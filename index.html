@@ -6,7 +6,509 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React + TS</title>
   </head>
+
   <body>
+    <div id="loading" class="loading-page">
+      <svg style="display: none">
+        <filter id="filter-blur">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
+        </filter>
+        <g id="someone-icon">
+          <circle cx="70" cy="79.56496" r="44" fill="#3241e0" />
+          <path
+            d="m100,78.06496a1.488,1.488 0 0 1 -1,1.4l0,0.18a43.963,43.963 0 0 1 -58,0l0,-0.18a1.479,1.479 0 0 1 0,-2.8l0,-0.1l1.066,0c0.161,0.15 0.329,0.291 0.492,0.438l0,0a40.929,40.929 0 0 0 54.877,0l0,0c0.163,-0.147 0.331,-0.288 0.492,-0.438l1.073,0l0,0.1a1.488,1.488 0 0 1 1,1.4z"
+            fill="#a4ef00"
+            fill-rule="evenodd"
+          />
+          <circle cx="80.21544" cy="26.43504" r="10" fill="#a4ef00" />
+          <circle
+            stroke="null"
+            cx="60.16192"
+            cy="26.43504"
+            r="10"
+            fill="#a4ef00"
+          />
+        </g>
+      </svg>
+      <style type="text/css">.loading-page {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .loading-page-text {
+        text-align: center;
+        letter-spacing: 6px;
+        font-size: 16px;
+        color: #999;
+        margin: 0;
+      }
+      .loading-page-glitch {
+        position: relative;
+        color: #fff;
+        font-size: 86px;
+        font-weight: bold;
+        text-shadow: 0 0 8px #a4ef00;
+      }
+      .loading-page-box {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .loading-page-icon {
+        width: 1.1em;
+        height: 1.1em;
+        margin-left: -0.11em;
+      }
+      .loading-page-line {
+        letter-spacing: 16px;
+        display: flex;
+        align-items: center;
+      }
+      .loading-page-line:not(:first-child) {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      .loading-page-line:nth-child(1) {
+        animation: clip 4000ms -360ms linear infinite, glitch1 1500ms -3568ms ease-out infinite;
+      }
+      @keyframes glitch1 {
+        0% {
+          transform: translateX(0);
+        }
+        96% {
+          transform: translateX(0);
+          color: #fff;
+        }
+        97% {
+          transform: translateX(4px);
+          color: #a4ef00;
+        }
+        98% {
+          transform: translateX(-4px);
+          color: #e03260;
+        }
+        99% {
+          transform: translateX(2px);
+          color: #fff;
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+      .loading-page-line:nth-child(2) {
+        animation: clip 4000ms -720ms linear infinite, glitch2 1500ms -1717ms ease-out infinite;
+      }
+      @keyframes glitch2 {
+        0% {
+          transform: translateX(0);
+        }
+        96% {
+          transform: translateX(0);
+          color: #fff;
+        }
+        97% {
+          transform: translateX(2px);
+          color: #a4ef00;
+        }
+        98% {
+          transform: translateX(1px);
+          color: #e03260;
+        }
+        99% {
+          transform: translateX(5px);
+          color: #fff;
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+      .loading-page-line:nth-child(3) {
+        animation: clip 4000ms -1080ms linear infinite, glitch3 1500ms -468ms ease-out infinite;
+      }
+      @keyframes glitch3 {
+        0% {
+          transform: translateX(0);
+        }
+        96% {
+          transform: translateX(0);
+          color: #fff;
+        }
+        97% {
+          transform: translateX(-4px);
+          color: #a4ef00;
+        }
+        98% {
+          transform: translateX(5px);
+          color: #e03260;
+        }
+        99% {
+          transform: translateX(3px);
+          color: #fff;
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+      .loading-page-line:nth-child(4) {
+        animation: clip 4000ms -1440ms linear infinite, glitch4 1500ms -1153ms ease-out infinite;
+      }
+      @keyframes glitch4 {
+        0% {
+          transform: translateX(0);
+        }
+        96% {
+          transform: translateX(0);
+          color: #fff;
+        }
+        97% {
+          transform: translateX(0px);
+          color: #a4ef00;
+        }
+        98% {
+          transform: translateX(-1px);
+          color: #e03260;
+        }
+        99% {
+          transform: translateX(-1px);
+          color: #fff;
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+      .loading-page-line:nth-child(5) {
+        animation: clip 4000ms -1800ms linear infinite, glitch5 1500ms -3505ms ease-out infinite;
+      }
+      @keyframes glitch5 {
+        0% {
+          transform: translateX(0);
+        }
+        96% {
+          transform: translateX(0);
+          color: #fff;
+        }
+        97% {
+          transform: translateX(-2px);
+          color: #a4ef00;
+        }
+        98% {
+          transform: translateX(-3px);
+          color: #e03260;
+        }
+        99% {
+          transform: translateX(-3px);
+          color: #fff;
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+      .loading-page-line:nth-child(6) {
+        animation: clip 4000ms -2160ms linear infinite, glitch6 1500ms -2992ms ease-out infinite;
+      }
+      @keyframes glitch6 {
+        0% {
+          transform: translateX(0);
+        }
+        96% {
+          transform: translateX(0);
+          color: #fff;
+        }
+        97% {
+          transform: translateX(2px);
+          color: #a4ef00;
+        }
+        98% {
+          transform: translateX(4px);
+          color: #e03260;
+        }
+        99% {
+          transform: translateX(1px);
+          color: #fff;
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+      .loading-page-line:nth-child(7) {
+        animation: clip 4000ms -2520ms linear infinite, glitch7 1500ms -1299ms ease-out infinite;
+      }
+      @keyframes glitch7 {
+        0% {
+          transform: translateX(0);
+        }
+        96% {
+          transform: translateX(0);
+          color: #fff;
+        }
+        97% {
+          transform: translateX(0px);
+          color: #a4ef00;
+        }
+        98% {
+          transform: translateX(4px);
+          color: #e03260;
+        }
+        99% {
+          transform: translateX(-3px);
+          color: #fff;
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+      .loading-page-line:nth-child(8) {
+        animation: clip 4000ms -2880ms linear infinite, glitch8 1500ms -2969ms ease-out infinite;
+      }
+      @keyframes glitch8 {
+        0% {
+          transform: translateX(0);
+        }
+        96% {
+          transform: translateX(0);
+          color: #fff;
+        }
+        97% {
+          transform: translateX(0px);
+          color: #a4ef00;
+        }
+        98% {
+          transform: translateX(2px);
+          color: #e03260;
+        }
+        99% {
+          transform: translateX(2px);
+          color: #fff;
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+      .loading-page-line:nth-child(9) {
+        animation: clip 4000ms -3240ms linear infinite, glitch9 1500ms -1474ms ease-out infinite;
+      }
+      @keyframes glitch9 {
+        0% {
+          transform: translateX(0);
+        }
+        96% {
+          transform: translateX(0);
+          color: #fff;
+        }
+        97% {
+          transform: translateX(2px);
+          color: #a4ef00;
+        }
+        98% {
+          transform: translateX(2px);
+          color: #e03260;
+        }
+        99% {
+          transform: translateX(3px);
+          color: #fff;
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+      .loading-page-line:nth-child(10) {
+        animation: clip 4000ms -3600ms linear infinite, glitch10 1500ms -275ms ease-out infinite;
+      }
+      @keyframes glitch10 {
+        0% {
+          transform: translateX(0);
+        }
+        96% {
+          transform: translateX(0);
+          color: #fff;
+        }
+        97% {
+          transform: translateX(5px);
+          color: #a4ef00;
+        }
+        98% {
+          transform: translateX(0px);
+          color: #e03260;
+        }
+        99% {
+          transform: translateX(1px);
+          color: #fff;
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+      @keyframes clip {
+        0% {
+          -webkit-clip-path: polygon(0 100%, 100% 100%, 100% 120%, 0 120%);
+                  clip-path: polygon(0 100%, 100% 100%, 100% 120%, 0 120%);
+        }
+        100% {
+          -webkit-clip-path: polygon(0 -20%, 100% -20%, 100% 0%, 0 0);
+                  clip-path: polygon(0 -20%, 100% -20%, 100% 0%, 0 0);
+        }
+      }</style>
+      <main>
+        <div class="loading-page-glitch">
+          <div class="loading-page-line">
+            SOME<span class="loading-page-box"
+              ><svg
+                viewBox="0 0 140 140"
+                xmlns="http://www.w3.org/2000/svg"
+                class="loading-page-icon"
+              >
+                <use
+                  href="#someone-icon"
+                  filter="url(#filter-blur)"
+                  opacity="0.8"
+                ></use>
+                <use href="#someone-icon"></use></svg></span
+            >NE
+          </div>
+          <div class="loading-page-line">
+            SOME<span class="loading-page-box"
+              ><svg
+                viewBox="0 0 140 140"
+                xmlns="http://www.w3.org/2000/svg"
+                class="loading-page-icon"
+              >
+                <use
+                  href="#someone-icon"
+                  filter="url(#filter-blur)"
+                  opacity="0.8"
+                ></use>
+                <use href="#someone-icon"></use></svg></span
+            >NE
+          </div>
+          <div class="loading-page-line">
+            SOME<span class="loading-page-box"
+              ><svg
+                viewBox="0 0 140 140"
+                xmlns="http://www.w3.org/2000/svg"
+                class="loading-page-icon"
+              >
+                <use
+                  href="#someone-icon"
+                  filter="url(#filter-blur)"
+                  opacity="0.8"
+                ></use>
+                <use href="#someone-icon"></use></svg></span
+            >NE
+          </div>
+          <div class="loading-page-line">
+            SOME<span class="loading-page-box"
+              ><svg
+                viewBox="0 0 140 140"
+                xmlns="http://www.w3.org/2000/svg"
+                class="loading-page-icon"
+              >
+                <use
+                  href="#someone-icon"
+                  filter="url(#filter-blur)"
+                  opacity="0.8"
+                ></use>
+                <use href="#someone-icon"></use></svg></span
+            >NE
+          </div>
+          <div class="loading-page-line">
+            SOME<span class="loading-page-box"
+              ><svg
+                viewBox="0 0 140 140"
+                xmlns="http://www.w3.org/2000/svg"
+                class="loading-page-icon"
+              >
+                <use
+                  href="#someone-icon"
+                  filter="url(#filter-blur)"
+                  opacity="0.8"
+                ></use>
+                <use href="#someone-icon"></use></svg></span
+            >NE
+          </div>
+          <div class="loading-page-line">
+            SOME<span class="loading-page-box"
+              ><svg
+                viewBox="0 0 140 140"
+                xmlns="http://www.w3.org/2000/svg"
+                class="loading-page-icon"
+              >
+                <use
+                  href="#someone-icon"
+                  filter="url(#filter-blur)"
+                  opacity="0.8"
+                ></use>
+                <use href="#someone-icon"></use></svg></span
+            >NE
+          </div>
+          <div class="loading-page-line">
+            SOME<span class="loading-page-box"
+              ><svg
+                viewBox="0 0 140 140"
+                xmlns="http://www.w3.org/2000/svg"
+                class="loading-page-icon"
+              >
+                <use
+                  href="#someone-icon"
+                  filter="url(#filter-blur)"
+                  opacity="0.8"
+                ></use>
+                <use href="#someone-icon"></use></svg></span
+            >NE
+          </div>
+          <div class="loading-page-line">
+            SOME<span class="loading-page-box"
+              ><svg
+                viewBox="0 0 140 140"
+                xmlns="http://www.w3.org/2000/svg"
+                class="loading-page-icon"
+              >
+                <use
+                  href="#someone-icon"
+                  filter="url(#filter-blur)"
+                  opacity="0.8"
+                ></use>
+                <use href="#someone-icon"></use></svg></span
+            >NE
+          </div>
+          <div class="loading-page-line">
+            SOME<span class="loading-page-box"
+              ><svg
+                viewBox="0 0 140 140"
+                xmlns="http://www.w3.org/2000/svg"
+                class="loading-page-icon"
+              >
+                <use
+                  href="#someone-icon"
+                  filter="url(#filter-blur)"
+                  opacity="0.8"
+                ></use>
+                <use href="#someone-icon"></use></svg></span
+            >NE
+          </div>
+          <div class="loading-page-line">
+            SOME<span class="loading-page-box"
+              ><svg
+                viewBox="0 0 140 140"
+                xmlns="http://www.w3.org/2000/svg"
+                class="loading-page-icon"
+              >
+                <use
+                  href="#someone-icon"
+                  filter="url(#filter-blur)"
+                  opacity="0.8"
+                ></use>
+                <use href="#someone-icon"></use></svg></span
+            >NE
+          </div>
+        </div>
+      </main>
+      <script>
+        window.__START_TIME = Date.now();
+      </script>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
