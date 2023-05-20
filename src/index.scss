@@ -12,6 +12,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  text-shadow: 0 0 4px rgba(#a4ef00, .6);
 }
 
 a {
@@ -27,12 +28,12 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #0f0f10;
+  background: #151617;
   background: repeating-linear-gradient(0deg,
   #0f0f10 25%,
   #0f0f10 50%,
   #151617 50%,
   #151617 75%);
-  background-size: 12px 12px;
+  background-size: 6px 6px;
 }
 
