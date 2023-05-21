@@ -20,7 +20,7 @@ export function createSomeoneView(config: SomeoneViewConfig) {
     if (isObserved) return;
     scrollObserve.observe(viewContainer, {
       childList: true,
-      subtree: true,
+      subtree: false,
     });
     isObserved = true;
   }
@@ -39,9 +39,14 @@ export function createSomeoneView(config: SomeoneViewConfig) {
     return isObserved;
   }
 
+  function setCursor(visible: boolean) {
+    visible ? viewContainer.classList.add('cursor') : viewContainer.classList.remove('cursor');
+  }
+
   return {
     getContainer,
     startObserve,
+    setCursor,
     clearObserve,
     getObserveStatus,
   }

@@ -1,0 +1,17 @@
+.someone-editor {
+  height: 100%;
+  overflow-y: auto;
+
+  &.cursor {
+    &::after {
+      content: '▉';
+      animation: blink .4s infinite steps(1);
+    }
+  }
+
+  @keyframes blink{
+    50% {
+      opacity: 0;
+    }
+  }
+}

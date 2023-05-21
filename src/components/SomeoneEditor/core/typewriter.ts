@@ -4,7 +4,9 @@ export type WriteInputer = string | (() => string) | (() => Promise<string>);
 
 export interface SomeoneTypewriterConfig {
   view: HTMLDivElement,
-  speed?: number
+  speed?: number,
+  onWrite?: () => void,
+  onWriteEnd?: () => void,
 }
 
 export type SomeoneTypewriterInstance = ReturnType<typeof createTypewriter>;
@@ -25,10 +27,12 @@ export function createTypewriter(config: SomeoneTypewriterConfig) {
   async function runWriteTask() {
     if (taskRunning || !writeTasks.length) return;
     taskRunning = true;
+    config.onWrite?.();
     while ((currentTask = writeTasks.shift())) {
       await currentTask();
     }
     taskRunning = false;
+    config.onWriteEnd?.();
   }
 
   async function writeText(text: string) {
@@ -53,13 +57,28 @@ export function createTypewriter(config: SomeoneTypewriterConfig) {
     })
   }
 
-  async function createWriter(inputer: WriteInputer, delay?: number) {
+  async function asyncWriteText(inputer: string) {
+    inputer.split('\n').forEach((line, index) => {
+      if (index) {
+        appendBr();
+      }
+
+      appendText(line);
+    });
+  } 
+
+  async function createWriter(inputer: WriteInputer, delay?: number, async?: boolean) {
     if (delay) {
       await sleepTimeout(delay);
     }
 
     if (typeof inputer !== 'string') {
       inputer = await inputer();
+    }
+
+    if (async) {
+      asyncWriteText(inputer);
+      return;
     }
 
     await writeText(inputer);
@@ -70,18 +89,9 @@ export function createTypewriter(config: SomeoneTypewriterConfig) {
     runWriteTask();
   }
 
-  function asyncWrite(inputer: string | (() => string)) {
-    if (typeof inputer === 'function') {
-      inputer = inputer();
-    }
-
-    inputer.split('\n').forEach((line, index) => {
-      if (index) {
-        appendBr();
-      }
-
-      appendText(line);
-    });
+  function asyncWrite(inputer: WriteInputer, delay?: number) {
+    writeTasks.push(() => createWriter(inputer, delay, true));
+    runWriteTask();
   }
 
   return {
