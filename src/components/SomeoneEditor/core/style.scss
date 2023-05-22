@@ -1,6 +1,7 @@
 .someone-editor {
   height: 100%;
   overflow-y: auto;
+  position: relative;
 
   &.cursor {
     &::after {
@@ -9,9 +10,51 @@
     }
   }
 
+  &.focus {
+    .someone-editor-inputer--cursor {
+      opacity: 1;
+    }
+  }
+
   @keyframes blink{
     50% {
       opacity: 0;
+    }
+  }
+
+
+  &-inputer {
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 0;
+    margin: 0;
+    width: 0px;
+    height: 1em;
+
+    &--view {
+      position: relative;
+      min-height: 1em;
+      padding-right: 1.5em;
+      overflow: hidden;
+    }
+
+    &--cursor {
+      position: relative;
+      display: inline-block;
+      width: 0px;
+      height: 1em;
+      background-color: #fff;
+      opacity: 0;
+
+      &::after {
+        content: '▉';
+        animation: blink 1s infinite steps(1);
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
     }
   }
 }

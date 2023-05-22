@@ -13,6 +13,7 @@ export function createSomeoneView(config: SomeoneViewConfig) {
   viewContainer.className = `someone-editor ${config.className || ''}`;
 
   function scrollCallback() {
+    console.log('callback');
     viewContainer.scrollTo(0, viewContainer.scrollHeight + 1);
   }
 

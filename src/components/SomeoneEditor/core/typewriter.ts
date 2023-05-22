@@ -1,12 +1,14 @@
+import { createSampleAutoMation } from "./automation";
+import { TextToken, TextTokenType, createTextToken } from "./token";
 import { sleepTimeout } from "./util";
 
 export type WriteInputer = string | (() => string) | (() => Promise<string>);
 
 export interface SomeoneTypewriterConfig {
-  view: HTMLDivElement,
-  speed?: number,
-  onWrite?: () => void,
-  onWriteEnd?: () => void,
+  view: HTMLDivElement;
+  speed?: number;
+  onWrite?: () => void;
+  onWriteEnd?: () => void;
 }
 
 export type SomeoneTypewriterInstance = ReturnType<typeof createTypewriter>;
@@ -14,14 +16,22 @@ export type SomeoneTypewriterInstance = ReturnType<typeof createTypewriter>;
 export function createTypewriter(config: SomeoneTypewriterConfig) {
   const writeTasks: (() => Promise<any>)[] = [];
   let taskRunning = false;
+  let prevToken: TextToken | null;
   let currentTask;
 
-  function appendText(text: string) {
-    config.view.appendChild(document.createTextNode(text));
+  function appendToken(text: string, tokenType: TextTokenType, token?: string) {
+    if (prevToken?.type === tokenType) {
+      prevToken.node!.textContent += text;
+      return;
+    }
+
+    prevToken = createTextToken(text, tokenType, token);
+    config.view.appendChild(prevToken.node);
   }
 
   function appendBr() {
-    config.view.appendChild(document.createElement('br'));
+    prevToken = null;
+    config.view.appendChild(document.createElement("br"));
   }
 
   async function runWriteTask() {
@@ -36,43 +46,62 @@ export function createTypewriter(config: SomeoneTypewriterConfig) {
   }
 
   async function writeText(text: string) {
-    let walk = 0;
-    let char: string;
+    const automation = createSampleAutoMation(text);
+
     await new Promise((resolve) => {
-     const loop = setInterval(() => {
-      char = text.charAt(walk++);
-      if (!char) {
-        clearInterval(loop);
-        resolve(true);
-        return;
-      }
+      const loop = setInterval(() => {
+        if (!automation.next()) {
+          clearInterval(loop);
+          resolve(true);
+          return;
+        }
 
-      if (char === '\n') {
-        appendBr();
-        return;
-      }
+        if (automation.isBreak()) {
+          appendBr();
+          return;
+        }
 
-      appendText(char);
-     }, config.speed || 100);
-    })
+        automation.clearToken();
+        automation.matchToken();
+        appendToken(
+          automation.getChar(),
+          automation.getToken(),
+          automation.getContent()
+        );
+      }, config.speed || 100);
+    });
   }
 
   async function asyncWriteText(inputer: string) {
-    inputer.split('\n').forEach((line, index) => {
-      if (index) {
+    const automation = createSampleAutoMation(inputer);
+
+    while (automation.next()) {
+      if (automation.isBreak()) {
         appendBr();
+        continue;
       }
 
-      appendText(line);
-    });
-  } 
+      automation.clearToken();
+      automation.matchToken();
 
-  async function createWriter(inputer: WriteInputer, delay?: number, async?: boolean) {
+      appendToken(
+        automation.getChar(),
+        automation.getToken(),
+        automation.getContent()
+      );
+    }
+  }
+
+  async function createWriter(
+    inputer: WriteInputer,
+    delay?: number,
+    async?: boolean
+  ) {
     if (delay) {
       await sleepTimeout(delay);
     }
 
-    if (typeof inputer !== 'string') {
+    if (typeof inputer !== "string") {
       inputer = await inputer();
     }
 
@@ -97,5 +126,5 @@ export function createTypewriter(config: SomeoneTypewriterConfig) {
   return {
     write,
     asyncWrite,
-  }
+  };
 }
