@@ -5,3 +5,11 @@ export function sleepTimeout(time: number) {
     }, time);
   })
 }
+
+export function subTextLeft(textNode: Node, index: number) {
+  return textNode.textContent!.substring(0, index);
+}
+
+export function subTextRight(textNode: Node, index: number) {
+  return textNode.textContent!.substring(index);
+}

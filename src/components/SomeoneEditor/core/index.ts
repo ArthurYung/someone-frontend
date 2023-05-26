@@ -17,7 +17,7 @@ export function createSomeoneEditor (config: SomeoneEditorConfig) {
   });
 
   const inputer = createSomeoneInputer(config, view.getContainer());
-  
+  console.log(inputer);
 
   view.startObserve();
 
