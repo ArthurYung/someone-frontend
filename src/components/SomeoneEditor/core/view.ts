@@ -5,16 +5,21 @@ export interface SomeoneViewConfig {
 export type SomeoneViewInstance = ReturnType<typeof createSomeoneView>;
 
 export function createSomeoneView(config: SomeoneViewConfig) {
+  const baseContainer = document.createElement('div');
   const viewContainer = document.createElement('div');
   const scrollObserve = new MutationObserver(scrollCallback);
   
   let isObserved = false;
 
   viewContainer.className = `someone-editor ${config.className || ''}`;
+  baseContainer.className = 'someone-editor--container';
+  baseContainer.appendChild(viewContainer);
 
   function scrollCallback() {
-    console.log('callback');
-    viewContainer.scrollTo(0, viewContainer.scrollHeight + 1);
+    const { offsetHeight, scrollHeight, scrollTop } = viewContainer;
+    if (offsetHeight + scrollTop < scrollHeight) {
+      viewContainer.scrollTo(0, viewContainer.scrollHeight + 1);
+    }
   }
 
   function startObserve() {
@@ -32,8 +37,12 @@ export function createSomeoneView(config: SomeoneViewConfig) {
     isObserved = false;
   }
 
-  function getContainer() {
+  function getView() {
     return viewContainer;
+  }
+
+  function getContainer() {
+    return baseContainer;
   }
 
   function getObserveStatus() {
@@ -45,10 +54,12 @@ export function createSomeoneView(config: SomeoneViewConfig) {
   }
 
   return {
+    getView,
     getContainer,
     startObserve,
     setCursor,
     clearObserve,
+    scrollCallback,
     getObserveStatus,
   }
 }

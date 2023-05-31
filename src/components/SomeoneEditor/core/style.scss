@@ -2,6 +2,11 @@
   height: 100%;
   overflow-y: auto;
   position: relative;
+  padding-right: 20px;
+  padding-left: 4px;
+  width: calc(100% + 20px);
+  box-sizing: border-box;
+  white-space:pre-wrap;
 
   &.cursor {
     &::after {
@@ -22,6 +27,10 @@
     }
   }
 
+  &--container {
+    overflow: hidden;
+    height: 100%;
+  }
 
   &-inputer {
     opacity: 0;

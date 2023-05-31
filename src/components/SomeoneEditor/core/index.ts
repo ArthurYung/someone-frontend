@@ -3,21 +3,30 @@ import { SomeoneViewConfig, createSomeoneView } from "./view";
 import { SomeoneInputerConfig, createSomeoneInputer } from "./inputer";
 import './style.scss';
 
-export type SomeoneEditorConfig = SomeoneViewConfig & SomeoneInputerConfig & Omit<SomeoneTypewriterConfig, 'view'>
+export type SomeoneEditorConfig = SomeoneViewConfig & SomeoneInputerConfig & Omit<SomeoneTypewriterConfig, 'view'> 
 
 export type SomeoneEditor = ReturnType<typeof createSomeoneEditor>;
 
 export function createSomeoneEditor (config: SomeoneEditorConfig) {
   const view = createSomeoneView(config);
   const typewiter = createTypewriter({
-    view: view.getContainer(),
+    view: view.getView(),
     speed: config.speed || 100,
     onWrite,
     onWriteEnd,
   });
 
-  const inputer = createSomeoneInputer(config, view.getContainer());
-  console.log(inputer);
+  const inputer = createSomeoneInputer({
+    ...config,
+    onEnter: (text) => {
+      typewiter.asyncWrite(text + '\n');
+      config.onEnter?.(text);
+    },
+    onInput: () => {
+      view.scrollCallback();
+      config.onInput?.()
+    }
+  }, view.getView());
 
   view.startObserve();
 

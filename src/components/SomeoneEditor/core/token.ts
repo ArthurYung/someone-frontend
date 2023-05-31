@@ -5,9 +5,17 @@ export enum TextTokenType {
   BREAK = 'break',
 }
 
-export const END_TOKEN = ']';
+export const END_TOKEN_BEGIN = '%';
+export const END_TOKEN_CLOSE = ']';
 export const START_TOKEN = '<';
 export const BREAK_TOKEN = '\n';
+
+/**
+ * Token Matcher Example: '<class|test>[%content%]'
+ * Jump to content walk length: '<' + '|' + '>' + '[' + '%' = 5
+ */
+export const CONTENT_START_TOKEN_LENTH = 5;
+
 
 function applyStyleNode(style: string, node: HTMLSpanElement) {
   node.style.cssText = style;
@@ -48,7 +56,7 @@ export function createTextToken(text: string, type = TextTokenType.DEFAULT, toke
 }
 
 export function matchTextToken(text: string) {
-  return text.match(/^\<(style|class)\|(.+?)\>\[(.+?)\]/)
+  return text.match(/^\<(style|class)\|(.+?)\>\[\%(.+?)\%\]/)
 }
 
 export type TextToken = ReturnType<typeof createTextToken>;

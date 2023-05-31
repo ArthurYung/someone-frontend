@@ -6,9 +6,16 @@ import './style.scss';
 
 export const SomeoneEditor: FC<{ speed?: number, children: any }> = ({ speed = 20, children }) => {
   const editorRef = useRef<HTMLDivElement>(null);
-  const pageEditor = useMemo(() => createSomeoneEditor({ speed }), []);
+  const onEnterRef = useRef<Function>(onEnter);
+  const pageEditor = useMemo(() => createSomeoneEditor({ speed, onEnter() {
+    onEnterRef.current?.();
+  }}), []);
   const [refreshId, setRefreshId] = useState(0);
   const [mountedEditor, setMountedEditor] = useState(false);
+
+  function onEnter() {
+    pageEditor.asyncWrite('<style|color:green>[%someone: %]')
+  }
 
   useEffect(() => {
     if (!editorRef.current) {
@@ -21,6 +28,8 @@ export const SomeoneEditor: FC<{ speed?: number, children: any }> = ({ speed = 2
     editorRef.current.appendChild(pageEditor.container);
     setMountedEditor(true);
   }, [refreshId, setRefreshId]);
+
+  onEnterRef.current = onEnter;
 
   return <SomeoneEditorProvider value={{ isMounted: mountedEditor, editor: pageEditor }}><div className="someone-editor-root" ref={editorRef} />{mountedEditor && children}</SomeoneEditorProvider>;
 };
