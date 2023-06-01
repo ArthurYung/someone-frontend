@@ -2,7 +2,7 @@
   height: 100%;
   overflow-y: auto;
   position: relative;
-  padding-right: 20px;
+  padding-right: 28px;
   padding-left: 4px;
   width: calc(100% + 20px);
   box-sizing: border-box;
@@ -45,7 +45,6 @@
     &--view {
       position: relative;
       min-height: 1em;
-      padding-right: 1.5em;
       overflow: hidden;
     }
 

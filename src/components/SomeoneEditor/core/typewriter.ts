@@ -19,8 +19,8 @@ export function createTypewriter(config: SomeoneTypewriterConfig) {
   let prevToken: TextToken | null;
   let currentTask;
 
-  function appendToken(text: string, tokenType: TextTokenType, token?: string) {
-    if (prevToken?.type === tokenType) {
+  function appendToken(text: string, tokenType: TextTokenType, token?: string, init?: boolean) {
+    if (prevToken?.type === tokenType && prevToken?.token === token) {
       prevToken.node!.textContent += text;
       return;
     }
@@ -87,7 +87,7 @@ export function createTypewriter(config: SomeoneTypewriterConfig) {
       appendToken(
         automation.getChar(),
         automation.getToken(),
-        automation.getContent()
+        automation.getContent(),
       );
     }
   }

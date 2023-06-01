@@ -3,6 +3,7 @@ export enum TextTokenType {
   STYLE = 'style',
   CLASS = 'class',
   BREAK = 'break',
+  NEW = 'new',
 }
 
 export const END_TOKEN_BEGIN = '%';
