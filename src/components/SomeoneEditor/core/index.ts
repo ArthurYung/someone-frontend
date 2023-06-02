@@ -25,9 +25,10 @@ export function createSomeoneEditor (config: SomeoneEditorConfig) {
       typewiter.asyncWrite(text + '\n');
       config.onEnter?.(text);
     },
-    onInput: () => {
+    onInput: (value) => {
+      console.log(value);
       view.scrollCallback();
-      config.onInput?.()
+      config.onInput?.(value);
     }
   }, view.getView());
 

@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { createEventWatcher } from './domListener';
-import { isSpaceChar, subTextLeft, subTextRight } from './util';
+import { createEventWatcher } from "./domListener";
+import { SUFFIX_TOKEN } from "./token";
+import { isSpaceChar, subTextLeft, subTextRight } from "./util";
 
 export interface SomeoneInputerConfig {
+  suffixs?: string[];
   onFocus?: () => void;
   onBlur?: () => void;
-  onInput?: () => void;
+  onInput?: (value: string) => void;
   onEnter?: (text: string) => void;
 }
 
@@ -13,11 +15,12 @@ export function createSomeoneInputer(
   config: SomeoneInputerConfig,
   root: HTMLDivElement
 ) {
-  const inputer = document.createElement('span');
-  const inputerView = document.createElement('span');
-  const inputerCursor = document.createElement('span');
-  const leftContainer = document.createTextNode('');
-  const rightContainer = document.createTextNode('');
+  const inputer = document.createElement("span");
+  const inputerView = document.createElement("span");
+  const inputerSuffix = document.createElement("span");
+  const inputerCursor = document.createElement("span");
+  const leftContainer = document.createTextNode("");
+  const rightContainer = document.createTextNode("");
 
   const inputerObserver = new MutationObserver(onInputerChange);
 
@@ -26,13 +29,13 @@ export function createSomeoneInputer(
       config.onFocus?.();
       if (isFocused) return;
       isFocused = true;
-      root.classList.add('focus');
+      root.classList.add("focus");
     },
     blur: () => {
       config.onBlur?.();
       if (!isFocused) return;
       isFocused = false;
-      root.classList.remove('focus');
+      root.classList.remove("focus");
     },
     keydown: (e) => {
       if (isCompose) {
@@ -40,30 +43,36 @@ export function createSomeoneInputer(
       }
 
       console.log(e);
-    
-      if (e.key === 'Backspace') {
+
+      if (e.key === "Backspace") {
         back();
         return;
       }
 
-      if (e.key === 'ArrowLeft') {
+      if (e.key === "ArrowLeft") {
         e.altKey ? wordJumpPrev() : prev();
         return;
       }
 
-      if (e.key === 'ArrowRight') {
+      if (e.key === "ArrowRight") {
         e.altKey ? wordJumpNext() : next();
         return;
       }
 
-      if (e.key === 'Enter') {
-        e.shiftKey ? inputText('\n') : enter();
+      if (e.key === "Enter") {
+        e.shiftKey ? inputText("\n") : enter();
+        e.preventDefault();
+        return;
+      }
+
+      if (e.key === "Tab") {
+        inputForSuffix();
         e.preventDefault();
         return;
       }
     },
     paste: (e) => {
-      const pasteValue = e.clipboardData?.getData('text') || '';
+      const pasteValue = e.clipboardData?.getData("text") || "";
       inputText(pasteValue);
       e.preventDefault();
     },
@@ -84,20 +93,24 @@ export function createSomeoneInputer(
     },
   });
 
-  inputer.className = 'someone-editor-inputer';
-  inputerView.className = 'someone-editor-inputer--view';
-  inputerCursor.className = 'someone-editor-inputer--cursor';
-  inputer.contentEditable = 'true';
+  inputer.className = "someone-editor-inputer";
+  inputerView.className = "someone-editor-inputer--view";
+  inputerCursor.className = "someone-editor-inputer--cursor";
+  inputerSuffix.className = "someone-editor-inputer--suffix";
+  inputer.contentEditable = "true";
   inputerView.appendChild(leftContainer);
   inputerView.appendChild(inputer);
   inputerView.appendChild(inputerCursor);
   inputerView.appendChild(rightContainer);
+  inputerView.appendChild(inputerSuffix);
 
   let index = 0;
   let length = 0;
+  let value = "";
   let isFocused = false;
   let isVisible = false;
   let isCompose = false;
+  let hasSuffix = false;
 
   function onInputerChange() {
     !isCompose && inputText(inputer.innerText);
@@ -116,20 +129,23 @@ export function createSomeoneInputer(
   }
 
   function clear() {
-    inputer.innerText = '';
-    leftContainer.textContent! = '';
-    rightContainer.textContent! = '';
+    inputer.innerText = "";
+    inputerSuffix.innerText = '';
+    leftContainer.textContent! = "";
+    rightContainer.textContent! = "";
+    value = "";
     index = 0;
     length = 0;
+    hasSuffix = false;
+    isCompose = false;
   }
 
   function remove(empty?: boolean) {
+    disconnectInput();
     empty && clear();
     inputerView.remove();
     isVisible = false;
     isFocused = false;
-    isCompose = false;
-    disconnectInput();
   }
 
   function append() {
@@ -142,15 +158,58 @@ export function createSomeoneInputer(
     return isFocused;
   }
 
+  function inputForSuffix() {
+    if (hasSuffix) {
+      inputText(inputerSuffix.innerText);
+      inputerSuffix.innerText = '';
+      hasSuffix = false;
+    }
+  }
+
+  function matchSuffixs() {
+    if (index === length && config.suffixs?.length && leftContainer.textContent![0] === SUFFIX_TOKEN) {
+      /**
+       * Each suffix config string order buy default
+       */
+      for (const suffix of config.suffixs) {
+        if (suffix.startsWith(value)) {
+          const suffixText = suffix.substring(value.length);
+          inputerSuffix.innerText = suffixText;
+          hasSuffix = suffixText !== '';
+          return;
+        }
+      }
+    }
+
+    if (hasSuffix) {
+      inputerSuffix.innerText = '';
+      hasSuffix = false;
+    }
+  }
+
   function inputText(text: string) {
     const len = text.length;
     index += len;
     length += len;
-    leftContainer.textContent += text;
+
+    /**
+     * Close observe before input node content to avoid duplicate callbacks
+     */
     disconnectInput();
-    inputer.innerText = '';
-    config.onInput?.();
+    leftContainer.textContent += text;
+    inputer.innerText = "";
+
+    /**
+     * Update inputer value and emit callback;
+     */
+    value = leftContainer.textContent! + rightContainer.textContent!;
+    config.onInput?.(value);
+
+    /**
+     * Match inputer suffix list with user config
+     */
     observeInput();
+    matchSuffixs();
   }
 
   function focus() {
@@ -180,7 +239,7 @@ export function createSomeoneInputer(
 
   function wordJumpPrev() {
     if (!index) return;
-    const prevTexts = leftContainer.textContent || '';
+    const prevTexts = leftContainer.textContent || "";
     let walker = index;
     while (--walker) {
       if (isSpaceChar(prevTexts.charAt(walker))) break;
@@ -193,7 +252,7 @@ export function createSomeoneInputer(
 
   function wordJumpNext() {
     if (index >= length) return;
-    const nextTexts = rightContainer.textContent || '';
+    const nextTexts = rightContainer.textContent || "";
     let walker = 0;
     while (index + ++walker < length) {
       if (isSpaceChar(nextTexts.charAt(walker))) break;
@@ -202,17 +261,17 @@ export function createSomeoneInputer(
     leftContainer.textContent! =
       leftContainer.textContent! + nextTexts.substring(0, walker);
     rightContainer.textContent! = nextTexts.substring(walker);
-    index += walker
+    index += walker;
   }
 
   function back() {
-    if (index) {
-      leftContainer.textContent = leftContainer.textContent!.substring(
-        0,
-        --index
-      );
-      length--;
-    }
+    if (!index) return;
+    disconnectInput();
+    leftContainer.textContent = leftContainer.textContent!.substring(0, --index);
+    value = leftContainer.textContent! + rightContainer.textContent!;
+    length--;
+    matchSuffixs();
+    observeInput();
   }
 
   function enter() {

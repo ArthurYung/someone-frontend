@@ -11,6 +11,10 @@ export const END_TOKEN_CLOSE = ']';
 export const START_TOKEN = '<';
 export const BREAK_TOKEN = '\n';
 
+export const SPACE_REG = /[ ,，。！·、]/;
+
+export const SUFFIX_TOKEN = '/';
+
 /**
  * Token Matcher Example: '<class|test>[%content%]'
  * Jump to content walk length: '<' + '|' + '>' + '[' + '%' = 5

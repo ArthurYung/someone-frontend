@@ -21,7 +21,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
 尚未登陆 请扫描下方二维码完成登录
 `, 0);
 
-  // write(generateQrcode, 2000);
+  write(generateQrcode, 2000);
 
   showInputer();
 

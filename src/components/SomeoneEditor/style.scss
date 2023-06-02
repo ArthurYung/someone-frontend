@@ -1,8 +1,9 @@
 .someone-editor-root {
   width: 60vw;
+  max-width: 960px;
   min-width: 300px;
-  height: 60vh;
+  height: 40vh;
   min-height: 120px;
-  padding-bottom: 10vh;
+  margin-bottom: 40vh;
   word-break: break-all;
 }

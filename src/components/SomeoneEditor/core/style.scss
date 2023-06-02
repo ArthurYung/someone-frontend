@@ -7,6 +7,7 @@
   width: calc(100% + 20px);
   box-sizing: border-box;
   white-space:pre-wrap;
+  caret-color: transparent;
 
   &.cursor {
     &::after {
@@ -33,6 +34,7 @@
   }
 
   &-inputer {
+    display: inline;
     caret-color: transparent;
     outline: none;
     border: none;
@@ -41,6 +43,11 @@
       position: relative;
       min-height: 1em;
       overflow: hidden;
+    }
+
+    &--suffix {
+      opacity: .3;
+      text-shadow: none;
     }
 
     &--cursor {
@@ -54,6 +61,8 @@
         animation: blink 1s infinite steps(1);
         position: absolute;
         left: 0;
+        top: 50%;
+        transform: translateY(-50%);
       }
     }
   }

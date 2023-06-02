@@ -4,7 +4,7 @@ import { createSomeoneEditor } from './core';
 import './style.scss';
 
 export const SomeoneEditor: FC<{ speed?: number; children: any }> = ({
-  speed = 10,
+  speed = 5,
   children,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -13,6 +13,7 @@ export const SomeoneEditor: FC<{ speed?: number; children: any }> = ({
     () =>
       createSomeoneEditor({
         speed,
+        suffixs: ['/helper', '/info', '/author'],
         onEnter() {
           onEnterRef.current?.();
         },

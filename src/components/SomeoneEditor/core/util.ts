@@ -1,3 +1,5 @@
+import { SPACE_REG } from "./token";
+
 export function sleepTimeout(time: number) {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -15,5 +17,5 @@ export function subTextRight(textNode: Node, index: number) {
 }
 
 export function isSpaceChar(char: string) {
-  return /[ ,，。！·、]/.test(char)
+  return SPACE_REG.test(char)
 }
