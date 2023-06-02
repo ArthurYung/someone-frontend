@@ -1,26 +1,35 @@
-import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { SomeoneEditorProvider } from "./context";
-import { createSomeoneEditor } from "./core";
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { SomeoneEditorProvider } from './context';
+import { createSomeoneEditor } from './core';
 import './style.scss';
 
-
-export const SomeoneEditor: FC<{ speed?: number, children: any }> = ({ speed = 20, children }) => {
+export const SomeoneEditor: FC<{ speed?: number; children: any }> = ({
+  speed = 10,
+  children,
+}) => {
   const editorRef = useRef<HTMLDivElement>(null);
-  const onEnterRef = useRef<Function>(onEnter);
-  const pageEditor = useMemo(() => createSomeoneEditor({ speed, onEnter() {
-    onEnterRef.current?.();
-  }}), []);
+  const onEnterRef = useRef<() => void>(onEnter);
+  const pageEditor = useMemo(
+    () =>
+      createSomeoneEditor({
+        speed,
+        onEnter() {
+          onEnterRef.current?.();
+        },
+      }),
+    []
+  );
   const [refreshId, setRefreshId] = useState(0);
   const [mountedEditor, setMountedEditor] = useState(false);
 
   function onEnter() {
-    pageEditor.asyncWrite('<style|color:green>[%someone: %]')
+    pageEditor.asyncWrite('<style|color:green>[%someone: %]');
   }
 
   useEffect(() => {
     if (!editorRef.current) {
       setTimeout(() => {
-        setRefreshId(refreshId + 1)
+        setRefreshId(refreshId + 1);
       }, 0);
       return;
     }
@@ -31,5 +40,12 @@ export const SomeoneEditor: FC<{ speed?: number, children: any }> = ({ speed = 2
 
   onEnterRef.current = onEnter;
 
-  return <SomeoneEditorProvider value={{ isMounted: mountedEditor, editor: pageEditor }}><div className="someone-editor-root" ref={editorRef} />{mountedEditor && children}</SomeoneEditorProvider>;
+  return (
+    <SomeoneEditorProvider
+      value={{ isMounted: mountedEditor, editor: pageEditor }}
+    >
+      <div className="someone-editor-root" ref={editorRef} />
+      {mountedEditor && children}
+    </SomeoneEditorProvider>
+  );
 };

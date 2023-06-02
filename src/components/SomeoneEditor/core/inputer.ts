@@ -1,5 +1,6 @@
-import { createEventWatcher } from "./domListener";
-import { subTextLeft, subTextRight } from "./util";
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { createEventWatcher } from './domListener';
+import { isSpaceChar, subTextLeft, subTextRight } from './util';
 
 export interface SomeoneInputerConfig {
   onFocus?: () => void;
@@ -12,19 +13,85 @@ export function createSomeoneInputer(
   config: SomeoneInputerConfig,
   root: HTMLDivElement
 ) {
-  const inputer = document.createElement("input");
-  const inputerView = document.createElement("span");
-  const inputerCursor = document.createElement("span");
-  const leftContainer = document.createTextNode("");
-  const rightContainer = document.createTextNode("");
+  const inputer = document.createElement('span');
+  const inputerView = document.createElement('span');
+  const inputerCursor = document.createElement('span');
+  const leftContainer = document.createTextNode('');
+  const rightContainer = document.createTextNode('');
 
-  inputer.className = "someone-editor-inputer";
-  inputerView.className = "someone-editor-inputer--view";
-  inputerCursor.className = "someone-editor-inputer--cursor";
+  const inputerObserver = new MutationObserver(onInputerChange);
+
+  const destroyInputerEvents = createEventWatcher(inputer as HTMLInputElement)({
+    focus: () => {
+      config.onFocus?.();
+      if (isFocused) return;
+      isFocused = true;
+      root.classList.add('focus');
+    },
+    blur: () => {
+      config.onBlur?.();
+      if (!isFocused) return;
+      isFocused = false;
+      root.classList.remove('focus');
+    },
+    keydown: (e) => {
+      if (isCompose) {
+        return;
+      }
+
+      console.log(e);
+    
+      if (e.key === 'Backspace') {
+        back();
+        return;
+      }
+
+      if (e.key === 'ArrowLeft') {
+        e.altKey ? wordJumpPrev() : prev();
+        return;
+      }
+
+      if (e.key === 'ArrowRight') {
+        e.altKey ? wordJumpNext() : next();
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        e.shiftKey ? inputText('\n') : enter();
+        e.preventDefault();
+        return;
+      }
+    },
+    paste: (e) => {
+      const pasteValue = e.clipboardData?.getData('text') || '';
+      inputText(pasteValue);
+      e.preventDefault();
+    },
+    compositionstart: () => {
+      isCompose = true;
+    },
+    compositionend: () => {
+      isCompose = false;
+      inputText(inputer.innerText);
+    },
+  });
+
+  const destroyDocumentEvents = createEventWatcher(document)({
+    mouseup: () => {
+      if (isVisible) {
+        inputer.focus();
+      }
+    },
+  });
+
+  inputer.className = 'someone-editor-inputer';
+  inputerView.className = 'someone-editor-inputer--view';
+  inputerCursor.className = 'someone-editor-inputer--cursor';
+  inputer.contentEditable = 'true';
   inputerView.appendChild(leftContainer);
+  inputerView.appendChild(inputer);
   inputerView.appendChild(inputerCursor);
   inputerView.appendChild(rightContainer);
-  inputerCursor.appendChild(inputer);
 
   let index = 0;
   let length = 0;
@@ -32,8 +99,24 @@ export function createSomeoneInputer(
   let isVisible = false;
   let isCompose = false;
 
+  function onInputerChange() {
+    !isCompose && inputText(inputer.innerText);
+  }
+
+  function observeInput() {
+    inputerObserver.observe(inputer, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+  }
+
+  function disconnectInput() {
+    inputerObserver.disconnect();
+  }
+
   function clear() {
-    inputer.innerText = "";
+    inputer.innerText = '';
     leftContainer.textContent! = '';
     rightContainer.textContent! = '';
     index = 0;
@@ -46,11 +129,13 @@ export function createSomeoneInputer(
     isVisible = false;
     isFocused = false;
     isCompose = false;
+    disconnectInput();
   }
 
   function append() {
     root.appendChild(inputerView);
     isVisible = true;
+    observeInput();
   }
 
   function isFocus() {
@@ -62,13 +147,14 @@ export function createSomeoneInputer(
     index += len;
     length += len;
     leftContainer.textContent += text;
-    inputer.value = "";
-    config.onInput?.()
+    disconnectInput();
+    inputer.innerText = '';
+    config.onInput?.();
+    observeInput();
   }
 
   function focus() {
     inputer.focus();
-    console.log(inputer);
   }
 
   function blur() {
@@ -92,6 +178,33 @@ export function createSomeoneInputer(
     }
   }
 
+  function wordJumpPrev() {
+    if (!index) return;
+    const prevTexts = leftContainer.textContent || '';
+    let walker = index;
+    while (--walker) {
+      if (isSpaceChar(prevTexts.charAt(walker))) break;
+    }
+    leftContainer.textContent! = prevTexts.substring(0, walker);
+    rightContainer.textContent! =
+      prevTexts.substring(walker) + rightContainer.textContent!;
+    index = walker;
+  }
+
+  function wordJumpNext() {
+    if (index >= length) return;
+    const nextTexts = rightContainer.textContent || '';
+    let walker = 0;
+    while (index + ++walker < length) {
+      if (isSpaceChar(nextTexts.charAt(walker))) break;
+    }
+
+    leftContainer.textContent! =
+      leftContainer.textContent! + nextTexts.substring(0, walker);
+    rightContainer.textContent! = nextTexts.substring(walker);
+    index += walker
+  }
+
   function back() {
     if (index) {
       leftContainer.textContent = leftContainer.textContent!.substring(
@@ -107,74 +220,10 @@ export function createSomeoneInputer(
     clear();
   }
 
-  const destroyInputerEvents = createEventWatcher(inputer)({
-    focus: () => {
-      config.onFocus?.();
-      if (isFocused) return;
-      isFocused = true;
-      root.classList.add("focus");
-    },
-    blur: () => {
-      config.onBlur?.();
-      if (!isFocused) return;
-      isFocused = false;
-      root.classList.remove("focus");
-    },
-    keydown: (e) => {
-      if (isCompose) {
-        return;
-      }
-
-      if (e.key.length === 1) {
-        inputText(e.key);
-        return;
-      }
-
-      if (e.key === "ArrowLeft") {
-        prev();
-        return;
-      }
-
-      if (e.key === "ArrowRight") {
-        next();
-        return;
-      }
-
-      if (e.key === "Backspace") {
-        back();
-        return;
-      }
-
-      if (e.key === 'Enter') {
-        e.shiftKey
-          ? inputText('\n')
-          : enter();
-        return;
-      }
-
-      console.log(e);
-    },
-    compositionstart: () => {
-      isCompose = true;
-    },
-    compositionend: (e) => {
-      isCompose = false;
-      inputText((e.target as any).value);
-    },
-  })
-
-
-  const destroyDocumentEvents = createEventWatcher(document)({
-    mouseup: () => {
-      if (isVisible) {
-        inputer.focus();
-      }
-    },
-  })
-
   function destroy() {
     destroyInputerEvents();
     destroyDocumentEvents();
+    remove();
   }
 
   return {

@@ -33,14 +33,9 @@
   }
 
   &-inputer {
-    opacity: 0;
-    position: absolute;
-    left: 0;
-    top: 0;
-    padding: 0;
-    margin: 0;
-    width: 0px;
-    height: 1em;
+    caret-color: transparent;
+    outline: none;
+    border: none;
 
     &--view {
       position: relative;
@@ -50,9 +45,7 @@
 
     &--cursor {
       position: relative;
-      display: inline-block;
       width: 0px;
-      height: 1em;
       background-color: #fff;
       opacity: 0;
 
@@ -61,7 +54,6 @@
         animation: blink 1s infinite steps(1);
         position: absolute;
         left: 0;
-        top: 0;
       }
     }
   }

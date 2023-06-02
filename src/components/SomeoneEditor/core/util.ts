@@ -13,3 +13,7 @@ export function subTextLeft(textNode: Node, index: number) {
 export function subTextRight(textNode: Node, index: number) {
   return textNode.textContent!.substring(index);
 }
+
+export function isSpaceChar(char: string) {
+  return /[ ,，。！·、]/.test(char)
+}
