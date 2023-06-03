@@ -1,18 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { SomeoneEditorConfig } from "./config";
 import { createEventWatcher } from "./domListener";
 import { SUFFIX_TOKEN } from "./token";
 import { isSpaceChar, subTextLeft, subTextRight } from "./util";
 
-export interface SomeoneInputerConfig {
-  suffixs?: string[];
-  onFocus?: () => void;
-  onBlur?: () => void;
-  onInput?: (value: string) => void;
-  onEnter?: (text: string) => void;
-}
+
 
 export function createSomeoneInputer(
-  config: SomeoneInputerConfig,
+  config: SomeoneEditorConfig,
   root: HTMLDivElement
 ) {
   const inputer = document.createElement("span");
@@ -26,13 +21,13 @@ export function createSomeoneInputer(
 
   const destroyInputerEvents = createEventWatcher(inputer as HTMLInputElement)({
     focus: () => {
-      config.onFocus?.();
+      config.emit('onFocus');
       if (isFocused) return;
       isFocused = true;
       root.classList.add("focus");
     },
     blur: () => {
-      config.onBlur?.();
+      config.emit('onBlur');
       if (!isFocused) return;
       isFocused = false;
       root.classList.remove("focus");
@@ -167,13 +162,15 @@ export function createSomeoneInputer(
   }
 
   function matchSuffixs() {
-    if (index === length && config.suffixs?.length && leftContainer.textContent![0] === SUFFIX_TOKEN) {
+    if (index === length && config.get('suffixs')?.length && leftContainer.textContent![0] === SUFFIX_TOKEN) {
       /**
        * Each suffix config string order buy default
        */
-      for (const suffix of config.suffixs) {
+      const suffixs = config.get('suffixs')!;
+      let suffixText = '';
+      for (const suffix of suffixs) {
         if (suffix.startsWith(value)) {
-          const suffixText = suffix.substring(value.length);
+          suffixText = suffix.substring(value.length);
           inputerSuffix.innerText = suffixText;
           hasSuffix = suffixText !== '';
           return;
@@ -203,7 +200,7 @@ export function createSomeoneInputer(
      * Update inputer value and emit callback;
      */
     value = leftContainer.textContent! + rightContainer.textContent!;
-    config.onInput?.(value);
+    config.emit('onEditorInput', value);
 
     /**
      * Match inputer suffix list with user config
@@ -275,7 +272,7 @@ export function createSomeoneInputer(
   }
 
   function enter() {
-    config.onEnter?.(leftContainer.textContent! + rightContainer.textContent!);
+    config.emit('onEditorEnter', value);
     clear();
   }
 

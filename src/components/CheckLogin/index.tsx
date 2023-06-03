@@ -15,15 +15,30 @@ function generateQrcode() {
 }
 
 export const CheckLogin: FC<{ children: any }> = ({ children }) => {
-  const { write, asyncWrite, showInputer } = useSomeoneEditor();
+  const { write, asyncWrite, showInputer, updateConfig } = useSomeoneEditor();
 
   write(`
 尚未登陆 请扫描下方二维码完成登录
-`, 0);
+`, 0).then(() => {
+  console.log('no test')
+})
 
-  write(generateQrcode, 2000);
+write(`
+尚未登陆 请扫描下方二维码完成登录
+尚未登陆 请扫描下方二维码完成登录
+`, 0).then(() => {
+  console.log('no test')
+})
+
+  write(generateQrcode, 20000).then(() => {
+    console.log('test');
+  })
 
   showInputer();
+
+  updateConfig({
+    suffixs: ['/test', '/teppd']
+  })
 
   return children;
 }

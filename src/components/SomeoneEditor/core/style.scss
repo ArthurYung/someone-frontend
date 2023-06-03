@@ -1,3 +1,19 @@
+@mixin cursor {
+  &::before {
+    content: '﻿';
+  }
+
+  &::after {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    background-color: #a4ef00;
+    box-shadow: 0 0 8px #a4ef00;
+  }
+}
+
 .someone-editor {
   height: 100%;
   overflow-y: auto;
@@ -10,8 +26,10 @@
   caret-color: transparent;
 
   &.cursor {
+    @include cursor;
+
     &::after {
-      content: '▉';
+      transform: translateY(10%);
       animation: blink .4s infinite steps(1);
     }
   }
@@ -51,18 +69,20 @@
     }
 
     &--cursor {
-      position: relative;
       width: 0px;
       background-color: #fff;
       opacity: 0;
+      position: relative;
+
+      @include cursor;
 
       &::after {
-        content: '▉';
-        animation: blink 1s infinite steps(1);
-        position: absolute;
         left: 0;
         top: 50%;
         transform: translateY(-50%);
+        position: absolute;
+        background-color: #fff;
+        animation: blink 1s infinite steps(1);
       }
     }
   }

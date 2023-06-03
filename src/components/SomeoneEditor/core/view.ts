@@ -1,17 +1,15 @@
-export interface SomeoneViewConfig {
-  className?: string
-}
+import { SomeoneEditorConfig } from "./config";
 
 export type SomeoneViewInstance = ReturnType<typeof createSomeoneView>;
 
-export function createSomeoneView(config: SomeoneViewConfig) {
+export function createSomeoneView(config: SomeoneEditorConfig) {
   const baseContainer = document.createElement('div');
   const viewContainer = document.createElement('div');
   const scrollObserve = new MutationObserver(scrollCallback);
   
   let isObserved = false;
 
-  viewContainer.className = `someone-editor ${config.className || ''}`;
+  viewContainer.className = `someone-editor ${config.get('className') || ''}`;
   baseContainer.className = 'someone-editor--container';
   baseContainer.appendChild(viewContainer);
 

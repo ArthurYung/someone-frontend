@@ -1,50 +1,55 @@
-import { SomeoneTypewriterConfig, createTypewriter } from "./typewriter";
-import { SomeoneViewConfig, createSomeoneView } from "./view";
-import { SomeoneInputerConfig, createSomeoneInputer } from "./inputer";
+import { createTypewriter } from "./typewriter";
+import { createSomeoneView } from "./view";
+import { createSomeoneInputer } from "./inputer";
+import { SomeoneEditorConfigProps, createSomeoneConfig } from "./config";
 import './style.scss';
-import { createEditorState } from "./state";
-
-export type SomeoneEditorConfig = SomeoneViewConfig & SomeoneInputerConfig & Omit<SomeoneTypewriterConfig, 'view'> 
 
 export type SomeoneEditor = ReturnType<typeof createSomeoneEditor>;
 
-export function createSomeoneEditor (config: SomeoneEditorConfig) {
-  const { state, updater } = createEditorState({});
-
+export function createSomeoneEditor (initConfig: SomeoneEditorConfigProps) {
+  const config = createSomeoneConfig(initConfig);
   const view = createSomeoneView(config);
-  const typewiter = createTypewriter({
-    view: view.getView(),
-    speed: config.speed || 100,
-    onWrite,
-    onWriteEnd,
-  });
-
-  const inputer = createSomeoneInputer({
-    ...config,
-    onEnter: (text) => {
-      typewiter.asyncWrite(text + '\n');
-      config.onEnter?.(text);
-    },
-    onInput: (value) => {
-      console.log(value);
-      view.scrollCallback();
-      config.onInput?.(value);
-    }
-  }, view.getView());
+  const typewiter = createTypewriter(config, view.getView());
+  const inputer = createSomeoneInputer(config, view.getView());
 
   view.startObserve();
 
+  config.set('onEditorEnter', (value) => {
+    typewiter.asyncWrite(value + '\n');
+    config.emit('onEnter', value);
+  });
+
+  config.set('onEditorInput', (value) => {
+    console.log(value);
+    view.scrollCallback();
+    config.emit('onInput', value);
+  });
+
+  config.set('onEditorWrite', () => {
+    config.set('isWriting', true);
+    view.setCursor(true);
+    config.emit('onWrite');
+    removeInputer();
+  });
+
+  config.set('onEditorWriteEnd', () => {
+    config.emit('onWriteEnd');
+    view.setCursor(false);
+    config.set('isWriting', false);
+    appendInputer();
+  })
+
   function showInputer() {
-    updater.setInputerVisible(true);
-    !state.isWriting && appendInputer();
+    config.set('inputerVisible', true);
+    config.get('isWriting') || appendInputer();
   }
 
   function hideInputer() {
-    updater.setInputerVisible(false);
+    config.set('inputerVisible', false);
   }
 
   function appendInputer() {
-    if (state.inputerVisible) {
+    if(config.get('inputerVisible')) {
       inputer.append();
       inputer.focus();
     }
@@ -55,18 +60,8 @@ export function createSomeoneEditor (config: SomeoneEditorConfig) {
     inputer.blur();
   }
 
-  function onWrite() {
-    updater.setIsWriting(true);
-    view.setCursor(true);
-    config.onWrite?.();
-    removeInputer();
-  }
-
-  function onWriteEnd() {
-    config.onWriteEnd?.();
-    view.setCursor(false);
-    updater.setIsWriting(false);
-    appendInputer();
+  function updateConfig(updateData: Partial<SomeoneEditorConfigProps>) {
+    config.setConfig(updateData)
   }
 
   return {
@@ -74,5 +69,6 @@ export function createSomeoneEditor (config: SomeoneEditorConfig) {
     ...typewiter,
     showInputer,
     hideInputer,
+    updateConfig,
   }
 }
