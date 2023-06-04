@@ -3,27 +3,45 @@ import { SomeoneEditorProvider } from './context';
 import { createSomeoneEditor } from './core';
 import './style.scss';
 
+function removeArrayItem<T>(arr: T[], item: T) {
+  const index = arr.indexOf(item);
+  if (index > -1) {
+    arr.splice(index, 1);
+  }
+}
+
 export const SomeoneEditor: FC<{ speed?: number; children: any }> = ({
-  speed = 20,
+  speed = 10,
   children,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
-  const onEnterRef = useRef<() => void>(onEnter);
+  const onEnterRefs = useRef<((val: string) =>any)[]>([]);
+  const onInputRefs = useRef<((val: string) =>any)[]>([]);
   const pageEditor = useMemo(
     () =>
       createSomeoneEditor({
         speed,
-        onEnter() {
-          onEnterRef.current?.();
+        onEnter(val) {
+          // 按顺序执行
+          onEnterRefs.current.every(fn =>fn(val))
         },
+        onInput(val) {
+          onInputRefs.current.every(fn =>fn(val))
+        }
       }),
     []
   );
   const [refreshId, setRefreshId] = useState(0);
   const [mountedEditor, setMountedEditor] = useState(false);
 
-  function onEnter() {
-    pageEditor.asyncWrite('<style|color:green>[%someone: %]');
+  function setEnterCallback(callback: (val: string) => any) {
+    onEnterRefs.current.push(callback);
+    return () => removeArrayItem(onEnterRefs.current, callback)
+  }
+
+  function setInputCallback(callback: (val: string) => any) {
+    onInputRefs.current.push(callback);
+    return () => removeArrayItem(onInputRefs.current, callback)
   }
 
   useEffect(() => {
@@ -38,11 +56,9 @@ export const SomeoneEditor: FC<{ speed?: number; children: any }> = ({
     setMountedEditor(true);
   }, [refreshId, setRefreshId]);
 
-  onEnterRef.current = onEnter;
-
   return (
     <SomeoneEditorProvider
-      value={{ isMounted: mountedEditor, editor: pageEditor }}
+      value={{ isMounted: mountedEditor, editor: pageEditor, setEnterCallback, setInputCallback }}
     >
       <div className="someone-editor-root" ref={editorRef} />
       {mountedEditor && children}

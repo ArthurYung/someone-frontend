@@ -4,18 +4,23 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
     "@types/qrcode-terminal": "^0.12.0",
+    "@types/qs": "^6.9.7",
+    "@types/ua-parser-js": "^0.7.36",
     "qrcode-terminal": "^0.12.0",
+    "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sass": "^1.62.1",
-    "vite-plugin-html": "^3.2.0"
+    "ua-parser-js": "^1.0.35",
+    "vite-plugin-html": "^3.2.0",
+    "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

@@ -34,14 +34,23 @@ export function createSomeoneEditor (initConfig: SomeoneEditorConfigProps) {
 
   config.set('onEditorWriteEnd', () => {
     config.emit('onWriteEnd');
-    view.setCursor(false);
     config.set('isWriting', false);
+    hideWriteCursor();
     appendInputer();
   })
 
+  function hideWriteCursor() {
+    if(config.get('inputerVisible')) {
+      view.setCursor(false);
+    }
+  }
+
   function showInputer() {
     config.set('inputerVisible', true);
-    config.get('isWriting') || appendInputer();
+    if (!config.get('isWriting')) {
+      hideWriteCursor();
+      appendInputer();
+    }
   }
 
   function hideInputer() {
