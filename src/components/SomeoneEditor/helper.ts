@@ -26,6 +26,8 @@ export function useSomeoneInputerWatch(callback: (val: string) => void | boolean
     }
     return setInputCallback(inputCallback);
   }, [])
+
+  callbackRef.current = callback;
 }
 
 export function useSomeoneEnterWatch(callback: (val: string) => void | boolean) {
@@ -37,4 +39,6 @@ export function useSomeoneEnterWatch(callback: (val: string) => void | boolean) 
     }
     return setEnterCallback(inputCallback);
   }, [])
+
+  callbackRef.current = callback;
 }

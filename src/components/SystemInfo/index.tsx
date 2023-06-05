@@ -18,8 +18,8 @@ export const SystemInfo: FC<{ children: any }> = ({ children }) => {
   })
 
   useEffect(() => {
-    setSystemReady(true);
-    return;
+    // setSystemReady(true);
+    // return;
     write(`SOMEONE System Setup`);
     asyncWrite("\n=================================\n\n");
     write(

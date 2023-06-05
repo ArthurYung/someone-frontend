@@ -21,6 +21,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   async function getUserInfo() {
     const res =  await fetchUserInfo();
     console.log(res);
+    showInputer();
   }
 
   useEffect(() => {
