@@ -135,9 +135,9 @@ export function createSomeoneInputer(
     isCompose = false;
   }
 
-  function remove(empty?: boolean) {
+  function remove() {
     disconnectInput();
-    empty && clear();
+    clear();
     inputerView.remove();
     isVisible = false;
     isFocused = false;

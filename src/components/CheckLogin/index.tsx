@@ -21,6 +21,8 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   async function getUserInfo() {
     const res =  await fetchUserInfo();
     console.log(res);
+    write('获取身份信息失败\n')
+    write(generateQrcode)
     showInputer();
   }
 
@@ -29,9 +31,9 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   }, [])
 
 
-  // updateConfig({
-  //   suffixs: ['/test', '/teppd']
-  // })
+  updateConfig({
+    suffixs: ['/test', '/teppd', '/help']
+  })
 
   return children;
 }
