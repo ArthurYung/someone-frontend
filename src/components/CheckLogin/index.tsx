@@ -8,6 +8,7 @@ import { checkCode, createCode } from '../../api/login';
 const MAX_LOOP_COUNT = 10;
 const REFRESH_SUFFIX = '/refresh';
 const TIMEOUT_ERROR_TOKEN = 'TIMEOUT';
+const WECHAT_QR_LINK = 'http://weixin.qq.com/r/uCpCWujEK7VUraw593_q';
 
 function space() {
   return `<style|color: transparent; text-shadow: none>[%█%]`
@@ -15,7 +16,7 @@ function space() {
 
 function generateQrcode() {
   return new Promise<string>((resolve) => {
-    qrcode.generate('https://www.baidu.com', { small: true }, (str) => {
+    qrcode.generate(WECHAT_QR_LINK, { small: true }, (str) => {
       resolve(str.replace(/ /g, space()))
     });
   })
