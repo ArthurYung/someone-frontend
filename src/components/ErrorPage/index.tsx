@@ -1,11 +1,36 @@
-import { FC, useMemo, useState } from "react";
+import { Component, FC, ErrorInfo, useMemo, useState, useEffect } from "react";
 import { getError } from "./check";
 import { ErrorContext } from "./context";
 import "./style.scss";
+import { requestErrorHandler } from "../../api/request";
+
+class ErrorBoundle extends Component<{
+  onError: (error: Error, info: ErrorInfo) => void;
+  children: any;
+}> {
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    this.props.onError(error, info);
+  }
+
+  render() {
+    return this.props.children;
+  }
+}
 
 export const ErrorPage: FC<{ children: any }> = ({ children }) => {
   const nativeError = useMemo(getError, []);
   const [errorInfo, setErrorInfo] = useState(nativeError);
+
+  useEffect(() => {
+    // 监听请求错误
+    const errorWatcherDestory = requestErrorHandler.watchError(error => {
+      setErrorInfo({
+        message: error.message,
+        info: String(error).split('\n'),
+      })
+    });
+    return errorWatcherDestory
+  }, [])
 
   return (
     <ErrorContext.Provider value={{ error: errorInfo, setError: setErrorInfo }}>
@@ -25,7 +50,13 @@ export const ErrorPage: FC<{ children: any }> = ({ children }) => {
           </div>
         </main>
       ) : (
-        children
+        <ErrorBoundle onError={(error, errorInfo) => {
+          setErrorInfo({
+            message: error.message,
+            info: errorInfo.componentStack.split('\n'),
+          })
+        }}>
+        {children}</ErrorBoundle>
       )}
     </ErrorContext.Provider>
   );

@@ -2,7 +2,6 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { useSomeoneEditor } from "../SomeoneEditor/context";
 import { successWrite, primaryWrite, errorWrite, importantWrite, useSomeoneInputerWatch } from '../SomeoneEditor/helper';
 import { getIP, system } from "./system";
-import "./style.scss";
 
 export const SystemInfo: FC<{ children: any }> = ({ children }) => {
   const [systemReady, setSystemReady] = useState(false);
@@ -12,8 +11,8 @@ export const SystemInfo: FC<{ children: any }> = ({ children }) => {
     if (systemReady) return;
     console.log('on keydown')
     hideInputer();
-    write(`Setup completed!`)
-    asyncWrite("\n=================================\n\n");
+    asyncWrite(`${successWrite("System completed!")}\n`)
+
     setSystemReady(true);
   })
 
@@ -50,14 +49,13 @@ This portion of the Setup program prepares Bruce & SOMEONE @1.0 to run your brow
     );
     asyncWrite("\nMain program started successfully...\n")
     asyncWrite("Detecting locale for you...\n", 100)
-    asyncWrite(`Set Simplified Chinese\n`, 100)
+    asyncWrite(`Set Language - Simplified Chinese\n`, 100)
+    asyncWrite("\n=================================\n\n", 100);
 
-    asyncWrite(`\n${primaryWrite("System completed!")}\n\n`)
     write(`${importantWrite("[重要声明] ")}`)
-    write(`\n本站为试验性网站，将且仅会为访问者提供便捷对话GPT大模型的${importantWrite("体验")}服务，\n对生成的开放性内容造成的风险与后果将由访问者自行承担。`, 300)
-    write(`\n按任意按键${importantWrite("同意上述声明")}并继续\n\n`).then(() => {
-      showInputer();
-    })
+    write(`\n本站为试验性网站，将且仅会为访问者提供便捷对话GPT大模型的${importantWrite("体验服务")}，\n对生成的开放性内容造成的风险与后果将由访问者自行承担。`, 300)
+    write(`\n按${importantWrite("任意按键")}同意上述声明并继续\n\n`);
+    showInputer();
   }, []);
 
   return systemReady ? children : null;

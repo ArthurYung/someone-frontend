@@ -17,6 +17,10 @@ export function importantWrite(text: string) {
   return `<class|important-write>[%${text}%]`
 }
 
+export function placeholderWrite(text: string) {
+  return `<class|placeholder-write>[%${text}%]`
+}
+
 export function useSomeoneInputerWatch(callback: (val: string) => void | boolean) {
   const { setInputCallback } = useContext(SomeoneEditorContext);
   const callbackRef = useRef<(val: string) => (void|boolean)>(callback);

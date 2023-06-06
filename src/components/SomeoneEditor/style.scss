@@ -2,8 +2,29 @@
   width: 60vw;
   max-width: 960px;
   min-width: 300px;
-  height: 40vh;
+  height: 60vh;
   min-height: 120px;
-  margin-bottom: 40vh;
+  padding-bottom: 10vh;
   word-break: break-all;
+}
+
+.succes-write {
+  color: #a4ef00;
+  // text-shadow: 0px 0px 5px rgba(#07ef00, .65);
+}
+.primary-write {
+  color: #3677ff;
+}
+.error-write {
+  color: #f33900;
+  text-shadow: 0px 0px 5px rgba(#f33900, .65);
+}
+.placeholder-write {
+  color: #666;
+  text-shadow: 0px 0px 5px rgba(#777, .65);
+}
+.important-write {
+  color: #3677ff;
+  text-shadow: 0px 0px 5px rgba(#3677ff, .65);
+  font-weight: 600;
 }

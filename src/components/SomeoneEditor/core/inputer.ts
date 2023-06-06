@@ -86,6 +86,11 @@ export function createSomeoneInputer(
         inputer.focus();
       }
     },
+    keydown: () => {
+      if (isVisible && !isFocus) {
+        inputer.focus();
+      }
+    }
   });
 
   inputer.className = "someone-editor-inputer";
