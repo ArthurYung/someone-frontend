@@ -11,8 +11,8 @@ export const GlobalLoading: FC<{ children: any }> = ({ children }) => {
     console.log('NOW: ' + currTime);
     const loadingSleep = Math.max(MIN_SLEEP - currTime + startTime, 0);
     setTimeout(() => {
-      document.getElementById('loading')?.remove();
-      setLoaded(true);
+      // document.getElementById('loading')?.remove();
+      // setLoaded(true);
     }, loadingSleep)
   }, []);
 
