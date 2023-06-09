@@ -1,0 +1,1 @@
+ export function generate(input: string, opts: any, cb?: (val: string) => void): void;

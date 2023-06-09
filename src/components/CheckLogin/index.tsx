@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useSomeoneEditor } from '../SomeoneEditor/context';
-import qrcode from 'qrcode-terminal';
+import * as qrcode from './qrcodeTerminal';
 import { UserInfo, fetchUserInfo } from '../../api/user';
 import { errorWrite, importantWrite, placeholderWrite, useSomeoneEnterWatch } from '../SomeoneEditor/helper';
 import { checkCode, createCode } from '../../api/login';
@@ -97,12 +97,13 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
 
 
   async function getUserInfo() {
-    const { data, error } = await fetchUserInfo();
-    if (error) {
-      asyncWrite(`\n获取身份信息失败 - ${error.message}`);
-      writeWechatLogin();
-      return;
-    }
+    // const { data, error } = await fetchUserInfo();
+    // if (error) {
+    //   asyncWrite(`\n获取身份信息失败 - ${error.message}`);
+    //   writeWechatLogin();
+    //   return;
+    // }
+    asyncWrite(`\n获取身份信息失败 - ${'服务尚未部署'}`);
     // console.log(res);
     write(generateQrcode)
     showInputer();
