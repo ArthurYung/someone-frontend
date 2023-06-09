@@ -23,14 +23,15 @@ import QRErrorCorrectLevel, { L } from 'qrcode-terminal/vendor/QRCode/QRErrorCor
         return arr;
     };
 
-export const error = L;
+let handleError = L;
+
 export function generate(input, opts, cb) {
     if (typeof opts === 'function') {
         cb = opts;
         opts = {};
     }
 
-    var qrcode = new QRCode(-1, this.error);
+    var qrcode = new QRCode(-1, handleError);
     qrcode.addData(input);
     qrcode.make();
 
@@ -93,5 +94,5 @@ export function generate(input, opts, cb) {
     else console.log(output);
 }
 export function setErrorLevel(error) {
-    this.error = QRErrorCorrectLevel[error] || this.error;
+    handleError = QRErrorCorrectLevel[error] || handleError;
 }
