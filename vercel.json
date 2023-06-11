@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+      {
+          "source": "/api/v1/:path*",
+          "destination": "http://api.someone.ink/api/v1/:path*"
+      }
+  ]
+}

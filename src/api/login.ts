@@ -1,11 +1,11 @@
-import { getJSON } from "./request";
+import { fetchData } from "./request";
 
 interface LoginCode {
   auth_code: string;
 }
 
 
-export const createCode = () => getJSON<{}, LoginCode>({
+export const createCode = () => fetchData<{}, LoginCode>({
   url: '/code',
 })
 
@@ -13,6 +13,6 @@ interface CheckCode {
   token: string;
 }
 
-export const checkCode = (code: string) => getJSON<{}, CheckCode>({
+export const checkCode = (code: string) => fetchData<{}, CheckCode>({
   url: `/${code}/check`,
 })

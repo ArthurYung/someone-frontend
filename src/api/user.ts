@@ -1,14 +1,18 @@
-import { getJSON } from "./request";
+import { fetchData } from "./request";
 
 export interface UserInfo {
-  // UserName string `json:"user_name"`
-	// UserId   int    `json:"id"`
-	// MsgCount int    `json:"msg_count"`
   user_name: string;
   id: number;
+  send_count: number;
   msg_count: number;
+  is_vip: 0 | 1;
 }
 
-export const fetchUserInfo = () => getJSON<{}, { info: UserInfo }>({
+export const fetchUserInfo = () => fetchData<{}, { info: UserInfo }>({
   url: '/info'
 })
+
+export const updateUserName = (data:{ user_name: string }) => fetchData({
+  url: '/info',
+  data,
+}, "POST")

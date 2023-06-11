@@ -3,22 +3,42 @@ import { useSomeoneEditor } from "../SomeoneEditor/context";
 import { successWrite, primaryWrite, errorWrite, importantWrite, useSomeoneInputerWatch } from '../SomeoneEditor/helper';
 import { getIP, system } from "./system";
 
+const CURRENT_VERSION = "v1.0"
+
 export const SystemInfo: FC<{ children: any }> = ({ children }) => {
   const [systemReady, setSystemReady] = useState(false);
   const { write, asyncWrite, showInputer, hideInputer } = useSomeoneEditor();
 
+  function writeComplition() {
+    asyncWrite("\n=================================\n\n", 100);
+    write(`${importantWrite("[重要声明] ")}`)
+    write(`\n本站为试验性网站，将且仅会为访问者提供便捷对话GPT大模型的${importantWrite("体验服务")}，\n对生成的开放性内容造成的风险与后果将由访问者自行承担。`, 300)
+    write(`\n按${importantWrite("任意按键")}同意上述声明并继续\n\n`);
+    showInputer();
+  }
+
   useSomeoneInputerWatch(() => {
     if (systemReady) return;
-    console.log('on keydown')
     hideInputer();
-    asyncWrite(`${successWrite("System completed!")}\n`)
+    asyncWrite(`${successWrite("System completed!")}\n\n`)
 
     setSystemReady(true);
+    localStorage.setItem("VERSION", CURRENT_VERSION);
   })
 
   useEffect(() => {
-    // setSystemReady(true);
-    // return;
+    if (localStorage.getItem("VERSION") === CURRENT_VERSION) {
+      setSystemReady(true);
+      return;
+    }
+
+    // 小于当前版本号
+    if (localStorage.getItem("VERSION")?.startsWith("v")) {
+      write(`Updating Stystem ${CURRENT_VERSION}...`)
+      asyncWrite(successWrite("done"))
+      writeComplition();
+      return;
+    }
     write(`SOMEONE System Setup`);
     asyncWrite("\n=================================\n\n");
     write(
@@ -50,12 +70,7 @@ This portion of the Setup program prepares Bruce & SOMEONE @1.0 to run your brow
     asyncWrite("\nMain program started successfully...\n")
     asyncWrite("Detecting locale for you...\n", 100)
     asyncWrite(`Set Language - Simplified Chinese\n`, 100)
-    asyncWrite("\n=================================\n\n", 100);
-
-    write(`${importantWrite("[重要声明] ")}`)
-    write(`\n本站为试验性网站，将且仅会为访问者提供便捷对话GPT大模型的${importantWrite("体验服务")}，\n对生成的开放性内容造成的风险与后果将由访问者自行承担。`, 300)
-    write(`\n按${importantWrite("任意按键")}同意上述声明并继续\n\n`);
-    showInputer();
+    writeComplition()
   }, []);
 
   return systemReady ? children : null;
