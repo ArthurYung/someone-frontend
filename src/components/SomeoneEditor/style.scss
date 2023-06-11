@@ -1,11 +1,18 @@
+// @property --rotate {
+//   syntax: "<angle>";
+//   initial-value: 132deg;
+//   inherits: false;
+// }
+
 .someone-editor-root {
-  width: 60vw;
-  max-width: 960px;
+  width: 80vw;
+  max-width: 1200px;
   min-width: 300px;
-  height: 50vh;
+  height: 76vh;
   min-height: 120px;
-  padding-bottom: 20vh;
+  padding: 18px 8px;
   word-break: break-all;
+  
 }
 
 .succes-write {
@@ -28,3 +35,4 @@
   text-shadow: 0px 0px 5px rgba(#3677ff, .65);
   font-weight: 600;
 }
+

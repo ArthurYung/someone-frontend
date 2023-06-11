@@ -19,7 +19,7 @@
   overflow-y: auto;
   position: relative;
   padding-right: 28px;
-  padding-left: 4px;
+  padding-left: 8px;
   width: calc(100% + 20px);
   box-sizing: border-box;
   white-space:pre-wrap;
@@ -82,6 +82,7 @@
         transform: translateY(-50%);
         position: absolute;
         background-color: #fff;
+        box-shadow: 0 0 8px rgba(#fff, .5);
         animation: blink 1s infinite steps(1);
       }
     }

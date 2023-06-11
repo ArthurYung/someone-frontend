@@ -36,12 +36,11 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: #151617;
-  background: repeating-linear-gradient(0deg,
-  #0f0f10 25%,
-  #0f0f10 50%,
-  #151617 50%,
-  #151617 75%);
-  background-size: 8px 8px;
+  background-image: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 100, color-stop(0%, #282b33), color-stop(100%, #151617));
+  background-image: -webkit-radial-gradient(#282b33, #151617);
+  background-image: -moz-radial-gradient(#282b33, #151617);
+  background-image: -o-radial-gradient(#282b33, #151617);
+  background-image: radial-gradient(#282b33, #151617);
 }
 
 
