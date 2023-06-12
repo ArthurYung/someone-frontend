@@ -13,10 +13,11 @@ export function createTypewriter(config: SomeoneEditorConfig, view: HTMLDivEleme
   let taskRunning = false;
   let prevToken: TextToken | null;
   let currentTask;
+  let currentLoop: number;
 
   function appendToken(text: string, tokenType: TextTokenType, token?: string) {
     if (prevToken?.type === tokenType && prevToken?.token === token) {
-      prevToken.node!.textContent += text;
+      prevToken.appendText(text);
       return;
     }
 
@@ -25,6 +26,11 @@ export function createTypewriter(config: SomeoneEditorConfig, view: HTMLDivEleme
   }
 
   function appendBr() {
+    if (prevToken?.type ===  TextTokenType.BLOCK && prevToken.node) {
+      prevToken.node.appendChild(document.createElement("br"))
+      return;
+    }
+    
     prevToken = null;
     view.appendChild(document.createElement("br"));
   }
@@ -44,9 +50,10 @@ export function createTypewriter(config: SomeoneEditorConfig, view: HTMLDivEleme
     const automation = createSampleAutoMation(text);
 
     await new Promise((resolve) => {
-      const loop = setInterval(() => {
+      clearInterval(currentLoop);
+      currentLoop = setInterval(() => {
         if (!automation.next()) {
-          clearInterval(loop);
+          clearInterval(currentLoop);
           resolve(true);
           return;
         }
@@ -126,8 +133,17 @@ export function createTypewriter(config: SomeoneEditorConfig, view: HTMLDivEleme
     })
   }
 
+  function clear() {
+    view.innerHTML = "";
+    prevToken = null;
+    taskRunning = false;
+    writeTasks.length = 0;
+    clearInterval(currentLoop);
+  }
+
   return {
     write,
     asyncWrite,
+    clear,
   };
 }

@@ -73,11 +73,17 @@ export function createSomeoneEditor (initConfig: SomeoneEditorConfigProps) {
     config.setConfig(updateData)
   }
 
+  function clearView() {
+    typewiter.clear();
+    appendInputer();
+  }
+
   return {
     container: view.getContainer(),
     ...typewiter,
     showInputer,
     hideInputer,
     updateConfig,
+    clearView,
   }
 }

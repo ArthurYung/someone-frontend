@@ -11,7 +11,7 @@ function removeArrayItem<T>(arr: T[], item: T) {
 }
 
 export const SomeoneEditor: FC<{ speed?: number; children: any }> = ({
-  speed = 10,
+  speed = 13,
   children,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
