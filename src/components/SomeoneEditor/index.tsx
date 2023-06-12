@@ -23,10 +23,10 @@ export const SomeoneEditor: FC<{ speed?: number; children: any }> = ({
         speed,
         onEnter(val) {
           // 按顺序执行
-          onEnterRefs.current.every(fn =>fn(val))
+          onEnterRefs.current.every(fn =>fn(val) !== false)
         },
         onInput(val) {
-          onInputRefs.current.every(fn =>fn(val))
+          onInputRefs.current.every(fn =>fn(val) !== false)
         }
       }),
     []

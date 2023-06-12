@@ -1,6 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useSomeoneEditor } from '../SomeoneEditor/context';
-import * as qrcode from './qrcodeTerminal';
 import { UserInfo, fetchUserInfo, updateUserName } from '../../api/user';
 import {
   errorWrite,
@@ -12,25 +11,15 @@ import {
 } from '../SomeoneEditor/helper';
 import { checkCode, createCode } from '../../api/login';
 import { setToken } from '../../utils/token';
-import './style.scss';
 import { UserInfoProvider } from './use-user';
+import './style.scss';
+import { generateQrcode } from './getQrCode';
 
 const MAX_LOOP_COUNT = 60;
 const REFRESH_SUFFIX = '/refresh';
 const TIMEOUT_ERROR_TOKEN = 'TIMEOUT';
 const WECHAT_QR_LINK = 'http://weixin.qq.com/r/uCpCWujEK7VUraw593_q';
 
-function lineSpace(str: string) {
-  return str ? `<style|letter-spacing:3px>[%${str}%]` : '';
-}
-
-function generateQrcode() {
-  return new Promise<string>((resolve) => {
-    qrcode.generate(WECHAT_QR_LINK, { small: true }, (str) => {
-      resolve(str.split('\n').map(lineSpace).join('\n'));
-    });
-  });
-}
 
 const useLoginCode = () => {
   const loopRef = useRef({ code: '', timeout: 0, loopCount: 0 });
@@ -82,7 +71,6 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
     showInputer,
     hideInputer,
     updateConfig,
-    clearView,
   } = useSomeoneEditor();
   const createLooper = useLoginCode();
 
@@ -99,7 +87,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
         '“Someone AI”'
       )} 或微信扫描下方二维码关注：\n`
     );
-    write(generateQrcode);
+    write(() => generateQrcode(WECHAT_QR_LINK));
     write(
       `\n2.请在公众号对话界面输入验证凭据 - ${importantWrite(data.auth_code)}\n`
     )
@@ -154,15 +142,14 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   }
 
   async function getUserInfo() {
-    write(generateQrcode).then;
-    // const { data, error } = await fetchUserInfo();
-    // if (error) {
-    //   asyncWrite(`\n获取身份信息失败 - ${error.message}`);
-    //   writeWechatLogin();
-    //   return;
-    // }
+    const { data, error } = await fetchUserInfo();
+    if (error) {
+      asyncWrite(`\n获取身份信息失败 - ${error.message}`);
+      writeWechatLogin();
+      return;
+    }
 
-    // writeSuccessInfo(data.info)
+    writeSuccessInfo(data.info)
   }
 
   async function handleUpdateUser(userName: string) {

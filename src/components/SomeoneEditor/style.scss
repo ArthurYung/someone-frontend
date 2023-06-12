@@ -8,11 +8,11 @@
   width: 80vw;
   max-width: 1200px;
   min-width: 300px;
-  height: 76vh;
+  height: 70vh;
   min-height: 120px;
   padding: 18px 8px;
+  padding-bottom: 10vh;
   word-break: break-all;
-  
 }
 
 .succes-write {
@@ -21,18 +21,34 @@
 }
 .primary-write {
   color: #3677ff;
+  text-shadow: 0px 0px 5px rgba(#3677ff, 0.65);
 }
 .error-write {
   color: #f33900;
-  text-shadow: 0px 0px 5px rgba(#f33900, .65);
+  text-shadow: 0px 0px 5px rgba(#f33900, 0.65);
 }
 .placeholder-write {
   color: #666;
-  text-shadow: 0px 0px 5px rgba(#777, .65);
+  text-shadow: 0px 0px 5px rgba(#777, 0.65);
 }
 .important-write {
   color: #3677ff;
-  text-shadow: 0px 0px 5px rgba(#3677ff, .65);
+  text-shadow: 0px 0px 5px rgba(#3677ff, 0.65);
   font-weight: 600;
 }
-
+.code-write {
+  color: #a4ef00;
+  font-weight: 600;
+}
+.someone {
+  color: #3677ff;
+  text-shadow: 0px 0px 5px rgba(#3677ff, 0.65);
+}
+.someone-link {
+  text-decoration: underline;
+  color: #f5f924;
+  text-shadow: 0px 0px 5px rgba(#f5f924, 0.65);
+  &:hover {
+    color: rgba(#f5f924, .6)
+  }
+}

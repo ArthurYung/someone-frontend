@@ -2,9 +2,10 @@ import { CheckLogin } from "./components/CheckLogin";
 import { ErrorPage } from "./components/ErrorPage";
 import { GlobalLoading } from "./components/GlobalLoading";
 import { LayoutMain } from "./components/LayoutMain";
+import { MessageContainer } from "./components/Message";
 import { SomeoneEditor } from "./components/SomeoneEditor";
 import { SystemInfo } from "./components/SystemInfo";
-console.log(import.meta.env)
+
 export const App = () => {
   return <GlobalLoading>
     <ErrorPage>
@@ -12,7 +13,7 @@ export const App = () => {
         <SomeoneEditor>
           <SystemInfo>
             <CheckLogin>
-
+              <MessageContainer />
             </CheckLogin>
           </SystemInfo>
         </SomeoneEditor>

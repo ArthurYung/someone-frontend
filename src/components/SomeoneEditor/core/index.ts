@@ -74,6 +74,8 @@ export function createSomeoneEditor (initConfig: SomeoneEditorConfigProps) {
   }
 
   function clearView() {
+    config.set('isWriting', false);
+    view.setCursor(false);
     typewiter.clear();
     appendInputer();
   }
