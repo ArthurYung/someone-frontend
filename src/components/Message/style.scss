@@ -1,0 +1,76 @@
+.layout-footer {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  .footer {
+    &-logo {
+      width: 52px;
+      height: 52px;
+    }
+
+    &-helper {
+      font-size: 12px;
+      opacity: .4;
+      padding: 0;
+      li {
+        list-style-type: none;
+      }
+    }
+
+    &-links {
+      display: flex;
+      align-items: center;
+      .link-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        margin-left: 8px;
+        &.bruce {
+          .link-icon-img {
+           width: 90%;
+           filter: invert(100);
+           transform: translateY(1px);
+
+          }
+        }
+
+        &.github {
+          .link-icon-img {
+            width: 90%;
+           }
+        }
+
+        &.survey {
+          .link-icon-img {
+            width: 100%;
+           }
+        }
+
+        &.txc {
+          .link-icon-img {
+            height: 100%;
+           }
+        }
+
+        &-img {
+          display: block;
+          filter: brightness(100);
+          opacity: .3;
+          transition: .3s ease-out;
+        }
+
+        &:hover {
+          .link-icon-img {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}
