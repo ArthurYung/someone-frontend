@@ -3,13 +3,15 @@ import { useUserInfo } from "../CheckLogin/use-user";
 import { Helpers, SomeoneHelper } from "./Helper";
 import { Links } from "./Links";
 import { useSomeoneEditor } from "../SomeoneEditor/context";
-import "./style.scss";
 import { useConfigUpdate, useWrites } from "./hooks";
+import { someoneSaid } from "../SomeoneEditor/helper";
+import { getTimePeriod } from "../../utils/date";
+import "./style.scss";
 
 export const MessageContainer: FC = () => {
-  const { clearView, write, updateConfig, showInputer } = useSomeoneEditor();
-  const { user_name, msg_count, is_vip } = useUserInfo();
-  const { writeLimit } = useWrites();
+  const { clearView, write, showInputer } = useSomeoneEditor();
+  const { msg_count, is_vip, user_name } = useUserInfo().userInfo;
+  const { writeLimit, writeUserName } = useWrites();
   useConfigUpdate();
   useEffect(() => {
     if (!msg_count && !is_vip) {
@@ -20,6 +22,10 @@ export const MessageContainer: FC = () => {
 
     showInputer();
     clearView();
+
+    write(someoneSaid())
+    write(`${getTimePeriod()}好，${user_name}😊`)
+    writeUserName(true);
   }, []);
 
   return (

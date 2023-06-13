@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSomeoneEditor } from "../SomeoneEditor/context";
 import { SomeoneHelper } from "./Helper";
 import { useUserInfo } from "../CheckLogin/use-user";
 import {
   codeWrite,
+  errorWrite,
   linkWrite,
   primaryWrite,
   someoneSaid,
@@ -12,6 +13,55 @@ import {
 } from "../SomeoneEditor/helper";
 import { generateQrcode } from "../CheckLogin/getQrCode";
 import { SURVEY_URL, TXC_URL } from "./Links";
+import { clearToken } from "../../utils/token";
+import { MessageInfo, sendMessage } from "../../api/message";
+
+const useBatchWriterCreator = (timeout = 300) => {
+  const writers = useRef<{ text: string, looper: number }[]>([]);
+
+  function createBatchWriter(callback: (text: string) => void) {
+    const writer = {
+      text: '',
+      looper: 0,
+    }
+
+    writers.current.push(writer);
+
+    function run() {
+      if (!writer.looper) {
+        writer.looper = window.setTimeout(() => {
+          callback(writer.text);
+          writer.text = '';
+          writer.looper = 0;
+        }, timeout)
+      }
+    }
+
+    function put(text: string) {
+      writer.text += text;
+    }
+
+    function clear() {
+      clearTimeout(writer.looper);
+      const index = writers.current.indexOf(writer);
+      if (index > -1) {
+        writers.current.splice(index, 1);
+      }
+    }
+
+    return {
+      run,
+      put,
+      clear,
+    }
+  }
+
+  useEffect(() => () => {
+    writers.current.forEach(item => window.clearTimeout(item.looper))
+  }, [])
+
+  return createBatchWriter;
+}
 
 export const useConfigUpdate = () => {
   const { updateConfig } = useSomeoneEditor();
@@ -30,12 +80,16 @@ export const useConfigUpdate = () => {
 };
 
 export const useWrites = () => {
-  const { write, asyncWrite, hideInputer } = useSomeoneEditor();
-  const { user_name, id, send_count, msg_count, is_vip } = useUserInfo();
+  const { write, asyncWrite, hideInputer, showInputer } = useSomeoneEditor();
+  const { userInfo, reloadUserInfo } = useUserInfo();
+  const { user_name, id, send_count, msg_count, is_vip } = userInfo;
+  const history = useRef<MessageInfo[]>([]);
+  const createBatchWather = useBatchWriterCreator(100);
 
   function writeUserName(inBreak = false) {
     asyncWrite(`${inBreak ? "\n" : ""}${user_name}: `);
   }
+
   function writeLimit() {
     asyncWrite("\n");
     asyncWrite(someoneSaid());
@@ -97,8 +151,51 @@ writeUserName(true)
     hideInputer()
     write(`Bye~`)
     setTimeout(() => {
+      clearToken();
       window.location.reload();
     }, 1000)
+  }
+
+  function writeSendMessage(value: string) {
+    let responseRole = '';
+    let responseContent = '';
+    const batchWriter = createBatchWather(write);
+    history.current = history.current.slice(-3);
+    history.current.push({ role: 'user', content: value })
+    hideInputer();
+    asyncWrite(someoneSaid());
+    sendMessage({
+      messages: history.current,
+      onMessage: data => {
+        if (data.delta.role) {
+          responseRole = data.delta.role;
+          return;
+        }
+        
+        responseContent += data.delta.content || '';
+        batchWriter.put(data.delta.content || '');
+        batchWriter.run();
+      }
+    }).then(() => {
+      responseRole && history.current.push({ role: responseRole, content: responseContent });
+    }).catch((err) => {
+      if (err.code === 3001) {
+        reloadUserInfo();
+        writeLimit();
+        return;
+      }
+
+      if (err.code === 5006) {
+        write(errorWrite('Ops! CPU要起火了! 让我冷静一下...\n'));
+        return;
+      }
+
+      write(errorWrite(err.message));
+    }).finally(() => {
+      batchWriter.clear();
+      showInputer();
+      writeUserName(true)
+    })
   }
 
   useSomeoneEnterWatch((value) => {
@@ -137,10 +234,12 @@ writeUserName(true)
       return;
     }
     
+    writeSendMessage(value)
   });
 
   return {
     writeLimit,
     writeHelp,
+    writeUserName,
   };
 };

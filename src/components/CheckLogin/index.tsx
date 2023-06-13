@@ -89,7 +89,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
     );
     write(() => generateQrcode(WECHAT_QR_LINK));
     write(
-      `\n2.请在公众号对话界面输入验证凭据 - ${importantWrite(data.auth_code)}\n`
+      `\n2.请在公众号对话界面输入验证凭据(不区分大小写) - ${importantWrite(data.auth_code)}\n`
     )
       .then(() => createLooper(data.auth_code))
       .then((token) => {
@@ -121,7 +121,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   }
 
   function welecomUserWrite(userInfo: UserInfo) {
-    write(primaryWrite('Welecome!')).then(() => {
+    write(primaryWrite('\nWelecome!'), 500).then(() => {
       setTimeout(() => {
         // clear
         setUserInfo(userInfo);
@@ -131,7 +131,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
 
   function writeSuccessInfo(userInfo: UserInfo) {
     if (userInfo.user_name) {
-      asyncWrite(`${successWrite('done')}\n`);
+      asyncWrite(`\n\n`);
       welecomUserWrite(userInfo);
       return;
     }
@@ -155,14 +155,16 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   async function handleUpdateUser(userName: string) {
     const { error } = await updateUserName({ user_name: userName });
     if (error) {
-      write(`${error.message}\n`);
+      write('更新失败，请刷新重试...\n')
+      write(errorWrite(`${error.code} - ${error.message}\n`));
       hideInputer();
       return;
     }
 
     const { data, error: userError } = await fetchUserInfo();
     if (userError) {
-      write(`${userError.message}\n`);
+      write('获取用户信息失败，请刷新重试...')
+      write(errorWrite(`${userError.code} - ${userError.message}\n`));
       hideInputer();
       return;
     }
@@ -170,17 +172,28 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
     return data;
   }
 
+  async function reloadUserInfo() {
+    const { data, error } = await fetchUserInfo();
+    if (error) {
+      write(`${error.message}\n`);
+      hideInputer();
+      return;
+    }
+
+    setUserInfo(data.info);
+  }
+
   useSomeoneEnterWatch((val) => {
     if (userInfo) return;
 
     if (userNameSetting) {
-      if (!/[\u4e00-\u9fa5a-zA-Z]{2,20}/.test(val)) {
+      if (!/^[\u4e00-\u9fa5a-zA-Z]{2,20}$/.test(val)) {
         write('系统识别失败，仅支持2-20个中文/英文字母组成\n');
         return;
       }
 
       hideInputer();
-      write('初始化中...\n');
+      write('正在设置中...\n');
       handleUpdateUser(val).then((userInfo) => {
         if (userInfo) {
           welecomUserWrite(userInfo.info);
@@ -210,8 +223,13 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
           )
             .then(() => createLooper(data.auth_code))
             .then((token) => {
-              console.log(token);
+              setToken(token);
+              return fetchUserInfo()
             })
+            .then(({ data, error}) => {
+              if (error) return Promise.reject(error);
+              writeSuccessInfo(data.info);
+            }) 
             .catch((error) => {
               if (error.message === TIMEOUT_ERROR_TOKEN) {
                 asyncWrite(
@@ -237,7 +255,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   }, []);
 
   return (
-    <UserInfoProvider value={userInfo!}>
+    <UserInfoProvider value={{userInfo: userInfo!, reloadUserInfo}}>
       {userInfo && children}
     </UserInfoProvider>
   );

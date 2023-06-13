@@ -1,5 +1,5 @@
-import qs from 'qs';
-import { clearToken, getToken } from '../utils/token';
+import qs from "qs";
+import { clearToken, getToken } from "../utils/token";
 
 const BASEURL =
   import.meta.env.MODE === "development"
@@ -13,61 +13,193 @@ export const requestErrorHandler = {
     return () => {
       const index = requestErrorHandler.watchers.indexOf(watcher);
       requestErrorHandler.watchers.splice(index, 1);
-    }
+    };
   },
   emitError: (err: Error) => {
-    requestErrorHandler.watchers.forEach(watcher => watcher(err))
-  }
-}
+    requestErrorHandler.watchers.forEach((watcher) => watcher(err));
+  },
+};
 
 export type ResponseData<T> = {
   code: number;
   message: string;
-} & T
+} & T;
 
-export function fetchData<Q = any, S = any>(config: { url: string; data?: Q }, method: RequestInit["method"] = "GET"): Promise<{
-  data: ResponseData<S>,
+export function fetchData<Q = any, S = any>(
+  config: { url: string; data?: Q },
+  method: RequestInit["method"] = "GET"
+): Promise<{
+  data: ResponseData<S>;
   error?: {
-    code: number,
+    code: number;
     message: string;
-  }
+  };
 }> {
-  let url = `${BASEURL}/api/v1${config.url}`
+  let url = `${BASEURL}/api/v1${config.url}`;
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
   headers.append("SMO-Token", getToken());
   const requestConfig: RequestInit = {
     headers,
     method,
-  }
+  };
 
   if (method === "GET") {
-    const params = config.data ? `?${qs.stringify(config.data)}` : '';
+    const params = config.data ? `?${qs.stringify(config.data)}` : "";
     url += params;
   }
 
   if (method === "POST") {
-    requestConfig.body = JSON.stringify(config.data || {})
+    requestConfig.body = JSON.stringify(config.data || {});
   }
 
-
   return fetch(url, requestConfig)
-  .then(res => res.json())
-  .then(res => {
-    if (!res.code) {
-      return { data: res as ResponseData<S>};
+    .then((res) => res.json())
+    .then((res) => {
+      if (!res.code) {
+        return { data: res as ResponseData<S> };
+      }
+
+      // 未登录
+      if (res.code === 4003) {
+        clearToken();
+      }
+
+      return { data: {} as ResponseData<S>, error: res };
+    })
+    .catch((error) => {
+      requestErrorHandler.emitError(error);
+      return Promise.reject(error);
+    });
+}
+
+export function fetchStream<T extends {}>(config: {
+  url: string;
+  data?: any;
+  method?: "GET" | "POST";
+  onMessage?: (data: T) => void;
+  timeout?: number;
+}) {
+  return new Promise((resolve, reject) => {
+    let url = `${BASEURL}/api/v1${config.url}`;
+
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("SMO-Token", getToken());
+  
+    const requestConfig: RequestInit = {
+      headers,
+      method: config.method || "GET",
+    };
+
+    const timeoutRejector = {
+      responseTimouter: 0,
+      refreshTimouter: () => {
+        timeoutRejector.responseTimouter = window.setTimeout(() => {
+          reject(new Error('Request Timeout!'));
+        }, config.timeout || 10000);
+      },
+      clearTimeouter: () => {
+        clearTimeout(timeoutRejector.responseTimouter);
+      }
     }
 
-    // 未登录
-    if (res.code === 4003) {
-      clearToken();
+    timeoutRejector.refreshTimouter();
+
+
+    if (requestConfig.method === "GET") {
+      const params = config.data ? `?${qs.stringify(config.data)}` : "";
+      url += params;
     }
 
-    return { data: {} as ResponseData<S>, error: res }
-  })
-  .catch(error => {
-    requestErrorHandler.emitError(error);
-    return Promise.reject(error);
+    if (requestConfig.method === "POST") {
+      requestConfig.body = JSON.stringify(config.data || {});
+    }
+
+    const push = async (
+      controller: ReadableStreamDefaultController,
+      reader: ReadableStreamDefaultReader
+    ) => {
+      const { value, done } = await reader.read();
+      timeoutRejector.refreshTimouter();
+      
+      if (done) {
+        controller.close();
+        timeoutRejector.clearTimeouter();
+        resolve(true);
+        return;
+      }
+
+
+      const resText = new TextDecoder().decode(value);
+
+      // 非正常message
+      if (!resText.startsWith("event:")) {
+        try {
+          const errorInfo = JSON.parse(resText);
+          // 未登录
+          if (errorInfo.code === 4003) {
+            clearToken();
+          }
+
+          reject(errorInfo);
+        } catch (e) {
+          reject(e);
+        }
+
+        return;
+      }
+
+      const lines = resText.split("\n");
+      let data: T;
+      for (let line of lines) {
+        if (!(line = line.trim())) continue;
+        if (line === "event:message") continue;
+        if (line.startsWith("data:")) {
+          data = JSON.parse(line.replace("data:", ""));
+          config.onMessage?.(data);
+          continue;
+        }
+        if (
+          line === "event:done" ||
+          line === "event:stop" ||
+          line === "data:finish" ||
+          line === "data:<!finish>"
+        ) {
+          controller.close();
+          timeoutRejector.clearTimeouter();
+          resolve(true);
+          return;
+        }
+
+        timeoutRejector.clearTimeouter();
+        reject(new Error("Parse line error: " + line));
+        return;
+      }
+
+      controller.enqueue(value);
+      push(controller, reader);
+    };
+
+    fetch(url, requestConfig)
+      .then((res) => {
+        const reader = res.body?.getReader();
+        if (reader) {
+          new ReadableStream({
+            start(controller) {
+              push(controller, reader);
+            },
+          });
+
+          return;
+        }
+
+        timeoutRejector.clearTimeouter();
+        reject(new Error("Get stream reader fail"));
+      })
+      .catch(err => {
+        timeoutRejector.clearTimeouter();
+        reject(err);
+      });
   });
-};
-
+}

@@ -9,7 +9,10 @@ const CONTEXT_INIT: UserInfo = {
   is_vip: 0,
 };
 
-const UserInfoContext = createContext(CONTEXT_INIT);
+const UserInfoContext = createContext({
+  userInfo: CONTEXT_INIT,
+  reloadUserInfo: () => {},
+});
 
 export const UserInfoProvider = UserInfoContext.Provider;
 export const useUserInfo = () => useContext(UserInfoContext)
