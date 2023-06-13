@@ -41,11 +41,15 @@ const useBatchWriterCreator = (timeout = 300) => {
       writer.text += text;
     }
 
-    function clear() {
+    function clear(force?: boolean) {
       clearTimeout(writer.looper);
       const index = writers.current.indexOf(writer);
       if (index > -1) {
         writers.current.splice(index, 1);
+      }
+
+      if (!force && writer.text) {
+        callback(writer.text);
       }
     }
 
