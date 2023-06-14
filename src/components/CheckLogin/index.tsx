@@ -2,6 +2,7 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { useSomeoneEditor } from '../SomeoneEditor/context';
 import { UserInfo, fetchUserInfo, updateUserName } from '../../api/user';
 import {
+  codeWrite,
   errorWrite,
   importantWrite,
   placeholderWrite,
@@ -89,7 +90,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
     );
     write(() => generateQrcode(WECHAT_QR_LINK));
     write(
-      `\n2.请在公众号对话界面输入验证凭据(不区分大小写) - ${importantWrite(data.auth_code)}\n`
+      `\n2.请在公众号对话界面输入验证凭据(不区分大小写) - ${codeWrite(data.auth_code)}\n`
     )
       .then(() => createLooper(data.auth_code))
       .then((token) => {
@@ -121,7 +122,8 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   }
 
   function welecomUserWrite(userInfo: UserInfo) {
-    write(primaryWrite('\nWelecome!'), 500).then(() => {
+    write('\n对话系统已开启 - ', 500)
+    write(primaryWrite('Welecome! ')).then(() => {
       setTimeout(() => {
         // clear
         setUserInfo(userInfo);
@@ -138,6 +140,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
 
     showInputer();
     write('\n你好Master，我该怎么称呼你呢？\n');
+    write('你可以在下方输入你想要设置的昵称，然后回车保存\n')
     setUserNameSetting(true);
   }
 
@@ -217,7 +220,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
         .then((data) => {
           if (!data?.auth_code) return;
           write(
-            `\n请在公众号对话界面输入验证凭据 - ${importantWrite(
+            `\n请在公众号对话界面输入验证凭据 - ${codeWrite(
               data.auth_code
             )}\n`
           )
@@ -233,7 +236,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
             .catch((error) => {
               if (error.message === TIMEOUT_ERROR_TOKEN) {
                 asyncWrite(
-                  placeholderWrite('验证凭据已失效，输入/refresh刷新凭据') +
+                  placeholderWrite('验证凭据已失效，请输入/refresh后回车刷新凭据') +
                     '\n'
                 );
                 showInputer();

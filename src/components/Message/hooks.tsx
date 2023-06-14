@@ -203,6 +203,7 @@ writeUserName(true)
   }
 
   useSomeoneEnterWatch((value) => {
+    value = value.trim();
     if (value === SomeoneHelper.HELPER) {
       writeHelp();
       return;
@@ -238,6 +239,11 @@ writeUserName(true)
       return;
     }
     
+    if (!value) {
+      writeUserName(true);
+      return;
+    }
+
     writeSendMessage(value)
   });
 

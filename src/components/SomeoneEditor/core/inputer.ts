@@ -37,8 +37,6 @@ export function createSomeoneInputer(
         return;
       }
 
-      console.log(e);
-
       if (e.key === "Backspace") {
         back();
         return;
@@ -50,7 +48,11 @@ export function createSomeoneInputer(
       }
 
       if (e.key === "ArrowRight") {
-        e.altKey ? wordJumpNext() : next();
+        if (hasSuffix) {
+          inputForSuffix();
+        } else {
+          e.altKey ? wordJumpNext() : next();
+        }
         return;
       }
 

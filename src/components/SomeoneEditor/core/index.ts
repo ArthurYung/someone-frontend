@@ -20,7 +20,6 @@ export function createSomeoneEditor (initConfig: SomeoneEditorConfigProps) {
   });
 
   config.set('onEditorInput', (value) => {
-    console.log(value);
     view.scrollCallback();
     config.emit('onInput', value);
   });
