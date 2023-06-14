@@ -1,6 +1,6 @@
 export function getTimePeriod() {
-  var currentTime = new Date();
-  var hour = currentTime.getHours();
+  const currentTime = new Date();
+  const hour = currentTime.getHours();
 
   if (hour >= 5 && hour < 9) {
     return "早上";

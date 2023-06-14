@@ -1,10 +1,8 @@
 import qs from "qs";
 import { clearToken, getToken } from "../utils/token";
+import { createStreamPusher } from "../utils/stream";
 
-const BASEURL =
-  import.meta.env.MODE === "development"
-    ? "https://dev.someone.ink"
-    : "https://someone.ink";
+const BASEURL = ""
 
 export const requestErrorHandler = {
   watchers: [] as ((err: Error) => void)[],
@@ -73,7 +71,7 @@ export function fetchData<Q = any, S = any>(
     });
 }
 
-export function fetchStream<T extends {}>(config: {
+export function fetchStream<T>(config: {
   url: string;
   data?: any;
   method?: "GET" | "POST";
@@ -94,8 +92,11 @@ export function fetchStream<T extends {}>(config: {
 
     const timeoutRejector = {
       responseTimouter: 0,
+      responseTimeouted: false,
       refreshTimouter: () => {
+        timeoutRejector.clearTimeouter();
         timeoutRejector.responseTimouter = window.setTimeout(() => {
+          timeoutRejector.responseTimeouted = true;
           reject(new Error('Request Timeout!'));
         }, config.timeout || 10000);
       },
@@ -116,27 +117,37 @@ export function fetchStream<T extends {}>(config: {
       requestConfig.body = JSON.stringify(config.data || {});
     }
 
+    const streamPusher = createStreamPusher();
+
     const push = async (
       controller: ReadableStreamDefaultController,
       reader: ReadableStreamDefaultReader
     ) => {
       const { value, done } = await reader.read();
-      timeoutRejector.refreshTimouter();
       
-      if (done) {
+      if (timeoutRejector.responseTimeouted) {
         controller.close();
-        timeoutRejector.clearTimeouter();
-        resolve(true);
         return;
       }
 
+      timeoutRejector.refreshTimouter();
 
-      const resText = new TextDecoder().decode(value);
 
-      // 非正常message
-      if (!resText.startsWith("event:")) {
+      if (!done) {
+        streamPusher.push(value);
+      }
+
+      const lines = streamPusher.getLines(done);
+      
+      if (!lines.length && streamPusher.hasValue()) {
+        push(controller, reader);
+        return;
+      }
+
+      // 错误返回
+      if (!/^(data|event):/.test(lines[0])) {
         try {
-          const errorInfo = JSON.parse(resText);
+          const errorInfo = JSON.parse(lines[0]);
           // 未登录
           if (errorInfo.code === 4003) {
             clearToken();
@@ -150,9 +161,9 @@ export function fetchStream<T extends {}>(config: {
         return;
       }
 
-      const lines = resText.split("\n");
       let data: T;
       for (let line of lines) {
+        console.log(line);
         if (!(line = line.trim())) continue;
         if (line === "event:message") continue;
         if (line.startsWith("data:")) {
@@ -174,6 +185,13 @@ export function fetchStream<T extends {}>(config: {
 
         timeoutRejector.clearTimeouter();
         reject(new Error("Parse line error: " + line));
+        return;
+      }
+
+      if (done) {
+        controller.close();
+        timeoutRejector.clearTimeouter();
+        resolve(true);
         return;
       }
 
