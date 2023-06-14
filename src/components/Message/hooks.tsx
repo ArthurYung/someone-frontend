@@ -10,6 +10,7 @@ import {
   someoneSaid,
   successWrite,
   useSomeoneEnterWatch,
+  userSaid,
 } from "../SomeoneEditor/helper";
 import { generateQrcode } from "../CheckLogin/getQrCode";
 import { SURVEY_URL, TXC_URL } from "./Links";
@@ -91,7 +92,7 @@ export const useWrites = () => {
   const createBatchWather = useBatchWriterCreator(100);
 
   function writeUserName(inBreak = false) {
-    asyncWrite(`${inBreak ? "\n" : ""}${user_name}: `);
+    asyncWrite(`${inBreak ? "\n" : ""}${userSaid(user_name)}`);
   }
 
   function writeLimit() {

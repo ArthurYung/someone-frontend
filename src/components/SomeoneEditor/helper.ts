@@ -33,6 +33,10 @@ export function someoneSaid() {
   return `<class|someone>[%someone: %]`
 }
 
+export function userSaid(text: string) {
+  return `<class|user>[%${text}: %]`
+}
+
 export function useSomeoneInputerWatch(callback: (val: string) => void | boolean) {
   const { setInputCallback } = useContext(SomeoneEditorContext);
   const callbackRef = useRef<(val: string) => (void|boolean)>(callback);
