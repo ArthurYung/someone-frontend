@@ -14,19 +14,18 @@ export function createSomeoneView(config: SomeoneEditorConfig) {
   baseContainer.appendChild(viewContainer);
 
   function scrollCallback() {
-    console.time('use oveserve callback')
     const { offsetHeight, scrollHeight, scrollTop } = viewContainer;
     if (offsetHeight + scrollTop < scrollHeight) {
       viewContainer.scrollTo(0, viewContainer.scrollHeight + 1);
     }
-    console.timeEnd('use oveserve callback')
   }
 
   function startObserve() {
     if (isObserved) return;
     scrollObserve.observe(viewContainer, {
-      childList: true,
+      childList: false,
       subtree: true,
+      characterData: true,
     });
     isObserved = true;
   }
