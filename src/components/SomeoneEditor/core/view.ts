@@ -23,7 +23,7 @@ export function createSomeoneView(config: SomeoneEditorConfig) {
   function startObserve() {
     if (isObserved) return;
     scrollObserve.observe(viewContainer, {
-      childList: false,
+      childList: true,
       subtree: true,
       characterData: true,
     });

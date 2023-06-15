@@ -1,6 +1,6 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import { useSomeoneEditor } from "../SomeoneEditor/context";
-import { successWrite, primaryWrite, errorWrite, importantWrite, useSomeoneInputerWatch } from '../SomeoneEditor/helper';
+import { successWrite, primaryWrite, errorWrite, importantWrite, useSomeoneInputerWatch, useSomeoneEnterWatch } from '../SomeoneEditor/helper';
 import { getIP, system } from "./system";
 
 const CURRENT_VERSION = "v1.0"
@@ -17,14 +17,23 @@ export const SystemInfo: FC<{ children: any }> = ({ children }) => {
     showInputer();
   }
 
-  useSomeoneInputerWatch(() => {
-    if (systemReady) return;
+  function agreedComplition() {
     hideInputer();
     asyncWrite(`${successWrite("System completed!")}\n\n`)
 
     setSystemReady(true);
     localStorage.setItem("VERSION", CURRENT_VERSION);
+  }
+
+  useSomeoneInputerWatch(() => {
+    if (systemReady) return;
+    agreedComplition();
   })
+
+  useSomeoneEnterWatch(() => {
+    if (systemReady) return;
+    agreedComplition();
+  });
 
   useEffect(() => {
     if (localStorage.getItem("VERSION") === CURRENT_VERSION) {

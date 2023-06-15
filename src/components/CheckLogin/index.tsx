@@ -109,7 +109,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
       .catch((error) => {
         if (error.message === TIMEOUT_ERROR_TOKEN) {
           asyncWrite(
-            placeholderWrite('验证凭据已失效，输入/refresh刷新凭据') + '\n'
+            placeholderWrite(`验证凭据已失效，在下方输入${REFRESH_SUFFIX}后输入回车可刷新凭据`) + '\n'
           );
           updateConfig({
             suffixs: [REFRESH_SUFFIX],
