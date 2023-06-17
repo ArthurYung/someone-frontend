@@ -126,12 +126,16 @@ writeUserName(true);
   }
 
   function writeInfo() {
-    write(`
-    用户ID: ${id}
-    用户昵称: ${user_name}
-    已对话: ${send_count}
-    剩余: ${msg_count}
-`)
+    write(async () => {
+      const { data, error } = await reloadUserInfo();
+      if (error) return '';
+      return `
+    用户ID: ${data.info.id}
+    用户昵称: ${data.info.user_name}
+    已对话: ${data.info.send_count}
+    剩余: ${data.info.msg_count}
+`
+    })
 writeUserName(true)
   }
 

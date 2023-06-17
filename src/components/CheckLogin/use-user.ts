@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { UserInfo } from "../../api/user";
+import { UserInfo, fetchUserInfo } from "../../api/user";
 
 const CONTEXT_INIT: UserInfo = {
   id: 0,
@@ -11,7 +11,7 @@ const CONTEXT_INIT: UserInfo = {
 
 const UserInfoContext = createContext({
   userInfo: CONTEXT_INIT,
-  reloadUserInfo: () => {},
+  reloadUserInfo: () => ({} as ReturnType<typeof fetchUserInfo>),
 });
 
 export const UserInfoProvider = UserInfoContext.Provider;

@@ -1,53 +1,55 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { SomeoneEditorConfig } from "./config";
-import { createEventWatcher } from "./domListener";
-import { SUFFIX_TOKEN } from "./token";
-import { isSpaceChar, subTextLeft, subTextRight } from "./util";
-
-
+import { SomeoneEditorConfig } from './config';
+import { createEventWatcher } from './domListener';
+import { getBackSize } from './events';
+import { createInputerHistory } from './history';
+import { SUFFIX_TOKEN } from './token';
+import { isSpaceChar, subTextLeft, subTextRight } from './util';
 
 export function createSomeoneInputer(
   config: SomeoneEditorConfig,
   root: HTMLDivElement
 ) {
-  const inputer = document.createElement("span");
-  const inputerView = document.createElement("span");
-  const inputerSuffix = document.createElement("span");
-  const inputerCursor = document.createElement("span");
-  const leftContainer = document.createTextNode("");
-  const rightContainer = document.createTextNode("");
+  const inputer = document.createElement('span');
+  const inputerView = document.createElement('span');
+  const inputerSuffix = document.createElement('span');
+  const inputerCursor = document.createElement('span');
+  const leftContainer = document.createTextNode('');
+  const rightContainer = document.createTextNode('');
 
   const inputerObserver = new MutationObserver(onInputerChange);
+
+  const inputerHistory = createInputerHistory();
 
   const destroyInputerEvents = createEventWatcher(inputer as HTMLInputElement)({
     focus: () => {
       config.emit('onFocus');
       if (isFocused) return;
       isFocused = true;
-      root.classList.add("focus");
+      root.classList.add('focus');
     },
     blur: () => {
       config.emit('onBlur');
       if (!isFocused) return;
       isFocused = false;
-      root.classList.remove("focus");
+      root.classList.remove('focus');
     },
     keydown: (e) => {
       if (isCompose) {
         return;
       }
 
-      if (e.key === "Backspace") {
+      if (e.key === 'Backspace') {
         back();
         return;
       }
 
-      if (e.key === "ArrowLeft") {
+      if (e.key === 'ArrowLeft') {
         e.altKey ? wordJumpPrev() : prev();
         return;
       }
 
-      if (e.key === "ArrowRight") {
+      if (e.key === 'ArrowRight') {
         if (hasSuffix) {
           inputForSuffix();
         } else {
@@ -56,20 +58,30 @@ export function createSomeoneInputer(
         return;
       }
 
-      if (e.key === "Enter") {
-        e.shiftKey ? inputText("\n") : enter();
+      if (e.key === 'ArrowUp') {
+        undo();
+        return;
+      }
+
+      if (e.key === 'ArrowDown') {
+        redo();
+        return;
+      }
+
+      if (e.key === 'Enter') {
+        e.shiftKey ? inputText('\n') : enter();
         e.preventDefault();
         return;
       }
 
-      if (e.key === "Tab") {
+      if (e.key === 'Tab') {
         inputForSuffix();
         e.preventDefault();
         return;
       }
     },
     paste: (e) => {
-      const pasteValue = e.clipboardData?.getData("text") || "";
+      const pasteValue = e.clipboardData?.getData('text') || '';
       inputText(pasteValue);
       e.preventDefault();
     },
@@ -92,14 +104,14 @@ export function createSomeoneInputer(
       if (isVisible && !isFocus) {
         inputer.focus();
       }
-    }
+    },
   });
 
-  inputer.className = "someone-editor-inputer";
-  inputerView.className = "someone-editor-inputer--view";
-  inputerCursor.className = "someone-editor-inputer--cursor";
-  inputerSuffix.className = "someone-editor-inputer--suffix";
-  inputer.contentEditable = "true";
+  inputer.className = 'someone-editor-inputer';
+  inputerView.className = 'someone-editor-inputer--view';
+  inputerCursor.className = 'someone-editor-inputer--cursor';
+  inputerSuffix.className = 'someone-editor-inputer--suffix';
+  inputer.contentEditable = 'true';
   inputerView.appendChild(leftContainer);
   inputerView.appendChild(inputer);
   inputerView.appendChild(inputerCursor);
@@ -108,7 +120,7 @@ export function createSomeoneInputer(
 
   let index = 0;
   let length = 0;
-  let value = "";
+  let value = '';
   let isFocused = false;
   let isVisible = false;
   let isCompose = false;
@@ -131,11 +143,11 @@ export function createSomeoneInputer(
   }
 
   function clear() {
-    inputer.innerText = "";
+    inputer.innerText = '';
     inputerSuffix.innerText = '';
-    leftContainer.textContent! = "";
-    rightContainer.textContent! = "";
-    value = "";
+    leftContainer.textContent! = '';
+    rightContainer.textContent! = '';
+    value = '';
     index = 0;
     length = 0;
     hasSuffix = false;
@@ -169,7 +181,11 @@ export function createSomeoneInputer(
   }
 
   function matchSuffixs() {
-    if (index === length && config.get('suffixs')?.length && leftContainer.textContent![0] === SUFFIX_TOKEN) {
+    if (
+      index === length &&
+      config.get('suffixs')?.length &&
+      leftContainer.textContent![0] === SUFFIX_TOKEN
+    ) {
       /**
        * Each suffix config string order buy default
        */
@@ -201,7 +217,7 @@ export function createSomeoneInputer(
      */
     disconnectInput();
     leftContainer.textContent += text;
-    inputer.innerText = "";
+    inputer.innerText = '';
 
     /**
      * Update inputer value and emit callback;
@@ -243,7 +259,7 @@ export function createSomeoneInputer(
 
   function wordJumpPrev() {
     if (!index) return;
-    const prevTexts = leftContainer.textContent || "";
+    const prevTexts = leftContainer.textContent || '';
     let walker = index;
     while (--walker) {
       if (isSpaceChar(prevTexts.charAt(walker))) break;
@@ -256,7 +272,7 @@ export function createSomeoneInputer(
 
   function wordJumpNext() {
     if (index >= length) return;
-    const nextTexts = rightContainer.textContent || "";
+    const nextTexts = rightContainer.textContent || '';
     let walker = 0;
     while (index + ++walker < length) {
       if (isSpaceChar(nextTexts.charAt(walker))) break;
@@ -270,15 +286,51 @@ export function createSomeoneInputer(
 
   function back() {
     if (!index) return;
+    const walk = getBackSize();
+    index -= walk;
+    length -= walk;
     disconnectInput();
-    leftContainer.textContent = leftContainer.textContent!.substring(0, --index);
+    leftContainer.textContent = leftContainer.textContent!.substring(0, index);
     value = leftContainer.textContent! + rightContainer.textContent!;
-    length--;
     matchSuffixs();
     observeInput();
   }
 
+  function undo() {
+    // 使用了history并且当前history不为
+    if (inputerHistory.current() !== value) {
+      inputerHistory.save(value);
+    }
+  
+    const undoText = inputerHistory.undo();
+    if (undoText) {
+      disconnectInput();
+      leftContainer.textContent = undoText;
+      rightContainer.textContent = '';
+      length = undoText.length;
+      value = undoText;
+      index = length;
+      matchSuffixs();
+      observeInput();
+    }
+  }
+
+  function redo() {
+    const redoText = inputerHistory.redo();
+    if (redoText) {
+      disconnectInput();
+      leftContainer.textContent = redoText;
+      rightContainer.textContent = '';
+      length = redoText.length;
+      value = redoText;
+      index = length;
+      matchSuffixs();
+      observeInput();
+    }
+  }
+
   function enter() {
+    inputerHistory.save(value);
     config.emit('onEditorEnter', value);
     clear();
   }

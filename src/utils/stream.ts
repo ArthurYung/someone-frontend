@@ -4,9 +4,8 @@ export function createStreamPusher() {
         done: false,
     }
 
-    function push(str: any) {
+    function push(str: BufferSource) {
         stream.value += new TextDecoder().decode(str);
-        console.log(stream.value);
     }
 
 

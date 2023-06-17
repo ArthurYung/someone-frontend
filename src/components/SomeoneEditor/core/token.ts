@@ -22,7 +22,6 @@ export const SUFFIX_TOKEN = '/';
  */
 export const CONTENT_START_TOKEN_LENTH = 5;
 
-
 function applyStyleNode(style: string, node: HTMLSpanElement) {
   node.style.cssText = style;
 }
@@ -32,9 +31,9 @@ function applyClassNode(className: string, node: HTMLSpanElement) {
 }
 
 function applyLinkAttributes(href: string, node: HTMLSpanElement) {
-  node.className = "someone-link"
-  node.setAttribute("href", href);
-  node.setAttribute("target", "_blank");
+  node.className = 'someone-link';
+  node.setAttribute('href', href);
+  node.setAttribute('target', '_blank');
 }
 
 function updateNodeContent(node: HTMLSpanElement, text: string) {
@@ -43,9 +42,9 @@ function updateNodeContent(node: HTMLSpanElement, text: string) {
 }
 
 function createTokenNode(type: TextTokenType) {
-  if (type === TextTokenType.BLOCK) return document.createElement("div")
-  if (type === TextTokenType.LINK) return  document.createElement("a")
-  return document.createElement("span");
+  if (type === TextTokenType.BLOCK) return document.createElement('div');
+  if (type === TextTokenType.LINK) return document.createElement('a');
+  return document.createElement('span');
 }
 
 function getTextNode(text: string, type: TextTokenType, token: string) {
@@ -56,15 +55,19 @@ function getTextNode(text: string, type: TextTokenType, token: string) {
   const node = createTokenNode(type);
   type === TextTokenType.CLASS && applyClassNode(token, node);
   type === TextTokenType.STYLE && applyStyleNode(token, node);
-  type === TextTokenType.BLOCK && applyStyleNode(`display:inline; ${token}`, node);
+  type === TextTokenType.BLOCK &&
+    applyStyleNode(`display:inline; ${token}`, node);
   type === TextTokenType.LINK && applyLinkAttributes(token, node);
   updateNodeContent(node, text);
 
   return node;
 }
 
-export function createTextToken(text: string, type = TextTokenType.DEFAULT, token = '') {
-
+export function createTextToken(
+  text: string,
+  type = TextTokenType.DEFAULT,
+  token = ''
+) {
   const textToken = {
     text,
     type,
@@ -84,13 +87,13 @@ export function createTextToken(text: string, type = TextTokenType.DEFAULT, toke
 
       textToken.node.appendChild(document.createTextNode(text));
     },
-  }
+  };
 
   return textToken;
 }
 
 export function matchTextToken(text: string) {
-  return text.match(/^\<(style|class|block|link)\|(.+?)\>\[\%([\s\S]*?)\%\]/)
+  return text.match(/^<(style|class|block|link)\|(.+?)>\[%([\s\S]*?)%\]/);
 }
 
 export type TextToken = ReturnType<typeof createTextToken>;

@@ -1,7 +1,15 @@
-import { BREAK_TOKEN, CONTENT_START_TOKEN_LENTH, END_TOKEN_BEGIN, END_TOKEN_CLOSE, START_TOKEN, TextTokenType, matchTextToken } from "./token";
+import {
+  BREAK_TOKEN,
+  CONTENT_START_TOKEN_LENTH,
+  END_TOKEN_BEGIN,
+  END_TOKEN_CLOSE,
+  START_TOKEN,
+  TextTokenType,
+  matchTextToken,
+} from './token';
 
 /**
- * 简单状态机 
+ * 简单状态机
  */
 export function createSampleAutoMation(text: string) {
   let walk = 0;
@@ -23,7 +31,11 @@ export function createSampleAutoMation(text: string) {
   }
 
   function clearToken() {
-    if (char === END_TOKEN_BEGIN && previewNext() === END_TOKEN_CLOSE && tokenType !== TextTokenType.DEFAULT) {
+    if (
+      char === END_TOKEN_BEGIN &&
+      previewNext() === END_TOKEN_CLOSE &&
+      tokenType !== TextTokenType.DEFAULT
+    ) {
       setToken(TextTokenType.DEFAULT, '');
       next();
       next();
@@ -42,7 +54,9 @@ export function createSampleAutoMation(text: string) {
     if (tokenType === TextTokenType.DEFAULT && char === START_TOKEN) {
       if ((currentToken = matchTextToken(subText()))) {
         setToken(currentToken[1] as TextTokenType, currentToken[2]);
-        jump( tokenType.length + tokenContent.length + CONTENT_START_TOKEN_LENTH - 1)
+        jump(
+          tokenType.length + tokenContent.length + CONTENT_START_TOKEN_LENTH - 1
+        );
         next();
       }
     }
@@ -75,5 +89,5 @@ export function createSampleAutoMation(text: string) {
     jump,
     setToken,
     isBreak,
-  }
+  };
 }

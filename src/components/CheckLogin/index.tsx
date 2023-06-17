@@ -176,14 +176,15 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   }
 
   async function reloadUserInfo() {
-    const { data, error } = await fetchUserInfo();
-    if (error) {
-      write(`${error.message}\n`);
+    const res = await fetchUserInfo();
+    if (res.error) {
+      write(`${res.error.message}\n`);
       hideInputer();
       return;
     }
 
-    setUserInfo(data.info);
+    setUserInfo(res.data.info);
+    return res
   }
 
   useSomeoneEnterWatch((val) => {
