@@ -180,10 +180,9 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
     if (res.error) {
       write(`${res.error.message}\n`);
       hideInputer();
-      return;
+    } else {
+      setUserInfo(res.data.info);
     }
-
-    setUserInfo(res.data.info);
     return res
   }
 
