@@ -9,7 +9,7 @@ import { getTimePeriod } from "../../utils/date";
 import "./style.scss";
 
 export const MessageContainer: FC = () => {
-  const { clearView, write, showInputer } = useSomeoneEditor();
+  const { clearView, write, asyncWrite, showInputer } = useSomeoneEditor();
   const { setMessageMode } = useSomeoneBaseEditor();
   const { msg_count, is_vip, user_name } = useUserInfo().userInfo;
   const { writeLimit, writeUserName } = useWrites();
@@ -24,7 +24,7 @@ export const MessageContainer: FC = () => {
     showInputer();
     clearView();
 
-    write(someoneSaid())
+    asyncWrite(someoneSaid())
     write(`${getTimePeriod()}好，${user_name}😊`)
     writeUserName(true);
   }, []);
