@@ -4,6 +4,8 @@
 //   inherits: false;
 // }
 
+$usenameScope: 100px;
+
 .someone-editor-root {
   width: 80vw;
   max-width: 1200px;
@@ -13,6 +15,12 @@
   padding: 18px 8px;
   padding-bottom: 10vh;
   word-break: break-all;
+
+  &.message-mode {
+    .someone-editor {
+      padding-left: $usenameScope;
+    }
+  }
 }
 
 .succes-write {
@@ -44,9 +52,15 @@
   color: #3677ff;
   text-shadow: 0px 0px 5px rgba(#3677ff, 0.65);
   font-weight: 600;
+  min-width: $usenameScope;
+  margin-left: -$usenameScope;
+  display: inline-block;
 }
 .user {
+  display: inline-block;
   font-weight: 600;
+  min-width:$usenameScope;
+  margin-left: -$usenameScope;
 }
 .someone-link {
   text-decoration: underline;

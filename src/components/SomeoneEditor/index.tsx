@@ -17,6 +17,7 @@ export const SomeoneEditor: FC<{ speed?: number; children: any }> = ({
   const editorRef = useRef<HTMLDivElement>(null);
   const onEnterRefs = useRef<((val: string) =>any)[]>([]);
   const onInputRefs = useRef<((val: string) =>any)[]>([]);
+  const [messageMode, setMessageMode] = useState(false);
   const pageEditor = useMemo(
     () =>
       createSomeoneEditor({
@@ -58,9 +59,9 @@ export const SomeoneEditor: FC<{ speed?: number; children: any }> = ({
 
   return (
     <SomeoneEditorProvider
-      value={{ isMounted: mountedEditor, editor: pageEditor, setEnterCallback, setInputCallback }}
+      value={{ isMounted: mountedEditor, editor: pageEditor, setEnterCallback, setInputCallback, setMessageMode }}
     >
-      <div className="someone-editor-root" ref={editorRef} />
+      <div className={`someone-editor-root ${messageMode ? 'message-mode' : ''}`} ref={editorRef} />
       {mountedEditor && children}
     </SomeoneEditorProvider>
   );

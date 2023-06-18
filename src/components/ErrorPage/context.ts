@@ -10,6 +10,7 @@ export const ErrorContext = createContext<{
   setError: (info: ErrorPageInfo) => void;
 }>({
   error: null,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setError: () => {},
 })
 

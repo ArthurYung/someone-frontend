@@ -30,11 +30,11 @@ export function placeholderWrite(text: string) {
 }
 
 export function someoneSaid() {
-  return `<class|someone>[%someone: %]`;
+  return `<class|someone>[%[someone]%]`;
 }
 
 export function userSaid(text: string) {
-  return `<class|user>[%${text}: %]`;
+  return `<class|user>[%[${text}]%]`;
 }
 
 export function useSomeoneInputerWatch(
