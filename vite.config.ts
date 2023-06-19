@@ -15,7 +15,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       manifest: {
         name: 'Someone',
-        theme_color: '#ffffff',
+        theme_color: '#151617',
         icons: [
           {
             src: 'someone-192.png',
