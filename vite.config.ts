@@ -11,19 +11,19 @@ export default defineConfig({
       minify: true,
     }),
     VitePWA({
-      includeAssets: ['someone-pwa.png'],
+      includeAssets: ['someone-192.png', 'someone-512.png'],
       registerType: 'autoUpdate',
       manifest: {
         name: 'Someone',
         theme_color: '#ffffff',
         icons: [
           {
-            src: 'someone-pwa-192x192.png',
+            src: 'someone-192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'someone-pwa.png',
+            src: 'someone-512.png',
             sizes: '512x512',
             type: 'image/png'
           }
