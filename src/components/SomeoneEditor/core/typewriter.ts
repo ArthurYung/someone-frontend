@@ -51,7 +51,7 @@ export function createTypewriter(config: SomeoneEditorConfig, view: HTMLDivEleme
 
     await new Promise((resolve) => {
       clearInterval(currentLoop);
-      currentLoop = setInterval(() => {
+      currentLoop = window.setInterval(() => {
         if (!automation.next()) {
           clearInterval(currentLoop);
           resolve(true);
