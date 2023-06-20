@@ -15,6 +15,7 @@ import { setToken } from "../../utils/token";
 import { UserInfoProvider } from "./use-user";
 import "./style.scss";
 import { generateQrcode } from "./getQrCode";
+import { md5Password } from "./password-md5";
 
 const MAX_LOOP_COUNT = 60;
 const REFRESH_SUFFIX = "/refresh";
@@ -108,7 +109,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   async function writeReigster(password: string) {
     hideInputer();
     write("\n正在生成Someone...");
-    userLoginInfo.current.password = password;
+    userLoginInfo.current.password = md5Password(password);
     const { data, error } = await registerUser(userLoginInfo.current)
     if (error) {
       write(`\n${errorWrite(error.message)}`);
@@ -176,7 +177,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   async function writeUserLogin(password: string) {
     hideInputer();
     write("\n正在验证...");
-    userLoginInfo.current.password = password;
+    userLoginInfo.current.password = md5Password(password);
     const { data, error } = await userLogin(userLoginInfo.current);
     if (error) {
       write(errorWrite(error.message));
