@@ -2,7 +2,10 @@ import qs from "qs";
 import { clearToken, getToken } from "../utils/token";
 import { createStreamPusher } from "../utils/stream";
 
-const BASEURL = "https://api.someone.ink";
+const BASEURL =
+  import.meta.env.MODE === "development"
+    ? ""
+    : "https://api.someone.ink";
 
 export const requestErrorHandler = {
   watchers: [] as ((err: Error) => void)[],
