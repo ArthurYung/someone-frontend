@@ -15,13 +15,13 @@ import { setToken } from "../../utils/token";
 import { UserInfoProvider } from "./use-user";
 import "./style.scss";
 import { generateQrcode } from "./getQrCode";
-import { md5Password } from "./password-md5";
+import { emailTest, md5Password } from "./password-md5";
 
 const MAX_LOOP_COUNT = 60;
 const REFRESH_SUFFIX = "/refresh";
 const LOGIN_SUFFIX = "/login";
-const USER_SUFFIX = "/user";
-const REGISTER_SUFFIX = "/register";
+const USER_SUFFIX = "/signin";
+const REGISTER_SUFFIX = "/signup";
 const TIMEOUT_ERROR_TOKEN = "TIMEOUT";
 const WECHAT_QR_LINK = "http://weixin.qq.com/r/uCpCWujEK7VUraw593_q";
 
@@ -88,6 +88,13 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   async function writeRegisterPasswordAfterEmail(email: string) {
     hideInputer();
     write("\n");
+    if (!emailTest(email)) {
+      write(errorWrite("请输入正确的邮箱地址"));
+      write("\n", 500)
+      writeRegisterEmail();
+      return;
+    }
+  
     const { data, error } = await checkEmail(email);
     if (error) {
       write(errorWrite(error.message));
@@ -96,6 +103,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
 
     if (!data.status) {
       write(errorWrite("该邮箱已被注册"));
+      write("\n")
       writeRegisterEmail();
       return;
     }
@@ -154,19 +162,14 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   }
 
   async function writePasswordAfterEmail(email: string) {
-    // hideInputer();
-    // write("\n");
-    // const { data, error } = await checkEmail(email);
-    // if (error) {
-    //   write(errorWrite(error.message));
-    //   return;
-    // }
-
-    // if (!data.status) {
-    //   write(errorWrite("该邮箱已被注册"));
-    //   writeUserLoginEmail();
-    //   return;
-    // }
+    hideInputer();
+    write("\n");
+    if (!emailTest(email)) {
+      write(errorWrite("请输入正确的邮箱地址"));
+      write("\n\n请输入邮箱账号，并按回车确认\n",500);
+      inputerStatus.current = "email";
+      return;
+    }
 
     showInputer();
     write("\n请输入密码，并按回车确认\n");
@@ -199,12 +202,12 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
 
   async function writeWechatLogin() {
     asyncWrite("\n正在准备身份验证指引...\n\n", 500);
+    hideInputer();
     const { data, error } = await createCode();
     if (error) {
       write(`错误代码 - ${error.code} - ${errorWrite(error.message)}`);
       return;
     }
-
     write(
       `1.请搜索微信公众号 - ${importantWrite(
         "“Someone AI”"
@@ -224,7 +227,6 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
       .then(({ data, error }) => {
         if (error) {
           write(errorWrite("用户数据获取失败，请刷新重试"));
-          hideInputer();
           return;
         }
 
@@ -316,7 +318,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
       showInputer();
       asyncWrite(`\n获取身份信息失败 - ${error.message}`);
       write("\n\n");
-      write(`请重新选择身份验证方式：
+      write(`请重新选择身份验证方式，并按回车确认：
 - 输入${codeWrite(LOGIN_SUFFIX)} - 免注册模式，使用微信订阅号验证码授权
 - 输入${codeWrite(USER_SUFFIX)} - 邮箱验证模式，将使用您在Someone的账号授权
 - 输入${codeWrite(REGISTER_SUFFIX)} - 立即注册你的Someone邮箱账号
