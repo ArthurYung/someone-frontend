@@ -10,7 +10,7 @@ export function primaryWrite(text: string) {
 }
 
 export function codeWrite(text: string) {
-  return `<class|code-write>[%${text}%]`;
+  return `<class|code-write>[%"${text}"%]`;
 }
 
 export function linkWrite(link: string, href?: string) {
