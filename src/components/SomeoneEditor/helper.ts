@@ -66,3 +66,7 @@ export function useSomeoneEnterWatch(
 
   callbackRef.current = callback;
 }
+
+export function useDocKeydown(key: string, fn: () => boolean | void, cmds?: string[]) {
+  const callbackRef = useRef<(val: string)>()
+}

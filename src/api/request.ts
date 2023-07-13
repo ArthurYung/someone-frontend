@@ -4,7 +4,7 @@ import { createStreamPusher } from "../utils/stream";
 
 const BASEURL =
   import.meta.env.MODE === "development"
-    ? ""
+    ? "https://api.someone.ink"
     : "https://api.someone.ink";
 
 export const requestErrorHandler = {

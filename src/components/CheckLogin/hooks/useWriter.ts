@@ -1,9 +1,27 @@
-import { checkEmail, createCode, registerUser, userLogin } from "../../../api/login";
+import {
+  checkEmail,
+  createCode,
+  registerUser,
+  userLogin,
+} from "../../../api/login";
 import { UserInfo, fetchUserInfo, updateUserName } from "../../../api/user";
 import { setToken } from "../../../utils/token";
 import { useSomeoneEditor } from "../../SomeoneEditor/context";
-import { codeWrite, errorWrite, importantWrite, placeholderWrite, primaryWrite } from "../../SomeoneEditor/helper";
-import { LOGIN_SUFFIX, REFRESH_SUFFIX, REGISTER_SUFFIX, TIMEOUT_ERROR_TOKEN, USER_SUFFIX, WECHAT_QR_LINK } from "../constants";
+import {
+  codeWrite,
+  errorWrite,
+  importantWrite,
+  placeholderWrite,
+  primaryWrite,
+} from "../../SomeoneEditor/helper";
+import {
+  LOGIN_SUFFIX,
+  REFRESH_SUFFIX,
+  REGISTER_SUFFIX,
+  TIMEOUT_ERROR_TOKEN,
+  USER_SUFFIX,
+  WECHAT_QR_LINK,
+} from "../constants";
 import { generateQrcode } from "../getQrCode";
 import { emailTest, md5Password } from "../password-md5";
 import { InputerStatus, UserLoginInfo } from "./useInputerState";
@@ -14,12 +32,12 @@ export const useWriter = (
   setUserInfo: (userInfo: UserInfo) => void,
   changeInputerStatus: (status: InputerStatus) => void,
   updateUserEmail: (email: string) => void,
-  updateUserPwd: (pwd: string) => void,
+  updateUserPwd: (pwd: string) => void
 ) => {
   const createLooper = useLoginCode();
   const { write, asyncWrite, showInputer, hideInputer, updateConfig, clear } =
     useSomeoneEditor();
-  
+
   function writeRegisterEmail() {
     showInputer();
     write("请输入邮箱账号，并按回车确认\n");
@@ -31,11 +49,11 @@ export const useWriter = (
     write("\n");
     if (!emailTest(email)) {
       write(errorWrite("请输入正确的邮箱地址"));
-      write("\n", 500)
+      write("\n", 500);
       writeRegisterEmail();
       return;
     }
-  
+
     const { data, error } = await checkEmail(email);
     if (error) {
       write(errorWrite(error.message));
@@ -44,7 +62,7 @@ export const useWriter = (
 
     if (!data.status) {
       write(errorWrite("该邮箱已被注册"));
-      write("\n")
+      write("\n");
       writeRegisterEmail();
       return;
     }
@@ -59,14 +77,14 @@ export const useWriter = (
     hideInputer();
     write("\n正在生成Someone...");
     updateUserPwd(md5Password(password));
-    const { data, error } = await registerUser(userLoginInfo.current)
+    const { data, error } = await registerUser(userLoginInfo.current);
     if (error) {
       write(`\n${errorWrite(error.message)}`);
       writeRegisterEmail();
       return;
     }
 
-    write("\n正在等待验证邮箱...")
+    write("\n正在等待验证邮箱...");
 
     try {
       const token = await createLooper(data.auth_code);
@@ -75,9 +93,7 @@ export const useWriter = (
     } catch (e: any) {
       if (e.message === TIMEOUT_ERROR_TOKEN) {
         asyncWrite(
-          "\n" +
-          placeholderWrite("请查看邮箱并点击验证链接后重新登录") +
-            "\n"
+          "\n" + placeholderWrite("请查看邮箱并点击验证链接后重新登录") + "\n"
         );
       }
       return;
@@ -92,8 +108,7 @@ export const useWriter = (
     }
 
     writeSuccessInfo(userInfo.info);
-  } 
-
+  }
 
   function writeUserLoginEmail() {
     showInputer();
@@ -107,7 +122,7 @@ export const useWriter = (
     write("\n");
     if (!emailTest(email)) {
       write(errorWrite("请输入正确的邮箱地址"));
-      write("\n\n请输入邮箱账号，并按回车确认\n",500);
+      write("\n\n请输入邮箱账号，并按回车确认\n", 500);
       changeInputerStatus("email");
       return;
     }
@@ -153,7 +168,16 @@ export const useWriter = (
         "“Someone AI”"
       )} 或微信扫描下方二维码关注：\n`
     );
-    write(() => generateQrcode(WECHAT_QR_LINK));
+    write(() => {
+      updateConfig({
+        speed: 1,
+      });
+      return generateQrcode(WECHAT_QR_LINK);
+    }).then(() => {
+      updateConfig({
+        speed: 13,
+      });
+    });
     write(
       `\n2.请在公众号对话界面输入验证凭据(不区分大小写) - ${codeWrite(
         data.auth_code
@@ -290,7 +314,7 @@ export const useWriter = (
       return;
     }
 
-    welecomUserWrite(data.info)
+    welecomUserWrite(data.info);
   }
 
   async function reloadUserInfo() {
@@ -318,5 +342,5 @@ export const useWriter = (
     writeRegisterPasswordAfterEmail,
     writeUserLoginEmail,
     writeReigster,
-  }
-}
+  };
+};

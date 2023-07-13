@@ -134,7 +134,6 @@ export function createTypewriter(config: SomeoneEditorConfig, view: HTMLDivEleme
   }
 
   function clear() {
-    console.log('clear');
     view.innerHTML = "";
     prevToken = null;
     taskRunning = false;
