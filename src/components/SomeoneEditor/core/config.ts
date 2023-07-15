@@ -42,7 +42,6 @@ export function createSomeoneConfig(initConfig: SomeoneEditorConfigProps) {
     value: SomeoneEditorConfigState[T]
   ) {
     configRef.value[key] = value;
-    console.log(configRef);
   }
 
   function setConfig(config: Partial<SomeoneEditorConfigState>) {

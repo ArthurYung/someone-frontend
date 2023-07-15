@@ -1,5 +1,6 @@
-import { useContext, useEffect, useRef } from 'react';
-import { SomeoneEditorContext } from './context';
+import { useCallback, useContext, useEffect, useRef } from "react";
+import { SomeoneEditorContext } from "./context";
+import { KeydownCMD, watchDocKeydown } from "./core/docKeydown";
 
 export function successWrite(text: string) {
   return `<class|succes-write>[%${text}%]`;
@@ -42,14 +43,18 @@ export function useSomeoneInputerWatch(
 ) {
   const { setInputCallback } = useContext(SomeoneEditorContext);
   const callbackRef = useRef<(val: string) => void | boolean>(callback);
+  const inputCallbackDestory = useRef<() => void>();
   useEffect(() => {
     const inputCallback = (val: string) => {
       return callbackRef.current?.(val);
     };
-    return setInputCallback(inputCallback);
+
+    inputCallbackDestory.current = setInputCallback(inputCallback);
+    return inputCallbackDestory.current;
   }, []);
 
   callbackRef.current = callback;
+  return inputCallbackDestory.current;
 }
 
 export function useSomeoneEnterWatch(
@@ -57,16 +62,37 @@ export function useSomeoneEnterWatch(
 ) {
   const { setEnterCallback } = useContext(SomeoneEditorContext);
   const callbackRef = useRef<(val: string) => void | boolean>(callback);
+  const enterCallbackDestory = useRef<() => void>();
   useEffect(() => {
     const inputCallback = (val: string) => {
       return callbackRef.current?.(val);
     };
-    return setEnterCallback(inputCallback);
+
+    enterCallbackDestory.current = setEnterCallback(inputCallback)
+    return enterCallbackDestory.current;
   }, []);
 
   callbackRef.current = callback;
+
+  return enterCallbackDestory.current;
 }
 
-export function useDocKeydown(key: string, fn: () => boolean | void, cmds?: string[]) {
-  const callbackRef = useRef<(val: string)>()
+export function useDocKeydownWatch(
+  key: string,
+  fn: () => boolean | void,
+  cmds?: KeydownCMD[]
+) {
+  const callbackRef = useRef<() => boolean | void>(fn);
+  const destory = useCallback(
+    watchDocKeydown(key, () => callbackRef.current(), cmds),
+    []
+  );
+  callbackRef.current = fn;
+
+  useEffect(() => {
+    return () => {
+      destory();
+    };
+  }, []);
+  return destory;
 }

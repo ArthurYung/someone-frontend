@@ -40,6 +40,7 @@ export const useWriter = (
 
   function writeRegisterEmail() {
     showInputer();
+    write(`\n正在准备身份注册指引...\n(指引过程中可以按下${codeWrite('"Ctrl" + "D"')}键退出身份注册)\n\n`);
     write("请输入邮箱账号，并按回车确认\n");
     changeInputerStatus("register-email");
   }
@@ -112,7 +113,7 @@ export const useWriter = (
 
   function writeUserLoginEmail() {
     showInputer();
-    asyncWrite("\n正在准备身份验证指引...\n\n", 500);
+    write(`\n正在准备身份验证指引...\n(指引过程中可以按下${codeWrite('"Ctrl" + "D"')}键退出当前身份验证模式)\n\n`);
     write("请输入邮箱账号，并按回车确认\n");
     changeInputerStatus("email");
   }
@@ -156,7 +157,7 @@ export const useWriter = (
   }
 
   async function writeWechatLogin() {
-    asyncWrite("\n正在准备身份验证指引...\n\n", 500);
+    write(`\n正在准备身份验证指引...\n(指引过程中可以按下${codeWrite('"Ctrl" + "D"')}键退出当前身份验证模式)\n\n`, 500);
     hideInputer();
     const { data, error } = await createCode();
     if (error) {
@@ -177,6 +178,7 @@ export const useWriter = (
       updateConfig({
         speed: 13,
       });
+      changeInputerStatus('wait-scan');
     });
     write(
       `\n2.请在公众号对话界面输入验证凭据(不区分大小写) - ${codeWrite(
@@ -276,21 +278,25 @@ export const useWriter = (
     changeInputerStatus("username");
   }
 
-  async function getUserInfo() {
-    const { data, error } = await fetchUserInfo();
-    if (error) {
-      showInputer();
-      asyncWrite(`\n获取身份信息失败 - ${error.message}`);
-      write("\n\n");
-      write(`请重新选择身份验证方式，并按回车确认：
+  function writeLoginPicker() {
+    showInputer();
+    write("\n\n");
+    write(`请重新选择身份验证方式，并按回车确认：
 - 输入${codeWrite(LOGIN_SUFFIX)} - 免注册模式，使用微信订阅号验证码授权
 - 输入${codeWrite(USER_SUFFIX)} - 邮箱验证模式，将使用您在Someone的账号授权
 - 输入${codeWrite(REGISTER_SUFFIX)} - 立即注册你的Someone邮箱账号
 `);
-      updateConfig({
-        suffixs: [LOGIN_SUFFIX, USER_SUFFIX, REGISTER_SUFFIX],
-      });
-      changeInputerStatus("login");
+    updateConfig({
+      suffixs: [LOGIN_SUFFIX, USER_SUFFIX, REGISTER_SUFFIX],
+    });
+    changeInputerStatus("login");
+  }
+
+  async function getUserInfo() {
+    const { data, error } = await fetchUserInfo();
+    if (error) {
+      asyncWrite(`\n获取身份信息失败 - ${error.message}`);
+      writeLoginPicker();
       return;
     }
 
@@ -342,5 +348,6 @@ export const useWriter = (
     writeRegisterPasswordAfterEmail,
     writeUserLoginEmail,
     writeReigster,
+    writeLoginPicker,
   };
 };

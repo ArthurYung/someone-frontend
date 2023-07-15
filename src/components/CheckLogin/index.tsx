@@ -1,6 +1,7 @@
 import { FC, useEffect } from "react";
 import { useSomeoneEditor } from "../SomeoneEditor/context";
 import {
+  useDocKeydownWatch,
   useSomeoneEnterWatch,
 } from "../SomeoneEditor/helper";
 import { UserInfoProvider } from "./use-user";
@@ -22,13 +23,14 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
     writeUserLogin,
     writeWechatLogin,
     reloadUserInfo,
-    getUserInfo
+    getUserInfo,
+    writeLoginPicker,
   } = useWriter(userLoginInfo, setUserInfo, changeInputerStatus, updateUserEmail, updateUserPwd);
+  
   const { write,  hideInputer } = useSomeoneEditor();
 
-  useSomeoneEnterWatch((val) => {
-    if (userInfo) return;
-
+  const destoryEnterWatch = useSomeoneEnterWatch((val) => {
+    console.log('on checklogin keydown')
     if (inputerStatus.current === "username") {
       if (!/^[\u4e00-\u9fa5a-zA-Z]{2,20}$/.test(val)) {
         write("系统识别失败，仅支持2-20个中文/英文字母组成\n");
@@ -83,10 +85,26 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
     }
   });
 
+  const destoryBackWatcher = useDocKeydownWatch('d', () => {
+    console.log('on back d', inputerStatus.current)
+    if (inputerStatus.current !== 'login') {
+      hideInputer();
+      writeLoginPicker();
+      return true;
+    }
+  }, ['ctrl'])
+
   useEffect(() => {
     write("身份确认中...");
     getUserInfo();
   }, []);
+
+  useEffect(() => {
+    if (userInfo) {
+      destoryEnterWatch?.()
+      destoryBackWatcher?.();
+    }
+  }, [userInfo])
 
   return (
     <UserInfoProvider value={{ userInfo: userInfo!, reloadUserInfo }}>

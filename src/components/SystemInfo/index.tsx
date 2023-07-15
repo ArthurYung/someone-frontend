@@ -25,13 +25,13 @@ export const SystemInfo: FC<{ children: any }> = ({ children }) => {
     localStorage.setItem("VERSION", CURRENT_VERSION);
   }
 
-  useSomeoneInputerWatch(() => {
-    if (systemReady) return;
+  const destoryInputerWatch = useSomeoneInputerWatch(() => {
+    console.log('systemInput')
     agreedComplition();
   })
 
-  useSomeoneEnterWatch(() => {
-    if (systemReady) return;
+  const destoryEnterWatch = useSomeoneEnterWatch(() => {
+    console.log('systemKeydown')
     agreedComplition();
   });
 
@@ -81,6 +81,13 @@ This portion of the Setup program prepares Bruce & SOMEONE @1.0 to run your brow
     asyncWrite(`Set Language - Simplified Chinese\n`, 100)
     writeComplition()
   }, []);
+
+  useEffect(() => {
+    if (systemReady) {
+      destoryInputerWatch?.();
+      destoryEnterWatch?.()
+    }
+  }, [systemReady])
 
   return systemReady ? children : null;
 };
