@@ -101,7 +101,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
 
   useEffect(() => {
     if (userInfo) {
-      destoryEnterWatch?.()
+      destoryEnterWatch?.();
       destoryBackWatcher?.();
     }
   }, [userInfo])

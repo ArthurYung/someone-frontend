@@ -83,16 +83,13 @@ export function useDocKeydownWatch(
   cmds?: KeydownCMD[]
 ) {
   const callbackRef = useRef<() => boolean | void>(fn);
-  const destory = useCallback(
-    watchDocKeydown(key, () => callbackRef.current(), cmds),
-    []
-  );
-  callbackRef.current = fn;
-
+  const dockeydownDestoryRef = useRef<() => boolean>();
+  
   useEffect(() => {
+    dockeydownDestoryRef.current = watchDocKeydown(key, () => callbackRef.current(), cmds);
     return () => {
-      destory();
+      dockeydownDestoryRef.current?.();
     };
   }, []);
-  return destory;
+  return dockeydownDestoryRef.current;
 }
