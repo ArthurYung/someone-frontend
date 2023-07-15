@@ -40,7 +40,7 @@ export const useWriter = (
 
   function writeRegisterEmail() {
     showInputer();
-    write(`\n正在准备身份注册指引...\n(指引过程中可以按下${codeWrite('"Ctrl" + "D"')}键退出身份注册)\n\n`);
+    write(`\n正在准备身份注册指引...\n(指引过程中可以按下${codeWrite('Ctrl + D')}键退出身份注册)\n\n`);
     write("请输入邮箱账号，并按回车确认\n");
     changeInputerStatus("register-email");
   }
@@ -113,7 +113,7 @@ export const useWriter = (
 
   function writeUserLoginEmail() {
     showInputer();
-    write(`\n正在准备身份验证指引...\n(指引过程中可以按下${codeWrite('"Ctrl" + "D"')}键退出当前身份验证模式)\n\n`);
+    write(`\n正在准备身份验证指引...\n(指引过程中可以按下${codeWrite('Ctrl + D')}键退出当前身份验证模式)\n\n`);
     write("请输入邮箱账号，并按回车确认\n");
     changeInputerStatus("email");
   }
@@ -157,7 +157,7 @@ export const useWriter = (
   }
 
   async function writeWechatLogin() {
-    write(`\n正在准备身份验证指引...\n(指引过程中可以按下${codeWrite('"Ctrl" + "D"')}键退出当前身份验证模式)\n\n`, 500);
+    write(`\n正在准备身份验证指引...\n(指引过程中可以按下${codeWrite('Ctrl + D')}键退出当前身份验证模式)\n\n`, 500);
     hideInputer();
     const { data, error } = await createCode();
     if (error) {
