@@ -11,6 +11,8 @@ export enum SomeoneHelper {
   SURVEY = '/survey',
   /** 反馈、建议 */
   FEEDBACK = '/feedback',
+  /** 清空历史记录 */
+  CLEAR = '/clear',
   /** 登出 */
   QUIT = '/quit',
 }
@@ -24,6 +26,9 @@ const Options = [{
 }, {
   key: SomeoneHelper.CONACT,
   name: '联系作者'
+}, {
+  key: SomeoneHelper.CLEAR,
+  name: '清空对话'
 }, {
   key: SomeoneHelper.SURVEY,
   name: '参与调研'

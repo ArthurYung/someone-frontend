@@ -13,6 +13,7 @@
     "@types/qrcode-terminal": "^0.12.0",
     "@types/qs": "^6.9.7",
     "@types/ua-parser-js": "^0.7.36",
+    "dexie": "^3.2.4",
     "js-md5": "^0.7.3",
     "qrcode-terminal": "^0.12.0",
     "qs": "^6.11.2",

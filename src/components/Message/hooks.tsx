@@ -5,7 +5,9 @@ import { useUserInfo } from "../CheckLogin/use-user";
 import {
   codeWrite,
   errorWrite,
+  historyPlaceholderWrite,
   linkWrite,
+  placeholderWrite,
   primaryWrite,
   someoneSaid,
   successWrite,
@@ -16,6 +18,7 @@ import { generateQrcode } from "../CheckLogin/getQrCode";
 import { SURVEY_URL, TXC_URL } from "./Links";
 import { clearToken } from "../../utils/token";
 import { MessageInfo, sendMessage } from "../../api/message";
+import { MessageDBRow, historyDB } from "../../utils/indexDB";
 
 const useBatchWriterCreator = (timeout = 300) => {
   const writers = useRef<{ text: string, looper: number }[]>([]);
@@ -77,6 +80,7 @@ export const useConfigUpdate = () => {
         SomeoneHelper.INFO,
         SomeoneHelper.CONACT,
         SomeoneHelper.SURVEY,
+        SomeoneHelper.CLEAR,
         SomeoneHelper.FEEDBACK,
         SomeoneHelper.QUIT,
       ],
@@ -85,7 +89,7 @@ export const useConfigUpdate = () => {
 };
 
 export const useWrites = () => {
-  const { write, asyncWrite, hideInputer, showInputer } = useSomeoneEditor();
+  const { write, asyncWrite, hideInputer, showInputer, clear } = useSomeoneEditor();
   const { userInfo, reloadUserInfo } = useUserInfo();
   const { user_name, id, send_count, msg_count, is_vip } = userInfo;
   const history = useRef<MessageInfo[]>([]);
@@ -115,11 +119,19 @@ export const useWrites = () => {
     write(`由于俺财力有限，每周可在Someone体验${primaryWrite("10轮")}对话服务\n`)
     write(`
 内置指令详解：
+
   - ${codeWrite(SomeoneHelper.HELPER)} -- 查看帮助文档
+
   - ${codeWrite(SomeoneHelper.INFO)} -- 可查看对话资源使用详情
+
   - ${codeWrite(SomeoneHelper.CONACT)} -- 查看本站作者联系方式
+
+  - ${codeWrite(SomeoneHelper.CLEAR)} -- 清空当前对话内容以及本地历史数据
+
   - ${codeWrite(SomeoneHelper.SURVEY)} -- 参与问卷调研，填写后将由机会获得额外对话体验次数
+
   - ${codeWrite(SomeoneHelper.FEEDBACK)} -- 参与提建议或反馈，填写后将由机会获得额外对话体验次数
+
   - ${codeWrite(SomeoneHelper.QUIT)} -- 退出当前用户登录状态
 `)
 writeUserName(true);
@@ -169,8 +181,10 @@ writeUserName(true)
     let responseRole = '';
     let responseContent = '';
     const batchWriter = createBatchWather(write);
+    const userSaidInfo = { role: 'user', content: value };
     history.current = history.current.slice(-3);
-    history.current.push({ role: 'user', content: value })
+    history.current.push(userSaidInfo);
+    historyDB.messages.add(userSaidInfo);
     hideInputer();
     asyncWrite(someoneSaid());
     sendMessage({
@@ -186,7 +200,10 @@ writeUserName(true)
         batchWriter.run();
       }
     }).then(() => {
-      responseRole && history.current.push({ role: responseRole, content: responseContent });
+      if (!responseRole) return;
+      const responseInfo = { role: responseRole, content: responseContent };
+      history.current.push(responseInfo);
+      historyDB.messages.add(responseInfo);
     }).catch((err) => {
       if (err.code === 3001) {
         reloadUserInfo();
@@ -205,6 +222,15 @@ writeUserName(true)
       showInputer();
       writeUserName(true)
     })
+  }
+
+  function writeHistorys(messages: MessageDBRow[]) {
+    if (!messages.length) return;
+    asyncWrite(historyPlaceholderWrite('======================== History =======================') + '\n');
+    messages.forEach(item => {
+      asyncWrite(`${item.role === 'user' ? userSaid(user_name) : someoneSaid()}${item.content}\n`, 100)
+    });
+    asyncWrite(historyPlaceholderWrite('========================================================') + '\n\n');
   }
 
   useSomeoneEnterWatch((value) => {
@@ -239,6 +265,14 @@ writeUserName(true)
       return;
     }
 
+    if (value === SomeoneHelper.CLEAR) {
+      clear();
+      writeUserName();
+      history.current = [];
+      historyDB.messages.clear();
+      return;
+    }
+
     if (!is_vip && !msg_count) {
       writeLimit();
       return;
@@ -256,5 +290,6 @@ writeUserName(true)
     writeLimit,
     writeHelp,
     writeUserName,
+    writeHistorys,
   };
 };

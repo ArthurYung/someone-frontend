@@ -34,6 +34,10 @@ export function placeholderWrite(text: string) {
   return `<class|placeholder-write>[%${text}%]`;
 }
 
+export function historyPlaceholderWrite(text: string) {
+  return `<class|placeholder-write history>[%${text}%]`;
+}
+
 export function tipsWrite(text: string) {
   return `<class|tips-dot-write>[% * %]<class|tips-text-write>[% ${text} %]`
 }

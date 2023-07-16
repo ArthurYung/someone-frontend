@@ -11,6 +11,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.57.1
   '@vitejs/plugin-react-swc': ^3.0.0
   autoprefixer: ^10.4.14
+  dexie: ^3.2.4
   eslint: ^8.38.0
   eslint-plugin-react-hooks: ^4.6.0
   eslint-plugin-react-refresh: ^0.3.4
@@ -32,6 +33,7 @@ dependencies:
   '@types/qrcode-terminal': registry.npmmirror.com/@types/qrcode-terminal/0.12.0
   '@types/qs': registry.npmmirror.com/@types/qs/6.9.7
   '@types/ua-parser-js': registry.npmmirror.com/@types/ua-parser-js/0.7.36
+  dexie: registry.npmmirror.com/dexie/3.2.4
   js-md5: registry.npmmirror.com/js-md5/0.7.3
   qrcode-terminal: registry.npmmirror.com/qrcode-terminal/0.12.0
   qs: registry.npmmirror.com/qs/6.11.2
@@ -3900,6 +3902,13 @@ packages:
     name: deep-is
     version: 0.1.4
     dev: true
+
+  registry.npmmirror.com/dexie/3.2.4:
+    resolution: {integrity: sha512-VKoTQRSv7+RnffpOJ3Dh6ozknBqzWw/F3iqMdsZg958R0AS8AnY9x9d1lbwENr0gzeGJHXKcGhAMRaqys6SxqA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/dexie/-/dexie-3.2.4.tgz}
+    name: dexie
+    version: 3.2.4
+    engines: {node: '>=6.0'}
+    dev: false
 
   registry.npmmirror.com/dir-glob/3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/dir-glob/-/dir-glob-3.0.1.tgz}
