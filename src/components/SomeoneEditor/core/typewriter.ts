@@ -70,7 +70,7 @@ export function createTypewriter(config: SomeoneEditorConfig, view: HTMLDivEleme
           automation.getToken(),
           automation.getContent()
         );
-      }, config.get('speed') || 100);
+      }, config.get('speed') || 13);
     });
   }
 

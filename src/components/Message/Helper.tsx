@@ -2,7 +2,7 @@ import { FC } from "react"
 
 export enum SomeoneHelper {
   /** 查看帮助 */
-  HELPER = '/helper',
+  HELPER = '/help',
   /** 查看详情 */
   INFO = '/info',
   /** 联系作者 */

@@ -5,6 +5,7 @@ const docKeydownListeners = new Map<
 >();
 
 function documentKeydownListener(e: KeyboardEvent) {
+  console.log('on document keydown', e)
   if (!docKeydownListeners.has(e.key)) return;
   const listeners = docKeydownListeners.get(e.key)!;
   let needPreventDefault = false;

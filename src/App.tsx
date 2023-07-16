@@ -1,4 +1,5 @@
 import { CheckLogin } from "./components/CheckLogin";
+import { EditorGuide } from "./components/EditorGuide";
 import { ErrorPage } from "./components/ErrorPage";
 import { GlobalLoading } from "./components/GlobalLoading";
 import { LayoutMain } from "./components/LayoutMain";
@@ -12,9 +13,11 @@ export const App = () => {
       <LayoutMain>
         <SomeoneEditor>
           <SystemInfo>
-            <CheckLogin>
-              <MessageContainer />
-            </CheckLogin>
+            <EditorGuide>
+              <CheckLogin>
+                <MessageContainer />
+              </CheckLogin>
+            </EditorGuide>
           </SystemInfo>
         </SomeoneEditor>
       </LayoutMain>

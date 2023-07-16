@@ -1,9 +1,9 @@
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useSomeoneEditor } from "../SomeoneEditor/context";
-import { successWrite, primaryWrite, errorWrite, importantWrite, useSomeoneInputerWatch, useSomeoneEnterWatch } from '../SomeoneEditor/helper';
+import { successWrite, errorWrite, importantWrite, useSomeoneInputerWatch, useSomeoneEnterWatch, tipsWrite, inputCodeWrite } from '../SomeoneEditor/helper';
 import { getIP, system } from "./system";
 
-const CURRENT_VERSION = "v1.0"
+const CURRENT_VERSION = "v1.1"
 
 export const SystemInfo: FC<{ children: any }> = ({ children }) => {
   const [systemReady, setSystemReady] = useState(false);
@@ -11,15 +11,15 @@ export const SystemInfo: FC<{ children: any }> = ({ children }) => {
 
   function writeComplition() {
     asyncWrite("\n=================================\n\n", 100);
-    write(`${importantWrite("[重要声明] ")}`)
-    write(`\n本站为试验性网站，将且仅会为访问者提供便捷对话GPT大模型的${importantWrite("体验服务")}，\n对生成的开放性内容造成的风险与后果将由访问者自行承担。`, 300)
-    write(`\n按${importantWrite("任意按键")}同意上述声明并继续\n\n`);
+    write(`${tipsWrite("重要声明:")}\n`)
+    write(`本站为试验性网站，将且仅会为访问者提供便捷对话GPT大模型的${importantWrite("体验服务")}，\n对生成的开放性内容造成的风险与后果将由访问者自行承担。`, 300)
+    write(`\n按${inputCodeWrite("任意按键")}同意上述声明并继续\n\n`);
     showInputer();
   }
 
   function agreedComplition() {
     hideInputer();
-    asyncWrite(`${successWrite("System completed!")}\n\n`)
+    asyncWrite(`${successWrite("You have agreed!")}\n\n`)
 
     setSystemReady(true);
     localStorage.setItem("VERSION", CURRENT_VERSION);
