@@ -39,8 +39,13 @@ export function createSomeoneInputer(
         return;
       }
 
-      if (e.key === 'Backspace') {
-        back();
+      if (e.key === 'ArrowUp') {
+        undo();
+        return;
+      }
+
+      if (e.key === 'ArrowDown') {
+        redo();
         return;
       }
 
@@ -58,15 +63,12 @@ export function createSomeoneInputer(
         return;
       }
 
-      if (e.key === 'ArrowUp') {
-        undo();
+
+      if (e.key === 'Backspace') {
+        back();
         return;
       }
 
-      if (e.key === 'ArrowDown') {
-        redo();
-        return;
-      }
 
       if (e.key === 'Enter') {
         e.shiftKey ? inputText('\n') : enter();
@@ -79,11 +81,14 @@ export function createSomeoneInputer(
         e.preventDefault();
         return;
       }
+
+      useHistory = false;
     },
     paste: (e) => {
       const pasteValue = e.clipboardData?.getData('text') || '';
       inputText(pasteValue);
       e.preventDefault();
+      useHistory = false;
     },
     compositionstart: () => {
       isCompose = true;
@@ -125,6 +130,7 @@ export function createSomeoneInputer(
   let isVisible = false;
   let isCompose = false;
   let hasSuffix = false;
+  let useHistory = false;
 
   function onInputerChange() {
     !isCompose && inputText(inputer.innerText);
@@ -292,24 +298,25 @@ export function createSomeoneInputer(
     disconnectInput();
     leftContainer.textContent = leftContainer.textContent!.substring(0, index);
     value = leftContainer.textContent! + rightContainer.textContent!;
+    useHistory = false;
     matchSuffixs();
     observeInput();
   }
 
   function undo() {
-    // 使用了history并且当前history不为
-    if (inputerHistory.current() !== value) {
+    if (!useHistory && inputerHistory.len()) {
       inputerHistory.save(value);
     }
   
     const undoText = inputerHistory.undo();
-    if (undoText) {
+    if (undoText !== null) {
       disconnectInput();
       leftContainer.textContent = undoText;
       rightContainer.textContent = '';
       length = undoText.length;
       value = undoText;
       index = length;
+      useHistory = true;
       matchSuffixs();
       observeInput();
     }
@@ -317,21 +324,23 @@ export function createSomeoneInputer(
 
   function redo() {
     const redoText = inputerHistory.redo();
-    if (redoText) {
+    if (redoText !== null) {
       disconnectInput();
       leftContainer.textContent = redoText;
       rightContainer.textContent = '';
       length = redoText.length;
       value = redoText;
       index = length;
+      useHistory = true;
       matchSuffixs();
       observeInput();
     }
   }
 
   function enter() {
-    inputerHistory.save(value);
+    !useHistory && inputerHistory.save(value);
     config.emit('onEditorEnter', value);
+    useHistory = false;
     clear();
   }
 

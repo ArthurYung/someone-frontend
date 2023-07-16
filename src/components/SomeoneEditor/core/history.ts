@@ -1,18 +1,14 @@
 export function createInputerHistory() {
     const history: string[] = [];
-    let currentIndex = 0;
+    let currentIndex = -1;
 
     function current() {
         return history[currentIndex];
     }
 
     function save(str: string) {
-        if (str) {
-            if (currentIndex === history.length) {
-                currentIndex++;
-            }
-            history.push(str);
-        }
+        history.push(str);
+        currentIndex = history.length - 1;
     }
 
     function undo() {
@@ -29,10 +25,15 @@ export function createInputerHistory() {
         return null;
     }
 
+    function len() {
+        return history.length;
+    }
+
     return {
         save,
         undo,
         redo,
-        current
+        current,
+        len
     }
 }
