@@ -101,7 +101,7 @@ export function createSomeoneInputer(
 
   const destroyDocumentEvents = createEventWatcher(document)({
     mouseup: () => {
-      if (isVisible) {
+      if (isVisible && window.getSelection()?.getRangeAt(0).collapsed) {
         inputer.focus();
       }
     },
