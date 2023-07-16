@@ -13,11 +13,11 @@ export const App = () => {
       <LayoutMain>
         <SomeoneEditor>
           <SystemInfo>
-            <EditorGuide>
-              <CheckLogin>
+            <CheckLogin>
+              <EditorGuide>
                 <MessageContainer />
-              </CheckLogin>
-            </EditorGuide>
+              </EditorGuide>
+            </CheckLogin>
           </SystemInfo>
         </SomeoneEditor>
       </LayoutMain>

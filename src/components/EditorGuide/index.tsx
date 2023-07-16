@@ -4,24 +4,29 @@ import { codeWrite, inputCodeWrite, successWrite, tipsWrite, useDocKeydownWatch 
 
 export const EditorGuide: FC<{ children: any }> = ({ children }) => {
   const [guideReady, setGuideReady] = useState(false);
-  const { write, asyncWrite } = useSomeoneEditor();
+  const { write, asyncWrite, clear } = useSomeoneEditor();
 
   function writeTips() {
-    write('\n\n');
     asyncWrite(`${tipsWrite('Tips:')}\n`);
-    write(`* 输入内置指令时（以${codeWrite("/")}开头），可通过右键${codeWrite(" → ")}或${codeWrite("Tab")}键来智能补全指令。
+    write(`
+* 输入内置指令时（以${codeWrite("/")}开头），可通过右键${codeWrite(" → ")}或${codeWrite("Tab")}键来智能补全指令。
+  
 * 聊天过程中可以通过方向键${codeWrite(" ↑↓ ")}来切换历史输入文字。
+
 * 可使用${codeWrite("Shift + 回车")}键来执行换行符操作。
+
 * 普通体验账号每周的对话有次数限制，可输入${codeWrite("/info")}指令来查看当前账号详情。
+
 * 更多操作内容可在验证身份成功后输入${codeWrite("/help")}查看操作帮助。
-请按${inputCodeWrite("空格键")}继续
+
+> 按${inputCodeWrite("空格键")}开启对话
 `, 300)
   }
 
   const destory = useDocKeydownWatch(' ', () => {
-    setGuideReady(true);
     localStorage.setItem("EDITOR_GUIDE", "true");
-    asyncWrite(`\n${successWrite("System completed!")}\n\n`)
+    clear();
+    setGuideReady(true);
   })
 
   useEffect(() => {
