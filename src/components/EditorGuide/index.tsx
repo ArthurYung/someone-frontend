@@ -19,7 +19,7 @@ export const EditorGuide: FC<{ children: any }> = ({ children }) => {
 
 * 更多操作内容可在验证身份成功后输入${codeWrite("/help")}查看操作帮助。
 
-> 按${inputCodeWrite("空格键")}开启对话
+> 按${inputCodeWrite("空格键")}继续对话
 `, 300)
   }
 
