@@ -70,6 +70,12 @@ $usenameScope: 100px;
 .code-write {
   color: #a4ef00;
   font-weight: 600;
+  &.md {
+    padding: 2px 4px;
+    border-radius: 4px;
+    background: #2c4000;
+    text-shadow: none;
+  }
 }
 .someone {
   color: #3677ff;

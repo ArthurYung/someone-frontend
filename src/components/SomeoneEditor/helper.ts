@@ -14,6 +14,10 @@ export function codeWrite(text: string) {
   return `<class|code-write>[%"${text}"%]`;
 }
 
+export function mdCodeWrite(text: string) {
+  return `<class|code-write md>[%${text}%]`;
+}
+
 export function linkWrite(link: string, href?: string) {
   return `<link|${href || link}>[%${link}%]`;
 }

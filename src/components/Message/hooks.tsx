@@ -19,6 +19,9 @@ import { SURVEY_URL, TXC_URL } from "./Links";
 import { clearToken } from "../../utils/token";
 import { MessageInfo, sendMessage } from "../../api/message";
 import { MessageDBRow, historyDB } from "../../utils/indexDB";
+import { parseMessage } from "../../utils/parser";
+
+
 
 const useBatchWriterCreator = (timeout = 300) => {
   const writers = useRef<{ text: string, looper: number }[]>([]);
@@ -31,11 +34,16 @@ const useBatchWriterCreator = (timeout = 300) => {
 
     writers.current.push(writer);
 
+    function parseWrite(text: string) {
+      const { res, unmatched } = parseMessage(text);
+      res && callback(res);
+      return unmatched;
+    }
+
     function run() {
       if (!writer.looper) {
         writer.looper = window.setTimeout(() => {
-          callback(writer.text);
-          writer.text = '';
+          writer.text = parseWrite(writer.text);
           writer.looper = 0;
         }, timeout)
       }
@@ -53,7 +61,9 @@ const useBatchWriterCreator = (timeout = 300) => {
       }
 
       if (!force && writer.text) {
-        callback(writer.text);
+        const unmatched = parseWrite(writer.text);
+        // 再执行一次未匹配的字符
+        unmatched && callback(unmatched);
       }
     }
 
@@ -228,7 +238,12 @@ writeUserName(true)
     if (!messages.length) return;
     asyncWrite(historyPlaceholderWrite('======================== History =======================') + '\n');
     messages.forEach(item => {
-      asyncWrite(`${item.role === 'user' ? userSaid(user_name) : someoneSaid()}${item.content}\n`, 100)
+      if (item.role === 'user') {
+        asyncWrite(`${userSaid(user_name)}${item.content}\n`, 100)
+      } else {
+        const { res, unmatched } = parseMessage(item.content)
+        asyncWrite(`${someoneSaid()}${res}${unmatched}\n`, 100)
+      }
     });
     asyncWrite(historyPlaceholderWrite('========================================================') + '\n\n');
   }

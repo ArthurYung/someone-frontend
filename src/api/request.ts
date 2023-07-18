@@ -166,7 +166,6 @@ export function fetchStream<T>(config: {
 
       let data: T;
       for (let line of lines) {
-        console.log(line);
         if (!(line = line.trim())) continue;
         if (line === "event:message") continue;
         if (line.startsWith("data:")) {
