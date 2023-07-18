@@ -12,16 +12,23 @@ export function createSomeoneOption(config: SomeoneEditorConfig) {
   };
 
   function getPrevOption() {
-    const index = optionRef.value
+    let index = optionRef.value
       ? optionRef.options.indexOf(optionRef.value)
       : -1;
+    if (index < 1) {
+      index = optionRef.options.length;
+    }
     return optionRef.options[index - 1];
   }
 
   function getNextOption() {
-    const index = optionRef.value
+    let index = optionRef.value
       ? optionRef.options.indexOf(optionRef.value)
-      : -2;
+      : optionRef.options.length;
+
+    if (index > optionRef.options.length - 2) {
+      index = -1;
+    }
     return optionRef.options[index + 1];
   }
 
