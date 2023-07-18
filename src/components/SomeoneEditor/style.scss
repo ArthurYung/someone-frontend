@@ -77,6 +77,15 @@ $usenameScope: 100px;
     text-shadow: none;
   }
 }
+.code-pre {
+  position: absolute;
+  background: #3a4b6e;
+  left: 94px;
+  right: 0;
+  opacity: .2;
+  user-select: none;
+  z-index: -1;
+}
 .someone {
   color: #3677ff;
   text-shadow: 0px 0px 5px rgba(#3677ff, 0.65);

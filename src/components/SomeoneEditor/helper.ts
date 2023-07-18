@@ -26,6 +26,14 @@ export function linkWrite(link: string, href?: string) {
   return `<link|${href || link}>[%${link}%]`;
 }
 
+export function codePreRootWrite(type = 'Code') {
+  return `<class|code-pre>[% %]<class|tips-dot-write>[% </> %]<class|tips-text-write>[% ${type} %]`
+}
+
+export function codePreLineWrite(text: string) {
+  return `<class|code-pre>[% %]${text}`
+}
+
 export function errorWrite(text: string) {
   return `<class|error-write>[%${text}%]`;
 }
