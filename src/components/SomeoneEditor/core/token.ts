@@ -5,6 +5,7 @@ export enum TextTokenType {
   BREAK = 'break',
   LINK = 'link',
   BLOCK = 'block',
+  OPTION = 'option',
 }
 
 export const END_TOKEN_BEGIN = '%';
@@ -28,6 +29,11 @@ function applyStyleNode(style: string, node: HTMLSpanElement) {
 
 function applyClassNode(className: string, node: HTMLSpanElement) {
   node.className = className;
+}
+
+function applyOptionAttrbutes(id: string, node: HTMLSpanElement) {
+  node.className = 'someone-option';
+  node.id = id;
 }
 
 function applyLinkAttributes(href: string, node: HTMLSpanElement) {
@@ -58,6 +64,8 @@ function getTextNode(text: string, type: TextTokenType, token: string) {
   type === TextTokenType.BLOCK &&
     applyStyleNode(`display:inline; ${token}`, node);
   type === TextTokenType.LINK && applyLinkAttributes(token, node);
+  type === TextTokenType.OPTION && applyOptionAttrbutes(token, node);
+
   updateNodeContent(node, text);
 
   return node;
@@ -93,7 +101,7 @@ export function createTextToken(
 }
 
 export function matchTextToken(text: string) {
-  return text.match(/^<(style|class|block|link)\|(.+?)>\[%([\s\S]*?)%\]/);
+  return text.match(/^<(style|class|block|link|option)\|(.+?)>\[%([\s\S]*?)%\]/);
 }
 
 export type TextToken = ReturnType<typeof createTextToken>;

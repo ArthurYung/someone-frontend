@@ -23,7 +23,9 @@ export function createSomeoneConfig(initConfig: SomeoneEditorConfigProps) {
     value: {
       ...initConfig,
       inputerVisible: false,
+      optionVisible: false,
       isWriting: false,
+      optionIds: [],
     } as SomeoneEditorConfigState,
   };
 

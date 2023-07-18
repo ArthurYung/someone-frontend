@@ -91,14 +91,6 @@ $usenameScope: 100px;
   min-width:$usenameScope;
   margin-left: -$usenameScope;
 }
-.someone-link {
-  text-decoration: underline;
-  color: #f5f924;
-  text-shadow: 0px 0px 5px rgba(#f5f924, 0.65);
-  &:hover {
-    color: rgba(#f5f924, .6)
-  }
-}
 
 @keyframes fadenum {
   0% {opacity: 1;}

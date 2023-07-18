@@ -31,4 +31,6 @@ export interface EditorState {
   /** Is it possible to add an input box to the view */
   inputerVisible: boolean;
   isWriting: boolean;
+  optionVisible: boolean;
+  optionIds: string[];
 }

@@ -2,6 +2,10 @@ import { useCallback, useContext, useEffect, useRef } from "react";
 import { SomeoneEditorContext } from "./context";
 import { KeydownCMD, watchDocKeydown } from "./core/docKeydown";
 
+export function optionWrite(id: string) {
+  return `<option|${id}>[% %]`;
+}
+
 export function successWrite(text: string) {
   return `<class|succes-write>[%${text}%]`;
 }

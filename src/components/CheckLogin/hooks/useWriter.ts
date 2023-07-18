@@ -11,6 +11,8 @@ import {
   codeWrite,
   errorWrite,
   importantWrite,
+  inputCodeWrite,
+  optionWrite,
   placeholderWrite,
   primaryWrite,
 } from "../../SomeoneEditor/helper";
@@ -35,7 +37,7 @@ export const useWriter = (
   updateUserPwd: (pwd: string) => void
 ) => {
   const createLooper = useLoginCode();
-  const { write, asyncWrite, showInputer, hideInputer, updateConfig, clear } =
+  const { write, asyncWrite, showInputer, runOptions, hideInputer, updateConfig, clear } =
     useSomeoneEditor();
 
   function writeRegisterEmail() {
@@ -113,7 +115,7 @@ export const useWriter = (
 
   function writeUserLoginEmail() {
     showInputer();
-    write(`\n正在准备身份验证指引...\n(${codeWrite('Ctrl + D')}可切换登录方式)\n\n`);
+    write(`\n正在准备邮箱验证指引...\n(${codeWrite('Ctrl + D')}可切换登录方式)\n\n`);
     write("请输入邮箱账号，并按回车确认\n");
     changeInputerStatus("email");
   }
@@ -157,7 +159,7 @@ export const useWriter = (
   }
 
   async function writeWechatLogin() {
-    write(`\n正在准备身份验证指引...\n(${codeWrite('Ctrl + D')}可切换登录方式)\n\n`, 500);
+    write(`\n正在准备公众号身份验证指引...\n(${codeWrite('Ctrl + D')}可切换登录方式)\n\n`, 500);
     hideInputer();
     const { data, error } = await createCode();
     if (error) {
@@ -279,13 +281,15 @@ export const useWriter = (
   }
 
   function writeLoginPicker() {
-    showInputer();
+    runOptions([LOGIN_SUFFIX, USER_SUFFIX, REGISTER_SUFFIX]);
     write("\n\n");
-    write(`请重新选择登录方式，并按回车确认：
-- 输入${codeWrite(LOGIN_SUFFIX)} - 免注册模式，使用微信订阅号验证码授权
-- 输入${codeWrite(USER_SUFFIX)} - 邮箱验证模式，将使用您在Someone的账号授权
-- 输入${codeWrite(REGISTER_SUFFIX)} - 立即注册你的Someone邮箱账号
-`);
+    write(`请选择登录方式，可以使用方向键${codeWrite('↑↓')}进行切换，然后按${inputCodeWrite('空格键')}确认：
+
+${optionWrite(LOGIN_SUFFIX)} ${importantWrite('[免注册模式]')}  使用微信订阅号验证码授权
+
+${optionWrite(USER_SUFFIX)} ${importantWrite('[邮箱验证模式]')}  将使用您在Someone的账号授权
+
+${optionWrite(REGISTER_SUFFIX)} ${importantWrite('[立即注册]')}  注册你的Someone邮箱账号`);
     updateConfig({
       suffixs: [LOGIN_SUFFIX, USER_SUFFIX, REGISTER_SUFFIX],
     });

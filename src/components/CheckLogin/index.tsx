@@ -27,7 +27,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
     writeLoginPicker,
   } = useWriter(userLoginInfo, setUserInfo, changeInputerStatus, updateUserEmail, updateUserPwd);
   
-  const { write,  hideInputer } = useSomeoneEditor();
+  const { write, asyncWrite, clear, hideInputer, currentOption, clearOptions } = useSomeoneEditor();
 
   const destoryEnterWatch = useSomeoneEnterWatch((val) => {
     console.log('on checklogin keydown')
@@ -59,21 +59,6 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
       return;
     }
 
-    if (inputerStatus.current === "login" && val === LOGIN_SUFFIX) {
-      writeWechatLogin();
-      return;
-    }
-
-    if (inputerStatus.current === "login" && val === USER_SUFFIX) {
-      writeUserLoginEmail();
-      return;
-    }
-
-    if (inputerStatus.current ==="login" && val === REGISTER_SUFFIX) {
-      writeRegisterEmail();
-      return;
-    }
-
     if (inputerStatus.current === "register-email") {
       writeRegisterPasswordAfterEmail(val);
       return;
@@ -86,13 +71,39 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   });
 
   const destoryBackWatcher = useDocKeydownWatch('d', () => {
-    console.log('on back d', inputerStatus.current)
     if (inputerStatus.current !== 'login') {
+      clear();
       hideInputer();
       writeLoginPicker();
       return true;
     }
   }, ['ctrl'])
+
+  const destorySpaceWatcher = useDocKeydownWatch(' ', () => {
+    const val = currentOption();
+    if (inputerStatus.current !== 'login' || !val) return;
+  
+    if (val === LOGIN_SUFFIX) {
+      asyncWrite('\n\n');
+      writeWechatLogin();
+      clearOptions();
+      return;
+    }
+
+    if (val === USER_SUFFIX) {
+      asyncWrite('\n\n');
+      writeUserLoginEmail();
+      clearOptions();
+      return;
+    }
+
+    if (val === REGISTER_SUFFIX) {
+      asyncWrite('\n\n');
+      writeRegisterEmail();
+      clearOptions();
+      return;
+    }
+  })
 
   useEffect(() => {
     write("身份确认中...");
@@ -103,6 +114,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
     if (userInfo) {
       destoryEnterWatch?.();
       destoryBackWatcher?.();
+      destorySpaceWatcher?.();
     }
   }, [userInfo])
 
