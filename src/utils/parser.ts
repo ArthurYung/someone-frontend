@@ -26,7 +26,7 @@ const TOKEN_PARSER_MAP = {
     return res ? importantWrite(res[1]) : '';
   },
   [Tokens.LINK]: (text: string) => {
-    const res = /^\[(.+?)\]\(([a-zA-Z.://?#%&]+)\)$/.exec(text);
+    const res = /^\[([^[]+?)\]\(([a-zA-Z.://?#%&]+)\)$/.exec(text);
     return res ? linkWrite(res[1], res[2]) : '';
   },
 };
@@ -69,6 +69,13 @@ export function parseMessage(text: string) {
       matcher += matchType;
       matchEnd = TOKEN_END_MAPTER[matchType];
       continue;
+    }
+
+    // 不同步的token
+    if (matchType === Tokens.LINK && text[i] === Tokens.LINK) {
+        res += matcher;
+        matcher = matchType;
+        continue;
     }
 
     if (matchType) {
