@@ -1,3 +1,4 @@
+import { RefObject } from "react";
 import {
   checkEmail,
   createCode,
@@ -34,7 +35,8 @@ export const useWriter = (
   setUserInfo: (userInfo: UserInfo) => void,
   changeInputerStatus: (status: InputerStatus) => void,
   updateUserEmail: (email: string) => void,
-  updateUserPwd: (pwd: string) => void
+  updateUserPwd: (pwd: string) => void,
+  inputerStatus: RefObject<InputerStatus>,
 ) => {
   const createLooper = useLoginCode();
   const { write, asyncWrite, showInputer, runOptions, hideInputer, updateConfig, clear } =
@@ -201,6 +203,10 @@ export const useWriter = (
         writeSuccessInfo(data.info);
       })
       .catch((error) => {
+        if (inputerStatus.current !== 'wait-scan') {
+          return;
+        }
+
         if (error.message === TIMEOUT_ERROR_TOKEN) {
           asyncWrite(
             placeholderWrite(

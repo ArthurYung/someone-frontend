@@ -25,7 +25,7 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
     reloadUserInfo,
     getUserInfo,
     writeLoginPicker,
-  } = useWriter(userLoginInfo, setUserInfo, changeInputerStatus, updateUserEmail, updateUserPwd);
+  } = useWriter(userLoginInfo, setUserInfo, changeInputerStatus, updateUserEmail, updateUserPwd, inputerStatus);
   
   const { write, asyncWrite, clear, hideInputer, currentOption, clearOptions } = useSomeoneEditor();
 
