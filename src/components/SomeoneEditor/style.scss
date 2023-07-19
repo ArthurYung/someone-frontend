@@ -21,6 +21,12 @@ $usenameScope: 100px;
       padding-left: $usenameScope;
     }
   }
+
+    *::selection {
+      background-color: #fff;
+      color: #000;
+      text-shadow: 0 0 3px rgba(0,0,0,.4);
+    }
 }
 
 .succes-write {
