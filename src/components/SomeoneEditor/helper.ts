@@ -55,7 +55,11 @@ export function historyPlaceholderWrite(text: string) {
 }
 
 export function tipsWrite(text: string) {
-  return `<class|tips-dot-write>[% * %]<class|tips-text-write>[% ${text} %]`
+  return `<class|tips-dot-write>[% * %]${tipsTextWrite(text)}`
+}
+
+export function tipsTextWrite(text: string) {
+  return `<class|tips-text-write>[% ${text} %]`
 }
 
 export function someoneSaid() {

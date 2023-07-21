@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { UserInfo } from "../../../api/user";
 
-export type InputerStatus = "login" | "email" | "password" | "username" | "qrcode" | "none" | "register-email" | "register-password" | "wait-scan"
+export type InputerStatus = "login" | "email" | "password" | "username" | "qrcode" | "none" | "register-email" | "register-password" | "wait-scan" | "set-token"
 
 export const useInputerState = () => {
   const [userInfo, setUserInfo] = useState<UserInfo>();

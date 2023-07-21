@@ -5,7 +5,7 @@ import {
   useSomeoneEnterWatch,
 } from "../SomeoneEditor/helper";
 import { UserInfoProvider } from "./use-user";
-import { LOGIN_SUFFIX, REFRESH_SUFFIX, REGISTER_SUFFIX, USER_SUFFIX } from "./constants";
+import { LOGIN_SUFFIX, REFRESH_SUFFIX, REGISTER_SUFFIX, TOKEN_SUFFIX, USER_SUFFIX } from "./constants";
 import { useInputerState } from "./hooks/useInputerState";
 import { useWriter } from "./hooks/useWriter";
 import "./style.scss";
@@ -22,6 +22,8 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
     writeReigster,
     writeUserLogin,
     writeWechatLogin,
+    writeTokenLogin,
+    writeTokenSetter,
     reloadUserInfo,
     getUserInfo,
     writeLoginPicker,
@@ -68,6 +70,11 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
       writeReigster(val);
       return;
     }
+
+    if (inputerStatus.current === "set-token") {
+      writeTokenSetter(val);
+      return;
+    }
   });
 
   const destoryBackWatcher = useDocKeydownWatch('d', () => {
@@ -82,6 +89,13 @@ export const CheckLogin: FC<{ children: any }> = ({ children }) => {
   const destorySpaceWatcher = useDocKeydownWatch(' ', () => {
     const val = currentOption();
     if (inputerStatus.current !== 'login' || !val) return;
+
+    if (val === TOKEN_SUFFIX) {
+      asyncWrite('\n\n');
+      writeTokenLogin();
+      clearOptions();
+      return;
+    }
   
     if (val === LOGIN_SUFFIX) {
       asyncWrite('\n\n');

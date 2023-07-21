@@ -13,15 +13,19 @@ import {
   errorWrite,
   importantWrite,
   inputCodeWrite,
+  linkWrite,
   optionWrite,
   placeholderWrite,
   primaryWrite,
+  successWrite,
+  tipsTextWrite,
 } from "../../SomeoneEditor/helper";
 import {
   LOGIN_SUFFIX,
   REFRESH_SUFFIX,
   REGISTER_SUFFIX,
   TIMEOUT_ERROR_TOKEN,
+  TOKEN_SUFFIX,
   USER_SUFFIX,
   WECHAT_QR_LINK,
 } from "../constants";
@@ -29,6 +33,7 @@ import { generateQrcode } from "../getQrCode";
 import { emailTest, md5Password } from "../password-md5";
 import { InputerStatus, UserLoginInfo } from "./useInputerState";
 import { useLoginCode } from "./useLoginCode";
+import { matchUUID } from "../../../utils/uuid";
 
 export const useWriter = (
   userLoginInfo: UserLoginInfo,
@@ -185,7 +190,7 @@ export const useWriter = (
       changeInputerStatus('wait-scan');
     });
     write(
-      `\n2.请在公众号对话界面输入验证凭据(不区分大小写) - ${codeWrite(
+      `\n\n2.请在公众号对话界面输入验证凭据(不区分大小写) - ${codeWrite(
         data.auth_code
       )}\n`
     )
@@ -222,6 +227,56 @@ export const useWriter = (
           write(`错误代码 - ${error.code} - ${errorWrite(error.message)}`);
         }
       });
+  }
+
+
+  async function writeTokenLogin() {
+    showInputer();
+    write(`\n正在准备授权码获取指引...`);
+    write(`\n授权码被重置前永久生效，请妥善保管...`, 500)
+    
+    write(`\n(${codeWrite('Ctrl + D')}可切换登录方式)\n\n`);
+
+    write(
+      `1.请搜索微信公众号 - ${importantWrite(
+        "“Someone AI”"
+      )} 或微信扫描下方二维码关注：\n`
+    );
+    write(() => {
+      updateConfig({
+        speed: 1,
+      });
+      return generateQrcode(WECHAT_QR_LINK);
+    }).then(() => {
+      updateConfig({
+        speed: 13,
+      });
+      changeInputerStatus('wait-scan');
+    });
+    write(`\n2.在公众号对话界面输入${codeWrite('授权码')}重置并获取您的永久授权码\n\n`)
+    write(`3.请在下方输入您的授权码，并按回车键确认：\n`)
+    await write(`* 可以复制公众号返回的整段文本，输入区会自动提取授权码\n* 手机授权码复制困难？试试${linkWrite('ox.bruceau.com', 'https://ox.bruceau.com')}从手机粘贴到电脑\n`)
+    changeInputerStatus('set-token');
+  }
+
+  async function writeTokenSetter(val: string) {
+    const safeToken = matchUUID(val);
+    if (!safeToken) {
+      write(`\n${errorWrite('授权码格式错误\n\n')}`)
+      write(`请在下方输入您的授权码，并按回车键确认：\n`, 500)
+      return;
+    }
+
+    setToken(safeToken);
+    const { data, error } = await fetchUserInfo();
+
+    if (error) {
+      write(`\n错误代码 - ${error.code} - ${errorWrite(error.message)}\n`);
+      write(`请在下方输入您的授权码，并按回车键确认：\n`, 500)
+      return;
+    }
+
+    writeSuccessInfo(data.info);
   }
 
   async function writeRefresh() {
@@ -287,15 +342,17 @@ export const useWriter = (
   }
 
   function writeLoginPicker() {
-    runOptions([LOGIN_SUFFIX, USER_SUFFIX, REGISTER_SUFFIX]);
+    runOptions([TOKEN_SUFFIX, LOGIN_SUFFIX, USER_SUFFIX, REGISTER_SUFFIX]);
     write("\n\n");
     write(`请选择登录方式，可以使用方向键${codeWrite('↑↓')}进行切换，然后按${inputCodeWrite('空格键')}确认：
 
-${optionWrite(LOGIN_SUFFIX)} ${importantWrite('[免注册模式]')}  使用微信订阅号验证码授权
+${optionWrite(TOKEN_SUFFIX)} ${importantWrite('[微信授权码]')}  使用微信订阅号生成永久授权码 ${tipsTextWrite('推荐')}
 
-${optionWrite(USER_SUFFIX)} ${importantWrite('[邮箱验证模式]')}  将使用您在Someone的账号授权
+${optionWrite(LOGIN_SUFFIX)} ${importantWrite('[公众号验证]')}  使用微信订阅号验证码授权
 
-${optionWrite(REGISTER_SUFFIX)} ${importantWrite('[立即注册]')}  注册你的Someone邮箱账号`);
+${optionWrite(USER_SUFFIX)} ${importantWrite('[邮箱账号验证]')}  将使用您在Someone的邮箱账号授权
+
+${optionWrite(REGISTER_SUFFIX)} ${successWrite('[注册邮箱账号]')}  注册你的Someone邮箱账号`);
     updateConfig({
       suffixs: [LOGIN_SUFFIX, USER_SUFFIX, REGISTER_SUFFIX],
     });
@@ -359,5 +416,7 @@ ${optionWrite(REGISTER_SUFFIX)} ${importantWrite('[立即注册]')}  注册你�
     writeUserLoginEmail,
     writeReigster,
     writeLoginPicker,
+    writeTokenLogin,
+    writeTokenSetter,
   };
 };
