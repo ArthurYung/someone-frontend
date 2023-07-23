@@ -1,16 +1,15 @@
 import { FC, useEffect } from "react";
-import { useSomeoneEditor } from "../SomeoneEditor/context";
+import { useSomeoneEditor } from "../../SomeoneEditor/context";
 import {
   useDocKeydownWatch,
   useSomeoneEnterWatch,
-} from "../SomeoneEditor/helper";
-import { UserInfoProvider } from "./use-user";
+} from "../../SomeoneEditor/helper";
+import { UserInfoProvider } from "../use-user";
 import { LOGIN_SUFFIX, REFRESH_SUFFIX, REGISTER_SUFFIX, TOKEN_SUFFIX, USER_SUFFIX } from "./constants";
 import { useInputerState } from "./hooks/useInputerState";
 import { useWriter } from "./hooks/useWriter";
-import "./style.scss";
 
-export const CheckLogin: FC<{ children: any }> = ({ children }) => {
+export const CheckLoginPC: FC<{ children: any }> = ({ children }) => {
   const { inputerStatus, userInfo, userLoginInfo, setUserInfo, updateUserEmail, updateUserPwd, changeInputerStatus } = useInputerState();
   const {
     handleUpdateUser,

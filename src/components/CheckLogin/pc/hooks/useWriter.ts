@@ -4,10 +4,10 @@ import {
   createCode,
   registerUser,
   userLogin,
-} from "../../../api/login";
-import { UserInfo, fetchUserInfo, updateUserName } from "../../../api/user";
-import { setToken } from "../../../utils/token";
-import { useSomeoneEditor } from "../../SomeoneEditor/context";
+} from "../../../../api/login";
+import { UserInfo, fetchUserInfo, updateUserName } from "../../../../api/user";
+import { setToken } from "../../../../utils/token";
+import { useSomeoneEditor } from "../../../SomeoneEditor/context";
 import {
   codeWrite,
   errorWrite,
@@ -19,7 +19,7 @@ import {
   primaryWrite,
   successWrite,
   tipsTextWrite,
-} from "../../SomeoneEditor/helper";
+} from "../../../SomeoneEditor/helper";
 import {
   LOGIN_SUFFIX,
   REFRESH_SUFFIX,
@@ -29,11 +29,11 @@ import {
   USER_SUFFIX,
   WECHAT_QR_LINK,
 } from "../constants";
-import { generateQrcode } from "../getQrCode";
-import { emailTest, md5Password } from "../password-md5";
+import { generateQrcode } from "../../getQrCode";
+import { emailTest, md5Password } from "../../password-md5";
 import { InputerStatus, UserLoginInfo } from "./useInputerState";
 import { useLoginCode } from "./useLoginCode";
-import { matchUUID } from "../../../utils/uuid";
+import { matchUUID } from "../../../../utils/uuid";
 
 export const useWriter = (
   userLoginInfo: UserLoginInfo,

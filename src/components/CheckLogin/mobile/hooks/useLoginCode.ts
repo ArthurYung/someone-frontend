@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { checkCode } from "../../../api/login";
+import { checkCode } from "../../../../api/login";
 import { MAX_LOOP_COUNT, TIMEOUT_ERROR_TOKEN } from "../constants";
 
 export const useLoginCode = () => {

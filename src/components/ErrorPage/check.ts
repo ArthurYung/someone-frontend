@@ -14,15 +14,15 @@ export function isIE() {
 }
 
 export function getError() {
-  if (isMobile()) {
-    return {
-      message: "Not Support Mobile Devices.",
-      info: [
-        "Mobile devices are not supported for now，please switch to a computer to access.",
-        "暂不支持移动设备使用，请移步至电脑访问。",
-      ],
-    };
-  }
+  // if (isMobile()) {
+  //   return {
+  //     message: "Not Support Mobile Devices.",
+  //     info: [
+  //       "Mobile devices are not supported for now，please switch to a computer to access.",
+  //       "暂不支持移动设备使用，请移步至电脑访问。",
+  //     ],
+  //   };
+  // }
 
   if (isIE()) {
     return {
