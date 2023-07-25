@@ -4,7 +4,7 @@ export enum TextTokenType {
   CLASS = 'class',
   BREAK = 'break',
   LINK = 'link',
-  BLOCK = 'block',
+  IMAGE = 'image',
   OPTION = 'option',
 }
 
@@ -23,52 +23,77 @@ export const SUFFIX_TOKEN = '/';
  */
 export const CONTENT_START_TOKEN_LENTH = 5;
 
-function applyStyleNode(style: string, node: HTMLSpanElement) {
+type GetTokenNode<T> = T extends TextTokenType.LINK
+  ? HTMLAnchorElement
+  : T extends TextTokenType.IMAGE
+  ? HTMLImageElement
+  : HTMLSpanElement;
+
+function isBlockToken(token: TextTokenType) {
+  return token === TextTokenType.IMAGE;
+}
+
+function applyStyleNode(style: string, node: HTMLElement) {
   node.style.cssText = style;
 }
 
-function applyClassNode(className: string, node: HTMLSpanElement) {
+function applyClassNode(className: string, node: HTMLElement) {
   node.className = className;
 }
 
-function applyOptionAttrbutes(id: string, node: HTMLSpanElement) {
+function applyOptionAttrbutes(id: string, node: HTMLElement) {
   node.className = 'someone-option';
   node.id = id;
 }
 
-function applyLinkAttributes(href: string, node: HTMLSpanElement) {
+function applyLinkAttributes(href: string, node: HTMLElement) {
   node.className = 'someone-link';
   node.setAttribute('href', href);
   node.setAttribute('target', '_blank');
 }
 
-function updateNodeContent(node: HTMLSpanElement, text: string) {
+function applyImageSrc(src: string, node: HTMLImageElement) {
+  console.log(src);
+  node.src = src;
+}
+
+function updateNodeContent(node: HTMLElement, text: string) {
   node.innerText = text;
   return;
 }
 
-function createTokenNode(type: TextTokenType) {
-  if (type === TextTokenType.BLOCK) return document.createElement('div');
-  if (type === TextTokenType.LINK) return document.createElement('a');
-  return document.createElement('span');
+function createTokenNode<T extends TextTokenType>(type: T): GetTokenNode<T> {
+  if (type === TextTokenType.LINK) return document.createElement('a') as any;
+  if (type === TextTokenType.IMAGE) return new Image() as any;
+  return document.createElement('span') as any;
 }
 
-function getTextNode(text: string, type: TextTokenType, token: string) {
+
+function getTextNode<T extends TextTokenType>(text: string, type: T, token: string) {
+  // 文本节点特殊处理
   if (type === TextTokenType.DEFAULT) {
     return document.createTextNode(text);
   }
 
   const node = createTokenNode(type);
+
   type === TextTokenType.CLASS && applyClassNode(token, node);
   type === TextTokenType.STYLE && applyStyleNode(token, node);
-  type === TextTokenType.BLOCK &&
-    applyStyleNode(`display:inline; ${token}`, node);
   type === TextTokenType.LINK && applyLinkAttributes(token, node);
   type === TextTokenType.OPTION && applyOptionAttrbutes(token, node);
+  type === TextTokenType.IMAGE && applyClassNode(token, node);
 
-  updateNodeContent(node, text);
+  !isBlockToken(type) && updateNodeContent(node, text);
 
   return node;
+}
+
+function updateImageContent(token: TextToken, text: string) {
+  token.text += text;
+}
+
+function updateTextContent(token: TextToken, text: string) {
+  token.node.textContent += text;
 }
 
 export function createTextToken(
@@ -82,26 +107,27 @@ export function createTextToken(
     token,
     node: getTextNode(text, type, token),
     appendText: (text: string) => {
-      if (type !== TextTokenType.BLOCK) {
-        textToken.node.textContent += text;
+      if (type === TextTokenType.IMAGE) {
+        updateImageContent(textToken, text);
         return;
       }
 
-      const latestText = textToken.node.lastChild;
-      if (latestText?.nodeName === '#text') {
-        latestText.textContent += text;
-        return;
-      }
-
-      textToken.node.appendChild(document.createTextNode(text));
+      updateTextContent(textToken, text);
     },
+    end: () => {
+      if (type === TextTokenType.IMAGE) {
+        applyImageSrc(textToken.text, textToken.node as HTMLImageElement);
+      }
+    }
   };
 
   return textToken;
 }
 
 export function matchTextToken(text: string) {
-  return text.match(/^<(style|class|block|link|option)\|(.+?)>\[%([\s\S]*?)%\]/);
+  return text.match(
+    /^<(style|class|link|option|image)\|(.+?)>\[%([\s\S]*?)%\]/
+  );
 }
 
 export type TextToken = ReturnType<typeof createTextToken>;

@@ -11,6 +11,7 @@ import { useSomeoneEditor } from "../../../SomeoneEditor/context";
 import {
   codeWrite,
   errorWrite,
+  hiddenImageWrite,
   importantWrite,
   inputCodeWrite,
   linkWrite,
@@ -35,6 +36,7 @@ import { InputerStatus, UserLoginInfo } from "./useInputerState";
 import { useLoginCode } from "./useLoginCode";
 import { matchUUID } from "../../../../utils/uuid";
 import { CreateFooterRadio } from "../../../Mobile/FooterRadio";
+import QrCodeSrc from '../../../../assets/qrcode.jpg';
 
 export const useWriter = (
   userLoginInfo: UserLoginInfo,
@@ -236,13 +238,11 @@ export const useWriter = (
     write(`\n正在准备授权码获取指引...`);
     write(`\n授权码被重置前永久生效，请妥善保管...`, 500)
     
-    write(`\n(${codeWrite('Ctrl + D')}可切换登录方式)\n\n`);
+    write(`\n(${codeWrite('→ 向右滑动屏幕')}可切换登录方式)\n\n`);
 
     write(
-      `1.请搜索微信公众号 - ${importantWrite(
-        "“Someone AI”"
-      )} 或微信扫描下方二维码关注：\n`
-    );
+      `1.长按识别下方二维码并关注公众号${importantWrite("“Someone AI”")}\n\n`);
+    asyncWrite(hiddenImageWrite(QrCodeSrc));
     write(() => {
       updateConfig({
         speed: 1,
@@ -344,22 +344,32 @@ export const useWriter = (
 
   function writeLoginPicker() {
     write("\n\n");
-    write(`请选择：
+    write(`Somone支持以下登录方式:
 
-${optionWrite(TOKEN_SUFFIX)} ${importantWrite('[微信授权码]')}  使用微信订阅号生成永久授权码 ${tipsTextWrite('推荐')}
+${importantWrite('[A]')} 使用微信订阅号生成永久授权码 ${tipsTextWrite('推荐')}
 
-${optionWrite(LOGIN_SUFFIX)} ${importantWrite('[公众号验证]')}  使用微信订阅号验证码授权
+${importantWrite('[B]')} 使用微信订阅号验证码授权
 
-${optionWrite(USER_SUFFIX)} ${importantWrite('[邮箱账号验证]')}  将使用您在Someone的邮箱账号授权
+${importantWrite('[C]')} 将使用您在Someone的邮箱账号授权
 
-${optionWrite(REGISTER_SUFFIX)} ${successWrite('[注册邮箱账号]')}  注册你的Someone邮箱账号`).then(() => {
-  const footerRadio = CreateFooterRadio({
-    options: ['A', 'B', "C"],
-    onClick: () => {
-      footerRadio.destory()
-    }
-  })
-})
+${successWrite('[D]')} 注册你的Someone邮箱账号
+
+`)
+
+    write('请选择你想要的登录方式，并点击底部对应字母').then(() => {
+      const footerRadio = CreateFooterRadio({
+        options: ['A', 'B', "C", "D"],
+        onClick: (key: string) => {
+          write('\n\n');
+          footerRadio.destory();
+          key === 'A' && writeTokenLogin();
+          key === 'B' && writeWechatLogin();
+          key === 'C' && writeUserLoginEmail();
+          key === 'D' && writeRegisterEmail();
+        }
+      })
+    })
+
     updateConfig({
       suffixs: [LOGIN_SUFFIX, USER_SUFFIX, REGISTER_SUFFIX],
     });

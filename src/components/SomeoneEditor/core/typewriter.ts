@@ -21,16 +21,12 @@ export function createTypewriter(config: SomeoneEditorConfig, view: HTMLDivEleme
       return;
     }
 
+    prevToken?.end();
     prevToken = createTextToken(text, tokenType, token);
     view.appendChild(prevToken.node);
   }
 
-  function appendBr() {
-    if (prevToken?.type ===  TextTokenType.BLOCK && prevToken.node) {
-      prevToken.node.appendChild(document.createElement("br"))
-      return;
-    }
-    
+  function appendBr() {    
     prevToken = null;
     view.appendChild(document.createElement("br"));
   }

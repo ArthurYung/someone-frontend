@@ -62,6 +62,11 @@ export function tipsTextWrite(text: string) {
   return `<class|tips-text-write>[% ${text} %]`
 }
 
+export function hiddenImageWrite(src: string) {
+  return `<image|hidden-image-write>[%${src}%]`
+}
+
+
 export function someoneSaid() {
   return `<class|someone>[%[someone]%]`;
 }
@@ -69,6 +74,7 @@ export function someoneSaid() {
 export function userSaid(text: string) {
   return `<class|user>[%[${text}]%]`;
 }
+
 
 export function useSomeoneInputerWatch(
   callback: (val: string) => void | boolean
