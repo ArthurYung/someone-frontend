@@ -36,7 +36,8 @@ import { InputerStatus, UserLoginInfo } from "./useInputerState";
 import { useLoginCode } from "./useLoginCode";
 import { matchUUID } from "../../../../utils/uuid";
 import { CreateFooterRadio } from "../../../Mobile/FooterRadio";
-import QrCodeSrc from '../../../../assets/qrcode.jpg';
+import html2canvas from "html2canvas";
+import { createMobileQrImage } from "../util";
 
 export const useWriter = (
   userLoginInfo: UserLoginInfo,
@@ -242,7 +243,7 @@ export const useWriter = (
 
     write(
       `1.长按识别下方二维码并关注公众号${importantWrite("“Someone AI”")}\n\n`);
-    asyncWrite(hiddenImageWrite(QrCodeSrc));
+    // asyncWrite(hiddenImageWrite(QrCodeSrc));
     write(() => {
       updateConfig({
         speed: 1,
@@ -254,6 +255,7 @@ export const useWriter = (
       });
       changeInputerStatus('wait-scan');
     });
+    write('<class|qrcode-cover>[% %]').then(createMobileQrImage)
     write(`\n2.在公众号对话界面输入${codeWrite('授权码')}重置并获取您的永久授权码\n\n`)
     write(`3.请在下方输入您的授权码，并按回车键确认：\n`)
     await write(`* 可以复制公众号返回的整段文本，输入区会自动提取授权码\n* 手机授权码复制困难？试试${linkWrite('ox.bruceau.com', 'https://ox.bruceau.com')}从手机粘贴到电脑\n`)

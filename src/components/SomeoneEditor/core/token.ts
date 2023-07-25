@@ -4,6 +4,7 @@ export enum TextTokenType {
   CLASS = 'class',
   BREAK = 'break',
   LINK = 'link',
+  BLOCK = 'block',
   IMAGE = 'image',
   OPTION = 'option',
 }
@@ -57,6 +58,11 @@ function applyImageSrc(src: string, node: HTMLImageElement) {
   node.src = src;
 }
 
+function applyBlockNode(className: string, node: HTMLSpanElement) {
+  applyStyleNode('display: block', node);
+  applyClassNode(className, node);
+}
+
 function updateNodeContent(node: HTMLElement, text: string) {
   node.innerText = text;
   return;
@@ -82,6 +88,7 @@ function getTextNode<T extends TextTokenType>(text: string, type: T, token: stri
   type === TextTokenType.LINK && applyLinkAttributes(token, node);
   type === TextTokenType.OPTION && applyOptionAttrbutes(token, node);
   type === TextTokenType.IMAGE && applyClassNode(token, node);
+  type === TextTokenType.BLOCK && applyBlockNode(token, node);
 
   !isBlockToken(type) && updateNodeContent(node, text);
 
@@ -126,7 +133,7 @@ export function createTextToken(
 
 export function matchTextToken(text: string) {
   return text.match(
-    /^<(style|class|link|option|image)\|(.+?)>\[%([\s\S]*?)%\]/
+    /^<(style|class|block|link|option|image)\|(.+?)>\[%([\s\S]*?)%\]/
   );
 }
 

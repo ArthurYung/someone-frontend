@@ -21,6 +21,7 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
   --loading-size: 78px;
+  --vh: 1vh;
 }
 
 @media screen and (max-width: 475px) {
@@ -41,7 +42,7 @@ a:hover {
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: calc(var(--vh) * 100);
   background: #151617;
   background-image: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 100, color-stop(0%, #282b33), color-stop(100%, #151617));
   background-image: -webkit-radial-gradient(#282b33, #151617);
@@ -80,7 +81,7 @@ body {
       <style type="text/css">
       .loading-page {
         width: 100%;
-        height: 100vh;
+        height: calc(var(--vh) * 100);
         display: flex;
         align-items: center;
         justify-content: center;

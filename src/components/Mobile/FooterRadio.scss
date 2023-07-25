@@ -2,7 +2,7 @@
   display: flex;
   position: fixed;
   width: 100vw;
-  height: 12vh;
+  height: calc(var(--vh) * 12);
   left: 0;
   bottom: 0;
   justify-content: center;

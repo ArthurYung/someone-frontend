@@ -1,13 +1,13 @@
 .error-page {
   width: 100%;
-  height: 100vh;
+  height: calc(var(--vh) * 100);
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #0000a8;
   &-container {
     min-width: 40vw;
-    padding-bottom: 20vh;
+    padding-bottom: calc(var(--vh) * 20);
     text-shadow: none;
     font-family: '宋体', serif;
 

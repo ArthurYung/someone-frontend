@@ -1,0 +1,8 @@
+.qrcode {
+    line-height: 1.15;
+    &-cover {
+        display: flex;
+        flex-direction:column;
+        position: relative;
+    }
+}
