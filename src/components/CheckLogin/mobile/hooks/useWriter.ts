@@ -51,23 +51,28 @@ export const useWriter = (
   const { write, asyncWrite, showInputer, hideInputer, updateConfig, clear, hideCursor } =
     useSomeoneEditor();
 
-  function writeRegisterEmail() {
-    showInputer();
-    write(`\n正在准备身份注册指引...\n(${codeWrite('Ctrl + D')}可切换登录方式)\n\n`);
-    write("请输入邮箱账号，并按回车确认\n");
+  async function writeRegisterEmail() {
+    write(`\n正在准备身份注册指引...\n(${codeWrite('→ 向右滑动屏幕')}可切换登录方式)\n\n`);
+    await write("请在底部输入邮箱账号，并点击右侧按钮提交\n");
     changeInputerStatus("register-email");
+    hideCursor();
+    const FooterInputer = CreateFooterInputer({
+      placeholder: '请输入您的邮箱',
+      onSubmit(val) {
+        if (!emailTest(val)) {
+          write("\n");
+          write(errorWrite("请输入正确的邮箱地址"));
+          write("\n", 500).then(hideCursor)
+          return;
+        }
+    
+        writeRegisterPasswordAfterEmail(val);
+        FooterInputer.destory();
+      }
+    });
   }
 
   async function writeRegisterPasswordAfterEmail(email: string) {
-    hideInputer();
-    write("\n");
-    if (!emailTest(email)) {
-      write(errorWrite("请输入正确的邮箱地址"));
-      write("\n", 500);
-      writeRegisterEmail();
-      return;
-    }
-
     const { data, error } = await checkEmail(email);
     if (error) {
       write(errorWrite(error.message));
@@ -75,20 +80,27 @@ export const useWriter = (
     }
 
     if (!data.status) {
+      write("\n");
       write(errorWrite("该邮箱已被注册"));
       write("\n");
       writeRegisterEmail();
       return;
     }
 
-    showInputer();
-    write("请输入密码，并按回车确认\n");
+    await write("\n请在底部输入密码，并点击右侧按钮提交\n");
     updateUserEmail(email);
     changeInputerStatus("register-password");
+    hideCursor();
+    const FooterInputer = CreateFooterInputer({
+      placeholder: '请输入您的密码',
+      onSubmit(val) {
+        writeReigster(val);
+        FooterInputer.destory();
+      }
+    });
   }
 
   async function writeReigster(password: string) {
-    hideInputer();
     write("\n正在生成Someone...");
     updateUserPwd(md5Password(password));
     const { data, error } = await registerUser(userLoginInfo.current);
@@ -124,30 +136,50 @@ export const useWriter = (
     writeSuccessInfo(userInfo.info);
   }
 
-  function writeUserLoginEmail() {
-    showInputer();
-    write(`\n正在准备邮箱验证指引...\n(${codeWrite('Ctrl + D')}可切换登录方式)\n\n`);
-    write("请输入邮箱账号，并按回车确认\n");
+  async function writeUserLoginEmail() {
+    write(`\n正在准备邮箱验证指引...\n(${codeWrite('→ 向右滑动屏幕')}可切换登录方式)\n\n`);
+    await write("请在底部输入邮箱账号，并点击右侧按钮提交\n");
     changeInputerStatus("email");
+    hideCursor();
+    const FooterInputer = CreateFooterInputer({
+      placeholder: '请输入您的邮箱',
+      onSubmit(val) {
+        writePasswordAfterEmail(val);
+        FooterInputer.destory();
+      }
+    });
   }
 
   async function writePasswordAfterEmail(email: string) {
-    showInputer();
     write("\n");
     if (!emailTest(email)) {
       write(errorWrite("请输入正确的邮箱地址"));
-      write("\n\n请输入邮箱账号，并按回车确认\n", 500);
-      changeInputerStatus("email");
+      await changeInputerStatus("email");
+      hideCursor();
+      const FooterInputer = CreateFooterInputer({
+        placeholder: '请输入您的邮箱',
+        onSubmit(val) {
+          writePasswordAfterEmail(val);
+          FooterInputer.destory();
+        }
+      });
       return;
     }
 
-    write("\n请输入密码，并按回车确认\n");
+    write("\n请在底部输入密码，并点击右侧按钮提交\n");
     updateUserEmail(email);
-    changeInputerStatus("password");
+    await changeInputerStatus("password");
+    hideCursor();
+    const FooterInputer = CreateFooterInputer({
+      placeholder: '请输入您的密码',
+      onSubmit(val) {
+        writeUserLogin(val);
+        FooterInputer.destory();
+      }
+    });
   }
 
   async function writeUserLogin(password: string) {
-    hideInputer();
     write("\n正在验证...");
     updateUserPwd(md5Password(password));
     const { data, error } = await userLogin(userLoginInfo.current);
@@ -169,70 +201,6 @@ export const useWriter = (
     writeSuccessInfo(userInfo.info);
   }
 
-  async function writeWechatLogin() {
-    write(`\n正在准备公众号身份验证指引...\n(${codeWrite('Ctrl + D')}可切换登录方式)\n\n`, 500);
-    hideInputer();
-    const { data, error } = await createCode();
-    if (error) {
-      write(`错误代码 - ${error.code} - ${errorWrite(error.message)}`);
-      return;
-    }
-    write(
-      `1.请搜索微信公众号 - ${importantWrite(
-        "“Someone AI”"
-      )} 或微信扫描下方二维码关注：\n`
-    );
-    write(() => {
-      updateConfig({
-        speed: 1,
-      });
-      return generateQrcode(WECHAT_QR_LINK);
-    }).then(() => {
-      updateConfig({
-        speed: 13,
-      });
-      changeInputerStatus('wait-scan');
-    });
-    write(
-      `\n\n2.请在公众号对话界面输入验证凭据(不区分大小写) - ${codeWrite(
-        data.auth_code
-      )}\n`
-    )
-      .then(() => createLooper(data.auth_code))
-      .then((token) => {
-        setToken(token);
-        return fetchUserInfo();
-      })
-      .then(({ data, error }) => {
-        if (error) {
-          write(errorWrite("用户数据获取失败，请刷新重试"));
-          return;
-        }
-
-        writeSuccessInfo(data.info);
-      })
-      .catch((error) => {
-        if (inputerStatus.current !== 'wait-scan') {
-          return;
-        }
-
-        if (error.message === TIMEOUT_ERROR_TOKEN) {
-          asyncWrite(
-            placeholderWrite(
-              `验证凭据已失效，在下方输入${REFRESH_SUFFIX}后输入回车可刷新凭据`
-            ) + "\n"
-          );
-          updateConfig({
-            suffixs: [REFRESH_SUFFIX],
-          });
-          showInputer();
-          changeInputerStatus("qrcode");
-        } else {
-          write(`错误代码 - ${error.code} - ${errorWrite(error.message)}`);
-        }
-      });
-  }
-
 
   async function writeTokenLogin() {
     write(`\n正在准备授权码获取指引...`);
@@ -241,8 +209,7 @@ export const useWriter = (
     write(`\n(${codeWrite('→ 向右滑动屏幕')}可切换登录方式)\n\n`);
 
     write(
-      `1.长按保存下方二维码，前往${importantWrite('"微信扫一扫"')}，关注公众号${importantWrite("“Someone AI”")}\n\n`);
-    // asyncWrite(hiddenImageWrite(QrCodeSrc));
+      `1.长按保存下方二维码，前往${importantWrite('"微信扫一扫"')}，关注公众号${importantWrite("“Someone AI”")}\n`);
     write(() => {
       updateConfig({
         speed: 1,
@@ -256,22 +223,31 @@ export const useWriter = (
     });
     write('<class|qrcode-cover>[% %]').then(createMobileQrImage)
     write(`\n2.在公众号对话界面输入${codeWrite('授权码')}重置并获取您的永久授权码\n\n`)
-    write(`3.请在下方输入您的授权码，并按回车键确认：\n`)
-    await write(`* 可以复制公众号返回的整段文本，输入区会自动提取授权码\n* 手机授权码复制困难？试试${linkWrite('ox.bruceau.com', 'https://ox.bruceau.com')}从手机粘贴到电脑\n`);
+    await write(`3.将授权码粘贴至底部输入框内，并点击右侧按钮提交\n`)
     hideCursor();
-    CreateFooterInputer({
-      onSubmit(val) {
-        console.log(val);
-      }
-    })
     changeInputerStatus('set-token');
+    const FooterInputer = CreateFooterInputer({
+      placeholder: '请输入您的授权码',
+      onSubmit(val) {
+        writeTokenSetter(val);
+        FooterInputer.destory();
+      }
+    });
   }
 
   async function writeTokenSetter(val: string) {
     const safeToken = matchUUID(val);
     if (!safeToken) {
       write(`\n${errorWrite('授权码格式错误\n\n')}`)
-      write(`请在下方输入您的授权码，并按回车键确认：\n`, 500)
+      await write(`请重新输入您的授权码，并点击右侧按钮提交\n`, 500);
+      hideCursor();
+      const FooterInputer = CreateFooterInputer({
+        placeholder: '请输入您的授权码',
+        onSubmit(val) {
+          writeTokenSetter(val);
+          FooterInputer.destory();
+        }
+      });
       return;
     }
 
@@ -280,7 +256,15 @@ export const useWriter = (
 
     if (error) {
       write(`\n错误代码 - ${error.code} - ${errorWrite(error.message)}\n`);
-      write(`请在下方输入您的授权码，并按回车键确认：\n`, 500)
+      await write(`请重新输入您的授权码，并点击右侧按钮提交\n`, 500);
+      hideCursor();
+      const FooterInputer = CreateFooterInputer({
+        placeholder: '请输入您的授权码',
+        onSubmit(val) {
+          writeTokenSetter(val);
+          FooterInputer.destory()
+        }
+      });
       return;
     }
 
@@ -355,24 +339,21 @@ export const useWriter = (
 
 ${importantWrite('[A]')} 使用微信订阅号生成永久授权码 ${tipsTextWrite('推荐')}
 
-${importantWrite('[B]')} 使用微信订阅号验证码授权
+${importantWrite('[B]')} 使用您在Someone的邮箱账号授权
 
-${importantWrite('[C]')} 将使用您在Someone的邮箱账号授权
-
-${successWrite('[D]')} 注册你的Someone邮箱账号
+${successWrite('[C]')} 注册你的Someone邮箱账号
 
 `)
 
     write('请选择你想要的登录方式，并点击底部对应字母').then(() => {
       const footerRadio = CreateFooterRadio({
-        options: ['A', 'B', "C", "D"],
+        options: ['A', 'B', "C"],
         onClick: (key: string) => {
           write('\n\n');
           footerRadio.destory();
           key === 'A' && writeTokenLogin();
-          key === 'B' && writeWechatLogin();
-          key === 'C' && writeUserLoginEmail();
-          key === 'D' && writeRegisterEmail();
+          key === 'B' && writeUserLoginEmail();
+          key === 'C' && writeRegisterEmail();
         }
       })
     })
@@ -434,7 +415,6 @@ ${successWrite('[D]')} 注册你的Someone邮箱账号
     reloadUserInfo,
     handleUpdateUser,
     getUserInfo,
-    writeWechatLogin,
     writeUserLogin,
     writeRegisterPasswordAfterEmail,
     writeUserLoginEmail,

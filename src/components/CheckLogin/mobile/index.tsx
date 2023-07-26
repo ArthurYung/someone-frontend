@@ -8,6 +8,8 @@ import { UserInfoProvider } from "../use-user";
 import { LOGIN_SUFFIX, REFRESH_SUFFIX, REGISTER_SUFFIX, TOKEN_SUFFIX, USER_SUFFIX } from "./constants";
 import { useInputerState } from "./hooks/useInputerState";
 import { useWriter } from "./hooks/useWriter";
+import { useHammer } from "../../Mobile/useHammer";
+import { checkCliboardData } from "./util";
 
 export const CheckLoginMobile: FC<{ children: any }> = ({ children }) => {
   const { inputerStatus, userInfo, userLoginInfo, setUserInfo, updateUserEmail, updateUserPwd, changeInputerStatus } = useInputerState();
@@ -20,7 +22,6 @@ export const CheckLoginMobile: FC<{ children: any }> = ({ children }) => {
     writeRegisterPasswordAfterEmail,
     writeReigster,
     writeUserLogin,
-    writeWechatLogin,
     writeTokenLogin,
     writeTokenSetter,
     reloadUserInfo,
@@ -28,7 +29,7 @@ export const CheckLoginMobile: FC<{ children: any }> = ({ children }) => {
     writeLoginPicker,
   } = useWriter(userLoginInfo, setUserInfo, changeInputerStatus, updateUserEmail, updateUserPwd, inputerStatus);
   
-  const { write, asyncWrite, clear, hideInputer, currentOption, clearOptions } = useSomeoneEditor();
+  const { write, hideInputer, clear } = useSomeoneEditor();
 
   const destoryEnterWatch = useSomeoneEnterWatch((val) => {
     console.log('on checklogin keydown')
@@ -76,58 +77,22 @@ export const CheckLoginMobile: FC<{ children: any }> = ({ children }) => {
     }
   });
 
-  const destoryBackWatcher = useDocKeydownWatch('d', () => {
-    if (inputerStatus.current !== 'login') {
-      clear();
-      hideInputer();
-      writeLoginPicker();
-      return true;
-    }
-  }, ['ctrl'])
-
-  const destorySpaceWatcher = useDocKeydownWatch(' ', () => {
-    const val = currentOption();
-    if (inputerStatus.current !== 'login' || !val) return;
-
-    if (val === TOKEN_SUFFIX) {
-      asyncWrite('\n\n');
-      writeTokenLogin();
-      clearOptions();
-      return;
-    }
-  
-    if (val === LOGIN_SUFFIX) {
-      asyncWrite('\n\n');
-      writeWechatLogin();
-      clearOptions();
-      return;
-    }
-
-    if (val === USER_SUFFIX) {
-      asyncWrite('\n\n');
-      writeUserLoginEmail();
-      clearOptions();
-      return;
-    }
-
-    if (val === REGISTER_SUFFIX) {
-      asyncWrite('\n\n');
-      writeRegisterEmail();
-      clearOptions();
-      return;
-    }
+  const destoryBack = useHammer('swipe', (e) => {
+    clear();
+    writeLoginPicker();
   })
+
+  
 
   useEffect(() => {
     write("身份确认中...");
-    getUserInfo();
+    checkCliboardData().then(getUserInfo);
   }, []);
 
   useEffect(() => {
     if (userInfo) {
       destoryEnterWatch?.();
-      destoryBackWatcher?.();
-      destorySpaceWatcher?.();
+      destoryBack?.();
     }
   }, [userInfo])
 

@@ -4,7 +4,8 @@ let currentManager: HammerManager
 
 function initManager() {
   if (!currentManager) {
-    currentManager = new Hammer(document.body)
+    currentManager = new Hammer(document.body);
+    currentManager.get('swipe').set({ direction: Hammer.DIRECTION_ALL, threshold: 100 });
   }
 
   return currentManager;

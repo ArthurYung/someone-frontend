@@ -1,4 +1,6 @@
 import html2canvas from 'html2canvas';
+import { matchUUID } from '../../../utils/uuid';
+import { setToken } from '../../../utils/token';
 
 export function createMobileQrImage() {
   const graphRoot = document.querySelector('.qrcode-cover') as HTMLElement;
@@ -18,4 +20,14 @@ export function createMobileQrImage() {
     graphRoot.innerHTML = '';
     graphRoot.appendChild(img);
   }, 34);
+}
+
+export async function checkCliboardData() {
+  try {
+    const res = await navigator.clipboard.readText();
+    const safeToken = matchUUID(res);
+    if (safeToken) setToken(safeToken);
+  } catch(e) {
+    
+  }
 }

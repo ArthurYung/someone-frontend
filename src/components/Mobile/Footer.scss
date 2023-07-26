@@ -20,6 +20,8 @@
     opacity: 0;
     transform: translateY(68px);
     max-width: calc(100vw - 60px);
+    min-width: 50vw;
+    justify-content: center;
 
     &.show {
       opacity: 1;
@@ -60,13 +62,16 @@
     line-height: 42px;
     border-radius: 21px;
     background-color: #30384a;
+    color: #fff;
     border: none;
     margin-right: 12px;
     outline: none;
+    box-sizing: border-box;
     caret-color: #3677ff;
     &.focus {
       box-shadow: 0 0 5px rgba(#a4ef00, .5);
       border: 1px solid #a4ef00;
+      padding: 0 23px;
     }
   }
 

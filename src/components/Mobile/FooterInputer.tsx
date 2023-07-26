@@ -41,15 +41,20 @@ export const FooterInputer = forwardRef<
 FooterRadioMethods,
   {
     onSubmit: (val: string) => void;
+    placeholder: string,
   }
->(({ onSubmit }, ref) => {
+>(({ onSubmit, placeholder }, ref) => {
+  const [val, updateVal] = useState('');
   const { visibleState } = useVisibleAnimate(ref);
   const { focus, blur, isFocus } = useInputerFoucs();
   return (
     <div className={cls}>
         <div className={`${cls}--inner ${visibleState}`}>
-            <input type="text" className={`${cls}--inputer ${isFocus ? 'focus' : ''}`} onFocus={focus} onBlur={blur} />
-            <div className={`${cls}--item submit`} onClick={() => onSubmit}>↑</div>
+            <input placeholder={placeholder} value={val} onChange={e => updateVal(e.target.value)} type="text" className={`${cls}--inputer ${isFocus ? 'focus' : ''}`} onFocus={focus} onBlur={blur} />
+            <div className={`${cls}--item submit`} onClick={() => {
+              onSubmit(val);
+              updateVal('');
+            }}>↑</div>
         </div>
     </div>
   );
@@ -57,13 +62,14 @@ FooterRadioMethods,
 
 export const CreateFooterInputer = (config: {
   onSubmit: (val: string) => void;
+  placeholder?: string
 }) => {
   const el = document.createElement('div')
   const root = createRoot(el);
   const ref = createRef<FooterRadioMethods>();
 
   document.body.appendChild(el);
-  root.render(<FooterInputer ref={ref} onSubmit={config.onSubmit}/>);
+  root.render(<FooterInputer ref={ref} placeholder={config.placeholder || '请输入'} onSubmit={config.onSubmit}/>);
 
   return {
     destory: () => {
