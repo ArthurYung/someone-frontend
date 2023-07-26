@@ -3,6 +3,7 @@
 //   initial-value: 132deg;
 //   inherits: false;
 // }
+@import '../Mobile/mixin.scss';
 
 $usenameScope: 100px;
 
@@ -60,6 +61,16 @@ $usenameScope: 100px;
   animation: fadenum 2s linear infinite;
 }
 
+.hidden-image-write {
+  display: block;
+  position: absolute;
+  left: 0;
+  z-index: 2;
+  opacity: 0.8;
+  width: 100%;
+  height: 24em;
+}
+
 .tips-dot-write {
   background-color: #fff;
   color: #000;
@@ -111,4 +122,19 @@ $usenameScope: 100px;
   0% {opacity: 1;}
   50% {opacity: 0.3;}
   100% {opacity: 1;}
+}
+
+@include mobile {
+  .someone-editor-root {
+    width: 100%;
+    height: calc(100dvh - 104px);
+    box-sizing: border-box;
+    padding: 0;
+    padding-top: 24px;
+
+    .someone-editor {
+      width: 100%;
+      padding: 0 18px;
+    }
+  }
 }

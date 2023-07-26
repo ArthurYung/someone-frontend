@@ -36,11 +36,13 @@ export function createSomeoneOption(config: SomeoneEditorConfig) {
     optionRef.prevWatcher = watchDocKeydown('ArrowUp', () => {
       const prevOption = getPrevOption();
       prevOption && switchSelect(prevOption);
+      return true;
     });
 
     optionRef.nextWatcher = watchDocKeydown('ArrowDown', () => {
       const nextOption = getNextOption();
       nextOption && switchSelect(nextOption);
+      return true;
     });
   }
 

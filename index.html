@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/someone.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,shrink-to-fit=no">
     <title>Someone</title>
     <style>
       :root {
@@ -20,6 +20,14 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  --loading-size: 78px;
+  --vh: 1vh;
+}
+
+@media screen and (max-width: 475px) {
+  :root {
+    --loading-size: 46px;
+  }
 }
 
 a {
@@ -34,7 +42,8 @@ a:hover {
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  height:100dvh;
+  overflow: hidden;
   background: #151617;
   background-image: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 100, color-stop(0%, #282b33), color-stop(100%, #151617));
   background-image: -webkit-radial-gradient(#282b33, #151617);
@@ -73,23 +82,16 @@ body {
       <style type="text/css">
       .loading-page {
         width: 100%;
-        height: 100vh;
+        height:100dvh;
         display: flex;
         align-items: center;
         justify-content: center;
         font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
       }
-      .loading-page-text {
-        text-align: center;
-        letter-spacing: 6px;
-        font-size: 16px;
-        color: #999;
-        margin: 0;
-      }
       .loading-page-glitch {
         position: relative;
         color: #fff;
-        font-size: 78px;
+        font-size: var(--loading-size);
         font-weight: 700;
         text-shadow: 0 0 8px #a4ef00;
       }

@@ -110,6 +110,10 @@ export function createSomeoneEditor (initConfig: SomeoneEditorConfigProps) {
     appendInputer();
   }
 
+  function hideCursor() {
+    view.setCursor(false);
+  }
+
   return {
     container: view.getContainer(),
     ...typewiter,
@@ -119,6 +123,7 @@ export function createSomeoneEditor (initConfig: SomeoneEditorConfigProps) {
     currentOption,
     clearOptions,
     updateConfig,
+    hideCursor,
     clearView,
   }
 }
