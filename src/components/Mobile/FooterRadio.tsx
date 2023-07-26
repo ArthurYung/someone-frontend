@@ -1,11 +1,9 @@
-import { createRef, forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { createRef, forwardRef } from "react";
 import { createRoot } from "react-dom/client";
-import './FooterRadio.scss';
+import { useVisibleAnimate } from "./useAnimate";
+import './Footer.scss';
 
-const cls = "mobile-footer-radio";
-
-const DURATION_TIME = 80;
-const ANMIATE_TIME = 300;
+const cls = "mobile-footer";
 
 interface FooterRadioMethods {
   remove: () => Promise<void>;
@@ -18,65 +16,22 @@ FooterRadioMethods,
     onClick: (key: string) => void;
   }
 >(({ options, onClick }, ref) => {
-  const [renderOptions, setRenderOptions] = useState(
-    options.map((item) => ({ key: item, visible: false }))
-  );
+  const { visibleState } = useVisibleAnimate(ref);
 
-  function showRadios() {
-    for (let i = 0; i < renderOptions.length; i++) {
-      setTimeout(() => {
-        setRenderOptions((prev) => {
-          prev[i] = {
-            ...prev[i],
-            visible: true,
-          };
-
-          return [...prev];
-        });
-      }, DURATION_TIME * i);
-    }
-  }
-
-  function hideRadios() {
-    return new Promise<void>((resolve) => {
-      for (let i = 0; i < renderOptions.length; i++) {
-        setTimeout(() => {
-          setRenderOptions((prev) => {
-            prev[i] = {
-              ...prev[i],
-              visible: false,
-            };
-
-            return [...prev];
-          });
-
-          if (!i) {
-            setTimeout(resolve, ANMIATE_TIME);
-          }
-        }, DURATION_TIME * (renderOptions.length - 1 - i));
-      }
-    });
-  }
-
-  useEffect(() => {
-    setTimeout(showRadios, 34)
-  }, []);
-
-  useImperativeHandle(ref, () => ({
-    remove: hideRadios
-  }))
 
   return (
     <div className={cls}>
-      {renderOptions.map((item) => (
-        <div
-          key={item.key}
-          className={`${cls}--item ${item.visible ? "visible" : ""}`}
-          onClick={() => onClick(item.key)}
-        >
-          {item.key}
-        </div>
-      ))}
+      <div className={`${cls}--inner ${visibleState}`}>
+        {options.map((item) => (
+          <div
+            key={item}
+            className={`${cls}--item`}
+            onClick={() => onClick(item)}
+          >
+            {item}
+          </div>
+        ))}
+      </div>
     </div>
   );
 });

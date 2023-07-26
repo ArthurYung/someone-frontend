@@ -36,8 +36,8 @@ import { InputerStatus, UserLoginInfo } from "./useInputerState";
 import { useLoginCode } from "./useLoginCode";
 import { matchUUID } from "../../../../utils/uuid";
 import { CreateFooterRadio } from "../../../Mobile/FooterRadio";
-import html2canvas from "html2canvas";
 import { createMobileQrImage } from "../util";
+import { CreateFooterInputer } from "../../../Mobile/FooterInputer";
 
 export const useWriter = (
   userLoginInfo: UserLoginInfo,
@@ -48,7 +48,7 @@ export const useWriter = (
   inputerStatus: RefObject<InputerStatus>,
 ) => {
   const createLooper = useLoginCode();
-  const { write, asyncWrite, showInputer, runOptions, hideInputer, updateConfig, clear } =
+  const { write, asyncWrite, showInputer, hideInputer, updateConfig, clear, hideCursor } =
     useSomeoneEditor();
 
   function writeRegisterEmail() {
@@ -235,14 +235,13 @@ export const useWriter = (
 
 
   async function writeTokenLogin() {
-    showInputer();
     write(`\n正在准备授权码获取指引...`);
     write(`\n授权码被重置前永久生效，请妥善保管...`, 500)
     
     write(`\n(${codeWrite('→ 向右滑动屏幕')}可切换登录方式)\n\n`);
 
     write(
-      `1.长按识别下方二维码并关注公众号${importantWrite("“Someone AI”")}\n\n`);
+      `1.长按保存下方二维码，前往${importantWrite('"微信扫一扫"')}，关注公众号${importantWrite("“Someone AI”")}\n\n`);
     // asyncWrite(hiddenImageWrite(QrCodeSrc));
     write(() => {
       updateConfig({
@@ -258,7 +257,13 @@ export const useWriter = (
     write('<class|qrcode-cover>[% %]').then(createMobileQrImage)
     write(`\n2.在公众号对话界面输入${codeWrite('授权码')}重置并获取您的永久授权码\n\n`)
     write(`3.请在下方输入您的授权码，并按回车键确认：\n`)
-    await write(`* 可以复制公众号返回的整段文本，输入区会自动提取授权码\n* 手机授权码复制困难？试试${linkWrite('ox.bruceau.com', 'https://ox.bruceau.com')}从手机粘贴到电脑\n`)
+    await write(`* 可以复制公众号返回的整段文本，输入区会自动提取授权码\n* 手机授权码复制困难？试试${linkWrite('ox.bruceau.com', 'https://ox.bruceau.com')}从手机粘贴到电脑\n`);
+    hideCursor();
+    CreateFooterInputer({
+      onSubmit(val) {
+        console.log(val);
+      }
+    })
     changeInputerStatus('set-token');
   }
 

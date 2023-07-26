@@ -16,9 +16,9 @@ export function hackVH () {
         watcher = window.setTimeout(() => {
             const newVH = window.innerHeight / 100;
             styleNode.innerText = `:root{--vh:${newVH}px}`;
+            // alert('resize');
         }, 300);
     }
 
     window.addEventListener('resize', resizeCallback);
-    window.addEventListener('focusin', resizeCallback);
 }
