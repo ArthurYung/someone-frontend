@@ -32,7 +32,7 @@ export const CheckLoginMobile: FC<{ children: any }> = ({ children }) => {
   const { write, hideInputer, clear } = useSomeoneEditor();
 
   const destoryEnterWatch = useSomeoneEnterWatch((val) => {
-    console.log('on checklogin keydown')
+
     if (inputerStatus.current === "username") {
       if (!/^[\u4e00-\u9fa5a-zA-Z]{2,20}$/.test(val)) {
         write("系统识别失败，仅支持2-20个中文/英文字母组成\n");

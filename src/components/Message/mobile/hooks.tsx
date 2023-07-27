@@ -83,7 +83,7 @@ const useBatchWriterCreator = (timeout = 300) => {
 }
 
 export const useWrites = () => {
-  const { write, asyncWrite, clear, isWriting } = useSomeoneEditor();
+  const { write, asyncWrite, clear, hasWriteTask } = useSomeoneEditor();
   const { userInfo, reloadUserInfo } = useUserInfo();
   const { user_name, msg_count, is_vip } = userInfo;
   const history = useRef<MessageInfo[]>([]);
@@ -237,8 +237,7 @@ writeUserName(true)
   useEffect(() => {
     const inputer = CreateFooterInputer({
       onSubmit: (val) => {
-        if (isWriting()) return true;
-
+        if (hasWriteTask()) return true;
         const value = val.trim();
         if (value === SomeoneHelper.HELPER) {
           writeHelp();
