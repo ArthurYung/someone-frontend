@@ -286,7 +286,7 @@ writeUserName(true)
           return;
         }
         
-        asyncWrite('\n' + value + '\n');
+        asyncWrite(value + '\n');
         writeSendMessage(value)
       }
     });
