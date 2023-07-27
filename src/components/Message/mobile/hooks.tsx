@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useSomeoneEditor } from "../SomeoneEditor/context";
-import { SomeoneHelper } from "./Helper";
-import { useUserInfo } from "../CheckLogin/use-user";
+import { useSomeoneEditor } from "../../SomeoneEditor/context";
+import { SomeoneHelper } from "../pc/Helper";
+import { useUserInfo } from "../../CheckLogin/use-user";
 import {
   codeWrite,
   errorWrite,
@@ -13,13 +13,14 @@ import {
   successWrite,
   useSomeoneEnterWatch,
   userSaid,
-} from "../SomeoneEditor/helper";
-import { generateQrcode } from "../CheckLogin/getQrCode";
-import { SURVEY_URL, TXC_URL } from "./Links";
-import { clearToken } from "../../utils/token";
-import { MessageInfo, sendMessage } from "../../api/message";
-import { MessageDBRow, historyDB } from "../../utils/indexDB";
-import { parseMessage } from "../../utils/parser";
+} from "../../SomeoneEditor/helper";
+import { generateQrcode } from "../../CheckLogin/getQrCode";
+import { SURVEY_URL, TXC_URL } from "../pc/Links";
+import { clearToken } from "../../../utils/token";
+import { MessageInfo, sendMessage } from "../../../api/message";
+import { MessageDBRow, historyDB } from "../../../utils/indexDB";
+import { parseMessage } from "../../../utils/parser";
+import { CreateFooterInputer } from "../../Mobile/FooterInputer";
 
 
 
@@ -81,39 +82,26 @@ const useBatchWriterCreator = (timeout = 300) => {
   return createBatchWriter;
 }
 
-export const useConfigUpdate = () => {
-  const { updateConfig } = useSomeoneEditor();
-  useEffect(() => {
-    updateConfig({
-      suffixs: [
-        SomeoneHelper.HELPER,
-        SomeoneHelper.INFO,
-        SomeoneHelper.CONACT,
-        SomeoneHelper.SURVEY,
-        SomeoneHelper.CLEAR,
-        SomeoneHelper.FEEDBACK,
-        SomeoneHelper.QUIT,
-      ],
-    });
-  }, []);
-};
-
 export const useWrites = () => {
-  const { write, asyncWrite, hideInputer, showInputer, clear } = useSomeoneEditor();
+  const { write, asyncWrite, clear } = useSomeoneEditor();
   const { userInfo, reloadUserInfo } = useUserInfo();
-  const { user_name, id, send_count, msg_count, is_vip } = userInfo;
+  const { user_name, msg_count, is_vip } = userInfo;
   const history = useRef<MessageInfo[]>([]);
   const createBatchWather = useBatchWriterCreator(100);
 
   function writeUserName(inBreak = false) {
-    asyncWrite(`${inBreak ? "\n" : ""}${userSaid(user_name)}`);
+    asyncWrite(`${inBreak ? "\n" : ""}${userSaid(user_name)}\n`);
   }
 
-  function writeLimit() {
+  function writeSumeoneName() {
+    asyncWrite(someoneSaid() + '\n');
+  }
+
+  async function writeLimit() {
     asyncWrite("\n");
-    asyncWrite(someoneSaid());
+    writeSumeoneName();
     write(`Sorry ${user_name}，我实在太累了，这周的相处就到这吧，下周见...\n`);
-    asyncWrite(someoneSaid());
+    writeSumeoneName();
     write(
       `有时间的话可以输入${codeWrite(
         SomeoneHelper.SURVEY
@@ -121,7 +109,7 @@ export const useWrites = () => {
         SomeoneHelper.FEEDBACK
       )}提建议或反馈，可能会更快见面哦！`
     );
-    writeUserName(true)
+    writeUserName(true);
   }
 
   function writeHelp() {
@@ -179,7 +167,6 @@ writeUserName(true)
   }
 
   function writeQuit() {
-    hideInputer()
     write(`Bye~`)
     setTimeout(() => {
       clearToken();
@@ -195,8 +182,7 @@ writeUserName(true)
     history.current = history.current.slice(-3);
     history.current.push(userSaidInfo);
     historyDB.messages.add(userSaidInfo);
-    hideInputer();
-    asyncWrite(someoneSaid());
+    writeSumeoneName();
     sendMessage({
       messages: history.current,
       onMessage: data => {
@@ -229,77 +215,85 @@ writeUserName(true)
       write(errorWrite(err.message));
     }).finally(() => {
       batchWriter.clear();
-      showInputer();
       writeUserName(true)
     })
   }
 
   function writeHistorys(messages: MessageDBRow[]) {
     if (!messages.length) return;
-    asyncWrite(historyPlaceholderWrite('======================== History =======================') + '\n');
+    asyncWrite(historyPlaceholderWrite('============= History ============') + '\n');
     messages.forEach(item => {
       if (item.role === 'user') {
-        asyncWrite(`${userSaid(user_name)}${item.content}\n`, 100)
+        asyncWrite(`${userSaid(user_name)}\n${item.content}\n`, 100)
       } else {
         const { res, unmatched } = parseMessage(item.content)
-        asyncWrite(`${someoneSaid()}${res}${unmatched}\n`, 100)
+        writeSumeoneName();
+        asyncWrite(`${res}${unmatched}\n`, 100)
       }
     });
-    asyncWrite(historyPlaceholderWrite('========================================================') + '\n\n');
+    asyncWrite(historyPlaceholderWrite('==================================') + '\n\n');
   }
 
-  useSomeoneEnterWatch((value) => {
-    value = value.trim();
-    if (value === SomeoneHelper.HELPER) {
-      writeHelp();
-      return;
-    }
-
-    if (value === SomeoneHelper.INFO) {
-      writeInfo();
-      return;
-    }
-
-    if (value === SomeoneHelper.CONACT) {
-      writeAuthor();
-      return;
-    }
-
-    if (value === SomeoneHelper.SURVEY) {
-      writeSurvey();
-      return;
-    }
-
-    if (value === SomeoneHelper.FEEDBACK) {
-      writeFeedback();
-      return;
-    }
-
-    if (value === SomeoneHelper.QUIT) {
-      writeQuit();
-      return;
-    }
-
-    if (value === SomeoneHelper.CLEAR) {
-      clear();
-      writeUserName();
-      history.current = [];
-      historyDB.messages.clear();
-      return;
-    }
-
-    if (!is_vip && !msg_count) {
-      writeLimit();
-      return;
-    }
+  useEffect(() => {
+    const inputer = CreateFooterInputer({
+      onSubmit: (val) => {
+        const value = val.trim();
+        if (value === SomeoneHelper.HELPER) {
+          writeHelp();
+          return;
+        }
     
-    if (!value) {
-      writeUserName(true);
-      return;
-    }
+        if (value === SomeoneHelper.INFO) {
+          writeInfo();
+          return;
+        }
+    
+        if (value === SomeoneHelper.CONACT) {
+          writeAuthor();
+          return;
+        }
+    
+        if (value === SomeoneHelper.SURVEY) {
+          writeSurvey();
+          return;
+        }
+    
+        if (value === SomeoneHelper.FEEDBACK) {
+          writeFeedback();
+          return;
+        }
+    
+        if (value === SomeoneHelper.QUIT) {
+          writeQuit();
+          return;
+        }
+    
+        if (value === SomeoneHelper.CLEAR) {
+          clear();
+          writeUserName();
+          history.current = [];
+          historyDB.messages.clear();
+          return;
+        }
+    
+        if (!is_vip && !msg_count) {
+          writeLimit();
+          return;
+        }
+        
+        if (!value) {
+          writeUserName(true);
+          return;
+        }
+        
+        asyncWrite('\n' + value + '\n');
+        writeSendMessage(value)
+      }
+    });
 
-    writeSendMessage(value)
-  });
+    return inputer.destory;
+  }, []);
+
 
   return {
     writeLimit,

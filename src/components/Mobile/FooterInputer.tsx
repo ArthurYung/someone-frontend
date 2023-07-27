@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { useWindowSize } from 'react-use';
 import { useVisibleAnimate } from "./useAnimate";
 import './Footer.scss';
+import { registeDestory } from "./footerHelper";
 
 const cls = "mobile-footer";
 
@@ -72,10 +73,10 @@ export const CreateFooterInputer = (config: {
   root.render(<FooterInputer ref={ref} placeholder={config.placeholder || '请输入'} onSubmit={config.onSubmit}/>);
 
   return {
-    destory: () => {
+    destory: registeDestory(() => {
       ref.current?.remove().then(() => {
         root.unmount();
       })
-    }
+    })
   }
 }

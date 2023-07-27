@@ -10,6 +10,7 @@ import { useInputerState } from "./hooks/useInputerState";
 import { useWriter } from "./hooks/useWriter";
 import { useHammer } from "../../Mobile/useHammer";
 import { checkCliboardData } from "./util";
+import { clearAllPopup } from "../../Mobile/footerHelper";
 
 export const CheckLoginMobile: FC<{ children: any }> = ({ children }) => {
   const { inputerStatus, userInfo, userLoginInfo, setUserInfo, updateUserEmail, updateUserPwd, changeInputerStatus } = useInputerState();
@@ -77,16 +78,18 @@ export const CheckLoginMobile: FC<{ children: any }> = ({ children }) => {
     }
   });
 
-  const destoryBack = useHammer('swipe', (e) => {
+  const destoryBack = useHammer('swiperight', () => {
+    if (inputerStatus.current === 'login') return;
     clear();
+    clearAllPopup();
     writeLoginPicker();
   })
 
   
 
   useEffect(() => {
-    write("身份确认中...");
-    checkCliboardData().then(getUserInfo);
+    hideInputer();
+    write("身份确认中...").then(checkCliboardData).then(getUserInfo)
   }, []);
 
   useEffect(() => {

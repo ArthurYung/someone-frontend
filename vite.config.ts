@@ -11,9 +11,14 @@ export default defineConfig({
       minify: true,
     }),
     VitePWA({
+      devOptions: {
+        enabled: true,
+        /* other options */
+      },
       includeAssets: ['someone-192.png', 'someone-512.png'],
       registerType: 'autoUpdate',
       manifest: {
+        start_url: "?mode=pwa",
         name: 'Someone',
         theme_color: '#151617',
         icons: [

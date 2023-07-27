@@ -1,5 +1,5 @@
 import { Component, FC, ErrorInfo, useMemo, useState, useEffect } from "react";
-import { getError } from "./check";
+import { getError, isMobile } from "./check";
 import { ErrorContext } from "./context";
 import "./style.scss";
 import { requestErrorHandler } from "../../api/request";
@@ -35,7 +35,7 @@ export const ErrorPage: FC<{ children: any }> = ({ children }) => {
   return (
     <ErrorContext.Provider value={{ error: errorInfo, setError: setErrorInfo }}>
       {errorInfo ? (
-        <main className="error-page">
+        <main className={`error-page ${isMobile() ? 'mobile' : ''}`}>
           <div className="error-page-container">
             <h3 className="error-page-container__message">
               ERROR: {errorInfo.message}

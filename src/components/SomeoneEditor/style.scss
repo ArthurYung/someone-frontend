@@ -127,14 +127,47 @@ $usenameScope: 100px;
 @include mobile {
   .someone-editor-root {
     width: 100%;
-    height: calc(100dvh - 104px);
+    height: calc(100dvh - 104rem);
     box-sizing: border-box;
     padding: 0;
-    padding-top: 24px;
+    padding-top: 24rem;
+    font-size: 14rem;
+
+    &.message-mode {
+      .someone-editor {
+        padding-left: 18px;
+      }
+    }
 
     .someone-editor {
       width: 100%;
-      padding: 0 18px;
+      padding: 0 18rem;
     }
+  }
+
+  .placeholder-write {
+    &.history {
+      margin-left: 0;
+    }
+  }
+
+  .code-write {
+    &.md {
+      padding: 2rem 4rem;
+      border-radius: 4rem;
+    }
+  }
+  .code-pre {
+    left: 0;
+    background-color: transparent;
+  }
+
+  .someone {
+    margin-top: 8rem;
+    margin-left: 0;
+  }
+  .user {
+    margin-left: 0;
+    margin-top: 8rem;
   }
 }

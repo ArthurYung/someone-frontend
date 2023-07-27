@@ -2,6 +2,7 @@ import { createRef, forwardRef } from "react";
 import { createRoot } from "react-dom/client";
 import { useVisibleAnimate } from "./useAnimate";
 import './Footer.scss';
+import { registeDestory } from "./footerHelper";
 
 const cls = "mobile-footer";
 
@@ -48,10 +49,10 @@ export const CreateFooterRadio = (config: {
   root.render(<FooterRadio ref={ref} options={config.options} onClick={config.onClick}/>);
 
   return {
-    destory: () => {
+    destory: registeDestory(() => {
       ref.current?.remove().then(() => {
         root.unmount();
       })
-    }
+    })
   }
 }

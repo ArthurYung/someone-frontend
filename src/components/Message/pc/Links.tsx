@@ -1,7 +1,7 @@
-import SurveyIcon from "../../assets/survey.png";
-import TxcIcon from "../../assets/txc.png";
-import Github from "../../assets/github.png";
-import Bruce from "../../assets/bruce.png";
+import SurveyIcon from "../../../assets/survey.png";
+import TxcIcon from "../../../assets/txc.png";
+import Github from "../../../assets/github.png";
+import Bruce from "../../../assets/bruce.png";
 import { FC } from "react";
 
 export const SURVEY_URL = "https://wj.qq.com/s2/12557549/d61e/";

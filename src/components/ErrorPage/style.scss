@@ -30,4 +30,24 @@
       }
     }
   }
+
+  &.mobile {
+    .error-page {
+      &-container {
+        &__message {
+          font-size: 16rem;
+        }
+        &__info {
+          font-size: 16rem;
+        }
+    
+        &__txt {
+          font-size: 12rem;
+          &::before {
+            margin-right: 4rem;
+          }
+        }
+      }
+    }
+  }
 }

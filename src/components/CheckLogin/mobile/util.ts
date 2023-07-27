@@ -24,10 +24,13 @@ export function createMobileQrImage() {
 
 export async function checkCliboardData() {
   try {
+    // const allowClibard = confirm('请求访问剪切板内容')
     const res = await navigator.clipboard.readText();
     const safeToken = matchUUID(res);
+    console.log('readtext: ', res)
     if (safeToken) setToken(safeToken);
   } catch(e) {
-    
+    console.log('fetch err:', e);
+    //
   }
 }

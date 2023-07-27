@@ -114,6 +114,10 @@ export function createSomeoneEditor (initConfig: SomeoneEditorConfigProps) {
     view.setCursor(false);
   }
 
+  function isWriting() {
+    return config.get('isWriting');
+  }
+
   return {
     container: view.getContainer(),
     ...typewiter,
@@ -124,6 +128,7 @@ export function createSomeoneEditor (initConfig: SomeoneEditorConfigProps) {
     clearOptions,
     updateConfig,
     hideCursor,
+    isWriting,
     clearView,
   }
 }
