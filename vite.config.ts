@@ -19,6 +19,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       manifest: {
         name: 'Someone',
+        short_name: "Someone",
         theme_color: '#151617',
         icons: [
           {
