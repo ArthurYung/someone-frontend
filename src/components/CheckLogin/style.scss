@@ -1,6 +1,15 @@
+@import "../Mobile/mixin.scss";
+
+@font-face {
+    font-family: 'qrcode';
+    src: url('../../assets/Menlo-Regular-1.woff2') format('woff2'), /* Super Modern Browsers */
+         url('../../assets/Menlo-Regular-1.woff') format('woff'), /* Pretty Modern Browsers */
+         url('../../assets/Menlo-Regular-1.ttf')  format('truetype'), /* Safari, Android, iOS */
+}
+
 .qrcode {
     line-height: 1.15;
-    font-size: 14rem;
+    font-family: qrcode, ui-monospace, SFMono-Regular, SF Mono,Menlo,Consolas,Liberation Mono,monospace !important;
     &-cover {
         display: flex;
         flex-direction:column;
@@ -8,3 +17,8 @@
     }
 }
 
+@include mobile {
+    .qrcode {
+        font-size: 14rem;
+    }
+}

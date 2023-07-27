@@ -4,12 +4,14 @@ const MIN_SLEEP = 1000;
 
 export const GlobalLoading: FC<{ children: any }> = ({ children }) => {
   const [loaded, setLoaded] = useState(false);
+  console.log('init data');
   useEffect(() => {
     const startTime = window.__START_TIME;
     const currTime = Date.now();
     console.log('START: ' + startTime);
     console.log('NOW: ' + currTime);
     const loadingSleep = Math.max(MIN_SLEEP - currTime + startTime, 0);
+    console.log('init data');
     setTimeout(() => {
       document.getElementById('loading')?.remove();
       setLoaded(true);

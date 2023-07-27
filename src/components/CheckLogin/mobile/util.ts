@@ -17,6 +17,7 @@ export function createMobileQrImage() {
 
     const img = new Image();
     img.src = canvas.toDataURL();
+    img.style.height = canvas.style.height;
     graphRoot.innerHTML = '';
     graphRoot.appendChild(img);
   }, 34);

@@ -1,5 +1,6 @@
 .error-page {
   width: 100%;
+  height:100vh;
   height:100dvh;
   display: flex;
   align-items: center;
@@ -7,6 +8,7 @@
   background-color: #0000a8;
   &-container {
     min-width: 40vw;
+    padding-bottom: 20vh; 
     padding-bottom: 20dvh;
     text-shadow: none;
     font-family: '宋体', serif;

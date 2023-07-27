@@ -127,6 +127,7 @@ $usenameScope: 100px;
 @include mobile {
   .someone-editor-root {
     width: 100%;
+    height: calc(100vh - 104rem);
     height: calc(100dvh - 104rem);
     box-sizing: border-box;
     padding: 0;
