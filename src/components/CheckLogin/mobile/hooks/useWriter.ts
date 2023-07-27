@@ -271,45 +271,6 @@ export const useWriter = (
     writeSuccessInfo(data.info);
   }
 
-  async function writeRefresh() {
-    hideInputer();
-    const { data, error } = await createCode();
-    if (error) {
-      write(`\n刷新失败. - ${error.code} - ${errorWrite(error.message)}`);
-      return;
-    }
-
-    if (!data?.auth_code) return;
-    await write(
-      `\n请在公众号对话界面输入验证凭据 - ${codeWrite(data.auth_code)}\n`
-    );
-
-    try {
-      const token = await createLooper(data.auth_code);
-
-      setToken(token);
-    } catch (e: any) {
-      if (e.message === TIMEOUT_ERROR_TOKEN) {
-        asyncWrite(
-          placeholderWrite("验证凭据已失效，请输入/refresh后回车刷新凭据") +
-            "\n"
-        );
-        showInputer();
-      }
-      return;
-    }
-
-    const { data: userInfo, error: userError } = await fetchUserInfo();
-
-    if (userError) {
-      write(`错误代码 - ${userError.code} - ${errorWrite(userError.message)}`);
-
-      return;
-    }
-
-    writeSuccessInfo(userInfo.info);
-  }
-
   function welecomUserWrite(userInfo: UserInfo) {
     write("\n对话系统已开启 - ", 500);
     write(primaryWrite("Welecome! ")).then(() => {
@@ -320,17 +281,23 @@ export const useWriter = (
     });
   }
 
-  function writeSuccessInfo(userInfo: UserInfo) {
+  async function writeSuccessInfo(userInfo: UserInfo) {
     if (userInfo.user_name) {
       asyncWrite(`\n\n`);
       welecomUserWrite(userInfo);
       return;
     }
 
-    showInputer();
     write("\n你好Master，我该怎么称呼你呢？\n");
-    write("你可以在下方输入你想要设置的昵称，然后回车保存\n");
+    await write("请输入你想要设置的昵称，并点击右侧按钮提交\n");
     changeInputerStatus("username");
+    const FooterInputer = CreateFooterInputer({
+      placeholder: '请输入您的昵称',
+      onSubmit(val) {
+        handleUpdateUser(val);
+        FooterInputer.destory();
+      }
+    });
   }
 
   function writeLoginPicker() {
@@ -378,17 +345,15 @@ ${successWrite('[C]')} 注册你的Someone邮箱账号
   async function handleUpdateUser(userName: string) {
     const { error } = await updateUserName({ user_name: userName });
     if (error) {
-      write("更新失败，请刷新重试...\n");
-      write(errorWrite(`${error.code} - ${error.message}\n`));
-      hideInputer();
+      write("更新失败，请重新选择登录方式...\n");
+      await write(errorWrite(`${error.code} - ${error.message}\n`));
       return;
     }
 
     const { data, error: userError } = await fetchUserInfo();
     if (userError) {
-      write("获取用户信息失败，请刷新重试...");
+      write("获取用户信息失败，请重新选择登录方式...");
       write(errorWrite(`${userError.code} - ${userError.message}\n`));
-      hideInputer();
       return;
     }
 
@@ -409,7 +374,6 @@ ${successWrite('[C]')} 注册你的Someone邮箱账号
   return {
     welecomUserWrite,
     writePasswordAfterEmail,
-    writeRefresh,
     writeRegisterEmail,
     registerUser,
     reloadUserInfo,
