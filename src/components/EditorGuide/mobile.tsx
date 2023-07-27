@@ -18,9 +18,11 @@ export const EditorGuideMobile: FC<{ children: any }> = ({ children }) => {
 
 * 可以安装Someone wep APP (PWA)来获得更好的使用体验：
 
-*    [IOS] Safari浏览器中打开 -> 点击底部分享${codeWrite('↥')}按钮 -> 添加至桌面
+[IOS]
+Safari浏览器中打开 -> 点击底部分享${codeWrite('↥')}按钮 -> 添加至桌面
 
-*    [Andriod] 根据自带浏览器指引将本站添加到桌面
+[Andriod]
+根据自带浏览器指引将本站添加到桌面
 
 > 点击${inputCodeWrite("任意位置")}开启对话
 `, 300)

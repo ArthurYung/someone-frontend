@@ -12,5 +12,8 @@
 
   &.mobile {
     align-items: initial;
+    img {
+      -webkit-touch-callout: default;
+    }
   }
 }
