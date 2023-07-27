@@ -83,9 +83,10 @@ const useBatchWriterCreator = (timeout = 300) => {
 }
 
 export const useWrites = () => {
-  const { write, asyncWrite, clear, hasWriteTask } = useSomeoneEditor();
+  const { write, asyncWrite, clear, isWriting } = useSomeoneEditor();
   const { userInfo, reloadUserInfo } = useUserInfo();
   const { user_name, msg_count, is_vip } = userInfo;
+  const inputerState = useRef<'sending' | 'input'>('input');
   const history = useRef<MessageInfo[]>([]);
   const createBatchWather = useBatchWriterCreator(100);
 
@@ -182,6 +183,7 @@ writeUserName(true)
     history.current = history.current.slice(-3);
     history.current.push(userSaidInfo);
     historyDB.messages.add(userSaidInfo);
+    inputerState.current = 'sending';
     writeSumeoneName();
     sendMessage({
       messages: history.current,
@@ -215,7 +217,8 @@ writeUserName(true)
       write(errorWrite(err.message));
     }).finally(() => {
       batchWriter.clear();
-      writeUserName(true)
+      writeUserName(true);
+      inputerState.current = 'input';
     })
   }
 
@@ -237,7 +240,7 @@ writeUserName(true)
   useEffect(() => {
     const inputer = CreateFooterInputer({
       onSubmit: (val) => {
-        if (hasWriteTask()) return true;
+        if (isWriting() || inputerState.current !== 'input') return true;
         const value = val.trim();
         if (value === SomeoneHelper.HELPER) {
           writeHelp();
@@ -287,7 +290,7 @@ writeUserName(true)
           return;
         }
         
-        asyncWrite(value + '\n');
+        write(value + '\n');
         writeSendMessage(value)
       }
     });

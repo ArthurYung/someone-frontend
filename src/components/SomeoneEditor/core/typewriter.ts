@@ -137,14 +137,9 @@ export function createTypewriter(config: SomeoneEditorConfig, view: HTMLDivEleme
     clearInterval(currentLoop);
   }
 
-  function hasWriteTask() {
-    return !!writeTasks.length
-  }
-
   return {
     write,
     asyncWrite,
     clear,
-    hasWriteTask,
   };
 }

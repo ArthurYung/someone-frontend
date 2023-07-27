@@ -1,7 +1,7 @@
 import { createTypewriter } from "./typewriter";
 import { createSomeoneView } from "./view";
 import { createSomeoneInputer } from "./inputer";
-import { SomeoneEditorConfigProps, createSomeoneConfig } from "./config";
+import { SomeoneEditorConfigProps, SomeoneEditorConfigState, createSomeoneConfig } from "./config";
 import './style.scss';
 import { createSomeoneOption } from "./option";
 
@@ -99,7 +99,7 @@ export function createSomeoneEditor (initConfig: SomeoneEditorConfigProps) {
     return optioner.current()?.id;
   }
 
-  function updateConfig(updateData: Partial<SomeoneEditorConfigProps>) {
+  function updateConfig(updateData: Partial<SomeoneEditorConfigState>) {
     config.setConfig(updateData)
   }
 
@@ -114,6 +114,10 @@ export function createSomeoneEditor (initConfig: SomeoneEditorConfigProps) {
     view.setCursor(false);
   }
 
+  function isWriting() {
+    return config.get('isWriting');
+  }
+
   return {
     container: view.getContainer(),
     ...typewiter,
@@ -124,6 +128,7 @@ export function createSomeoneEditor (initConfig: SomeoneEditorConfigProps) {
     clearOptions,
     updateConfig,
     hideCursor,
+    isWriting,
     clearView,
   }
 }
