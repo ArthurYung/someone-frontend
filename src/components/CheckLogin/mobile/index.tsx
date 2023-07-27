@@ -16,7 +16,6 @@ export const CheckLoginMobile: FC<{ children: any }> = ({ children }) => {
   const { inputerStatus, userInfo, userLoginInfo, setUserInfo, updateUserEmail, updateUserPwd, changeInputerStatus } = useInputerState();
   const {
     handleUpdateUser,
-    writeRefresh,
     writePasswordAfterEmail,
     writeRegisterEmail,
     writeUserLoginEmail,
@@ -43,12 +42,6 @@ export const CheckLoginMobile: FC<{ children: any }> = ({ children }) => {
       hideInputer();
       write("正在设置中...\n");
       handleUpdateUser(val)
-      return;
-    }
-
-    // 刷新code
-    if (inputerStatus.current === "qrcode" && val === REFRESH_SUFFIX) {
-      writeRefresh();
       return;
     }
 
