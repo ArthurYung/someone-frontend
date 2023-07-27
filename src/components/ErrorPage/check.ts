@@ -27,19 +27,19 @@ export function getError() {
   //     ],
   //   };
   // }
-  if (isMobile() && !isPWA()) {
-    return {
-      message: "Browsing environment is restricted",
-      info: [
-        "Only supports opening with Web APP.",
-        "为了后续更好的体验，移动端仅支持Web APP模式下访问(PWA).",
-        "请将本网站添加至手机桌面，并通过桌面入口程序访问.",
-        "添加方式如下:",
-        "[IOS] Safari浏览器中打开 -> 分享 -> 添加至桌面.",
-        "[Android] 根据自带浏览器指引将本站添加到桌面."
-      ]
-    }
-  }
+  // if (isMobile() && !isPWA()) {
+  //   return {
+  //     message: "Browsing environment is restricted",
+  //     info: [
+  //       "Only supports opening with Web APP.",
+  //       "为了后续更好的体验，移动端仅支持Web APP模式下访问(PWA).",
+  //       "请将本网站添加至手机桌面，并通过桌面入口程序访问.",
+  //       "添加方式如下:",
+  //       "[IOS] Safari浏览器中打开 -> 分享 -> 添加至桌面.",
+  //       "[Android] 根据自带浏览器指引将本站添加到桌面."
+  //     ]
+  //   }
+  // }
 
   if (isIE()) {
     return {

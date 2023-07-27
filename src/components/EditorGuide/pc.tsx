@@ -19,6 +19,8 @@ export const EditorGuidePC: FC<{ children: any }> = ({ children }) => {
 
 * 更多操作内容可在验证身份成功后输入${codeWrite("/help")}查看操作帮助。
 
+* 可以点击地址栏右侧的小电脑安装Someone wep APP (PWA)来获得更好的使用体验。
+
 > 按${inputCodeWrite("空格键")}开启对话
 `, 300)
   }
