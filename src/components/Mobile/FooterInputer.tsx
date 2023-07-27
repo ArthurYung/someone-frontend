@@ -49,7 +49,7 @@ const useInputerFoucs = () => {
 export const FooterInputer = forwardRef<
   FooterRadioMethods,
   {
-    onSubmit: (val: string) => void;
+    onSubmit: (val: string) => boolean | void;
     placeholder: string;
   }
 >(({ onSubmit, placeholder }, ref) => {
@@ -57,8 +57,7 @@ export const FooterInputer = forwardRef<
   const { visibleState } = useVisibleAnimate(ref);
   const { focus, blur, isFocus } = useInputerFoucs();
   function submitInputer() {
-    onSubmit(val);
-    updateVal('');
+    onSubmit(val) || updateVal('');
   }
 
   return (
@@ -88,7 +87,7 @@ export const FooterInputer = forwardRef<
 });
 
 export const CreateFooterInputer = (config: {
-  onSubmit: (val: string) => void;
+  onSubmit: (val: string) => boolean | void;
   placeholder?: string;
 }) => {
   const el = document.createElement('div');
