@@ -12,7 +12,7 @@ export default defineConfig({
     }),
     VitePWA({
       devOptions: {
-        enabled: true,
+        enabled: false,
         /* other options */
       },
       includeAssets: ['someone-192.png', 'someone-512.png'],
