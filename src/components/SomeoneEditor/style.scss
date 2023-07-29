@@ -143,6 +143,7 @@ $usenameScope: 100px;
     .someone-editor {
       width: 100%;
       padding: 0 18rem;
+      -webkit-overflow-scrolling: touch;
     }
   }
 
@@ -171,4 +172,8 @@ $usenameScope: 100px;
     margin-left: 0;
     margin-top: 8rem;
   }
+}
+
+body, html {
+  overscroll-behavior: none;
 }
