@@ -251,6 +251,7 @@ export const useWriter = (
       return;
     }
 
+    write('');
     setToken(safeToken);
     const { data, error } = await fetchUserInfo();
 
