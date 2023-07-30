@@ -43,7 +43,7 @@ const useInputerFoucs = () => {
     const editorView = document.querySelector('.someone-editor') as HTMLElement;
   
     function resizeClientHeight() {
-      if (editorView.offsetHeight +  editorView.getBoundingClientRect().top < 0) {
+      if (editorView.offsetHeight +  editorView.getBoundingClientRect().top < 30) {
         editorView.style.transform = `translate3d(0, ${-editorView.getBoundingClientRect().top}px, 0)`
       } else {
         editorView.style.transform = ''
@@ -72,6 +72,7 @@ export const FooterInputer = forwardRef<
   const { visibleState } = useVisibleAnimate(ref);
   const { focus, blur, isFocus } = useInputerFoucs();
   function submitInputer() {
+    if (!val.trim()) return;
     onSubmit(val) || updateVal('');
   }
 
