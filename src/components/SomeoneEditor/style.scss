@@ -143,6 +143,9 @@ $usenameScope: 100px;
     .someone-editor {
       width: 100%;
       padding: 0 18rem;
+      height: auto;
+      max-height: 100%;
+      transition: transform .15s ease-out;
     }
   }
 

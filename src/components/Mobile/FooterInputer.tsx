@@ -39,6 +39,21 @@ const useInputerFoucs = () => {
 
   useEffect(() => blur, []);
 
+  useEffect(() => {
+    const editorView = document.querySelector('.someone-editor') as HTMLElement;
+  
+    function resizeClientHeight() {
+      if (editorView.offsetHeight +  editorView.getBoundingClientRect().top < 0) {
+        editorView.style.transform = `translate3d(0, ${-editorView.getBoundingClientRect().top}px, 0)`
+      } else {
+        editorView.style.transform = ''
+      }
+    }
+
+    window.visualViewport?.addEventListener('resize', resizeClientHeight);
+    return () => window.visualViewport?.removeEventListener('resize', resizeClientHeight);
+  }, [])
+
   return {
     focus,
     blur,
