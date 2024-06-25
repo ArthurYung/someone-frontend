@@ -4,8 +4,8 @@ import { createStreamPusher } from "../utils/stream";
 
 const BASEURL =
   import.meta.env.MODE === "development"
-    ? "https://api.someone.ink"
-    : "https://api.someone.ink";
+    ? "https://someone-api.bruceau.plus"
+    : "https://someone-api.bruceau.plus";
 
 export const requestErrorHandler = {
   watchers: [] as ((err: Error) => void)[],
