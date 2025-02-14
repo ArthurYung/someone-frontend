@@ -200,9 +200,8 @@ writeUserName(true)
     sendMessage({
       messages: history.current,
       onMessage: data => {
-        if (data.delta.role) {
+        if (data.delta.role && !responseRole) {
           responseRole = data.delta.role;
-          return;
         }
         
         responseContent += data.delta.content || '';

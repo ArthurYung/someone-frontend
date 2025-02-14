@@ -4,7 +4,7 @@ import { createStreamPusher } from "../utils/stream";
 
 const BASEURL =
   import.meta.env.MODE === "development"
-    ? "https://someone-api.bruceau.plus"
+    ? ""
     : "https://someone-api.bruceau.plus";
 
 export const requestErrorHandler = {
