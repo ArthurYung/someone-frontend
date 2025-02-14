@@ -101,7 +101,7 @@ export function fetchStream<T>(config: {
         timeoutRejector.responseTimouter = window.setTimeout(() => {
           timeoutRejector.responseTimeouted = true;
           reject(new Error('Request Timeout!'));
-        }, config.timeout || 10000);
+        }, config.timeout || 50000);
       },
       clearTimeouter: () => {
         clearTimeout(timeoutRejector.responseTimouter);
