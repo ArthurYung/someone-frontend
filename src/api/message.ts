@@ -19,12 +19,20 @@ export interface GPTResponseStreamData {
 export const sendMessage = (config: {
   messages: MessageInfo[];
   onMessage: (data: GPTResponseStreamData) => void;
-}) =>
-  fetchStream({
+}) => {
+  const requestMessages = config.messages.map((message) => {
+    if (message.role === "user") return message;
+    return {
+      role: message.role,
+      content: message.content.replace(/<think>[\s\S]*?<\/think>/g, ""),
+    };
+  });
+  return fetchStream({
     url: "/send",
     method: "POST",
     data: {
-      messages: config.messages
+      messages: requestMessages,
     },
     onMessage: config.onMessage,
   });
+};
