@@ -26,12 +26,20 @@ export function linkWrite(link: string, href?: string) {
   return `<link|${href || link}>[%${link}%]`;
 }
 
-export function codePreRootWrite(type = 'Code') {
-  return `<class|code-pre>[% %]<class|tips-dot-write>[% </> %]<class|tips-text-write>[% ${type} %]`
+export function codePreRootWrite(type = "Code") {
+  return `<class|code-pre>[% %]<class|tips-dot-write>[% </> %]<class|tips-text-write>[% ${type} %]`;
+}
+
+export function thinkRootWrite() {
+  return `<class|think-header>[%💭 思考...%]`;
+}
+
+export function thinkLineWrite(text: string) {
+  return `<class|think>[%${text}%]`;
 }
 
 export function codePreLineWrite(text: string) {
-  return `<class|code-pre>[% %]${text}`
+  return `<class|code-pre>[% %]${text}`;
 }
 
 export function errorWrite(text: string) {
@@ -55,17 +63,16 @@ export function historyPlaceholderWrite(text: string) {
 }
 
 export function tipsWrite(text: string) {
-  return `<class|tips-dot-write>[% * %]${tipsTextWrite(text)}`
+  return `<class|tips-dot-write>[% * %]${tipsTextWrite(text)}`;
 }
 
 export function tipsTextWrite(text: string) {
-  return `<class|tips-text-write>[% ${text} %]`
+  return `<class|tips-text-write>[% ${text} %]`;
 }
 
 export function hiddenImageWrite(src: string) {
-  return `<image|hidden-image-write>[%${src}%]`
+  return `<image|hidden-image-write>[%${src}%]`;
 }
-
 
 export function someoneSaid() {
   return `<class|someone>[%[someone]%]`;
@@ -75,9 +82,8 @@ export function userSaid(text: string) {
   return `<class|user>[%[${text}]%]`;
 }
 
-
 export function useSomeoneInputerWatch(
-  callback: (val: string) => void | boolean
+  callback: (val: string) => void | boolean,
 ) {
   const { setInputCallback } = useContext(SomeoneEditorContext);
   const callbackRef = useRef<(val: string) => void | boolean>(callback);
@@ -96,7 +102,7 @@ export function useSomeoneInputerWatch(
 }
 
 export function useSomeoneEnterWatch(
-  callback: (val: string) => void | boolean
+  callback: (val: string) => void | boolean,
 ) {
   const { setEnterCallback } = useContext(SomeoneEditorContext);
   const callbackRef = useRef<(val: string) => void | boolean>(callback);
@@ -106,7 +112,7 @@ export function useSomeoneEnterWatch(
       return callbackRef.current?.(val);
     };
 
-    enterCallbackDestory.current = setEnterCallback(inputCallback)
+    enterCallbackDestory.current = setEnterCallback(inputCallback);
     return enterCallbackDestory.current;
   }, []);
 
@@ -118,13 +124,17 @@ export function useSomeoneEnterWatch(
 export function useDocKeydownWatch(
   key: string,
   fn: () => boolean | void,
-  cmds?: KeydownCMD[]
+  cmds?: KeydownCMD[],
 ) {
   const callbackRef = useRef<() => boolean | void>(fn);
   const dockeydownDestoryRef = useRef<() => boolean>();
-  
+
   useEffect(() => {
-    dockeydownDestoryRef.current = watchDocKeydown(key, () => callbackRef.current(), cmds);
+    dockeydownDestoryRef.current = watchDocKeydown(
+      key,
+      () => callbackRef.current(),
+      cmds,
+    );
     return () => {
       dockeydownDestoryRef.current?.();
     };

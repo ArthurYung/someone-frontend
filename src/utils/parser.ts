@@ -4,22 +4,32 @@ import {
   importantWrite,
   linkWrite,
   mdCodeWrite,
+  thinkLineWrite,
+  thinkRootWrite,
 } from '../components/SomeoneEditor/helper';
 
 enum Tokens {
   CODE = '`',
   BOLD = '*',
   LINK = '[',
+  TAG = '<',
 }
 
 enum LineTokens {
   CODE_PRE = '```',
+  THINK = '<think>'
+}
+
+enum LineEndTokens {
+  CODE_PRE = '```',
+  THINK = '</think>'
 }
 
 const TOKEN_END_MAPTER = {
   [Tokens.CODE]: '`',
   [Tokens.BOLD]: '*',
   [Tokens.LINK]: ')',
+  [Tokens.TAG]: '>'
 };
 
 const TOKEN_PARSER_MAP = {
@@ -35,31 +45,54 @@ const TOKEN_PARSER_MAP = {
     const res = /^\[([^[]+?)\]\(([a-zA-Z.://?#%&]+)\)$/.exec(text);
     return res ? linkWrite(res[1], res[2]) : '';
   },
+  [Tokens.TAG]: (_: string) => '',
 };
 
 const LINE_START_PARSER_MAP = {
   [LineTokens.CODE_PRE]: (text: string) => {
     const res = /^```([a-zA-Z]+)?$/.exec(text);
     return res ? codePreRootWrite(res[1]) : '';
+  },
+  [LineTokens.THINK]: (text: string) => {
+    if(/^<think>/.exec(text)) {
+      return thinkRootWrite()
+    }
+    return '';
   }
 }
 
 interface lineParser {
   type: null | LineTokens,
   offset: number,
+  end: LineEndTokens | null
+  render: (text: string) => string
 }
 
 const LineParser: lineParser = {
   type: null,
   offset: 0,
+  end: null,
+  render: (text: string) => text
 }
 
 function parseLineStart(text: string) {
   if (LineParser.type) return '';
   let res = '';
+  console.log('parser text :', text);
   if (res = LINE_START_PARSER_MAP[LineTokens.CODE_PRE](text)) {
     LineParser.type = LineTokens.CODE_PRE;
+    LineParser.end = LineEndTokens.CODE_PRE;
     LineParser.offset = 0;
+    LineParser.render = codePreLineWrite;
+    return res;
+  }
+
+  if (res = LINE_START_PARSER_MAP[LineTokens.THINK](text)) {
+    LineParser.type = LineTokens.THINK;
+    LineParser.end = LineEndTokens.THINK;
+    LineParser.offset = 0;
+    LineParser.render = thinkLineWrite;
+    return res;
   }
 
   return res
@@ -70,36 +103,26 @@ function parseLineEnd(text: string) {
     return text;
   }
 
-  if (text === LineParser.type) {
+  if (text === LineParser.end) {
     LineParser.type = null;
     LineParser.offset = 0;
-    return codePreLineWrite('');
-  }
-
-  if (!LineParser.offset) {
-    return codePreLineWrite('');
+    return '';
   }
 
   LineParser.offset = 0;
-  return text;
-}
-
-function parseLineContent(text: string) {
-  const res = LineParser.offset ? text : codePreLineWrite(text);
-  LineParser.offset += text.length;
-  return res;
+  return LineParser.render(text || ' ');
 }
 
 function parseCodePrestart(text: string) {
-  console.log(text);
   return parseLineStart(text) || parseLineEnd(text);
 }
 
 function parseToken(text: string, type: Tokens) {
-  return TOKEN_PARSER_MAP[type](text);
+  return TOKEN_PARSER_MAP[type]?.(text) || '';
 }
 
 export function parseMessage(text: string) {
+  console.log('parse text', text);
   let res = '';
   let matcher = '';
   let matchType: Tokens | null = null;
@@ -117,10 +140,7 @@ export function parseMessage(text: string) {
 
     if (LineParser.type) {
       matcher += text[i];
-      if (!LineParser.type.startsWith(matcher)) {
-        res += parseLineContent(matcher);
-        matcher = '';
-      }
+      LineParser.offset += 1;
       continue;
     }
 
