@@ -148,24 +148,25 @@ export function fetchStream<T>(config: {
       }
 
       // 错误返回
-      if (!/^(data|event):/.test(lines[0])) {
-        try {
-          const errorInfo = JSON.parse(lines[0]);
-          // 未登录
-          if (errorInfo.code === 4003) {
-            clearToken();
-          }
-
-          reject(errorInfo);
-        } catch (e) {
-          reject(e);
-        }
-
-        return;
-      }
-
+      // if (!/^(data|event):/.test(lines[0])) {
+      //   try {
+      //     const errorInfo = JSON.parse(lines[0]);
+      //     // 未登录
+      //     if (errorInfo.code === 4003) {
+      //       clearToken();
+      //     }
+      //
+      //     reject(errorInfo);
+      //   } catch (e) {
+      //     reject(e);
+      //   }
+      //
+      //   return;
+      // }
+      //
       let data: T;
       for (let line of lines) {
+        if (!line) continue;
         if (!(line = line.trim())) continue;
         if (line === "event:message") continue;
         if (line.startsWith("data:")) {
