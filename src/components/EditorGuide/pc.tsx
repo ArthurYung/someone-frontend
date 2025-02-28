@@ -13,6 +13,10 @@ export const EditorGuidePC: FC<{ children: any }> = ({ children }) => {
   
 * 聊天过程中可以通过方向键${codeWrite(" ↑↓ ")}来切换历史输入文字。
 
+* 聊天过程中同时按住${codeWrite("Ctrl")} + ${codeWrite("D")}可以向下滚动内容。
+
+* 聊天过程中可以通过${codeWrite("Ctrl")} + ${codeWrite("U")}可以向上滚动内容。
+
 * 可使用${codeWrite("Shift + 回车")}键来执行换行符操作。
 
 * 普通体验账号每周的对话有次数限制，可输入${codeWrite("/info")}指令来查看当前账号详情。

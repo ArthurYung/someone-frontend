@@ -137,11 +137,33 @@ export const useWrites = () => {
       `由于俺财力有限，每周可在Someone体验${primaryWrite("10轮")}对话服务\n`,
     );
     write(`
+操作小Tips：
+
+  * 输入内置指令时（以${codeWrite("/")}开头），可通过右键${codeWrite(" → ")}或${codeWrite("Tab")}键来智能补全指令。
+    
+  * 聊天过程中同时按住${codeWrite("Ctrl")} + ${codeWrite("D")}可以向下滚动内容。
+
+  * 聊天过程中可以通过${codeWrite("Ctrl")} + ${codeWrite("U")}可以向上滚动内容。
+  
+  * 聊天过程中可以通过方向键${codeWrite(" ↑↓ ")}来切换历史输入文字。
+
+  * 可使用${codeWrite("Shift + 回车")}键来执行换行符操作。
+
+  * 如果想复制回答内容，可以按照回答结尾输入${codeWrite("/copy x")}指令来复制内容到剪切板。
+
+  * 普通体验账号每周的对话有次数限制，可输入${codeWrite("/info")}指令来查看当前账号详情。
+
+  * 更多操作内容可在验证身份成功后输入${codeWrite("/help")}查看操作帮助。
+
+  * 可以点击地址栏右侧的小电脑安装Someone wep APP (PWA)来获得更好的使用体验。
+
+`);
+    write(`
 内置指令详解：
 
   - ${codeWrite(SomeoneHelper.HELPER)} -- 查看帮助文档
 
-  - ${codeWrite(SomeoneHelper.COPY + " {ID}")} -- 可以复制指定代码块COPY ID的内容，例如"/copy 1"
+  - ${codeWrite(SomeoneHelper.COPY + " {ID}")} -- 可以复制指定回答或代码块内容，例如"/copy 1"
 
   - ${codeWrite(SomeoneHelper.INFO)} -- 可查看对话资源使用详情
 

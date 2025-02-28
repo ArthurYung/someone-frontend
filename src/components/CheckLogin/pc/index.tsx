@@ -77,6 +77,7 @@ export const CheckLoginPC: FC<{ children: any }> = ({ children }) => {
   });
 
   const destoryBackWatcher = useDocKeydownWatch('d', () => {
+    console.log('on checklogin keydown')
     if (inputerStatus.current !== 'login') {
       clear();
       hideInputer();

@@ -69,6 +69,16 @@ export function createSomeoneInputer(
         return;
       }
 
+      if (e.key === 'u' && e.ctrlKey) {
+        root.scrollTo(root.scrollLeft, root.scrollTop - 200);
+        return;
+      }
+
+      if (e.key === 'd' && e.ctrlKey) {
+        root.scrollTo(root.scrollLeft, root.scrollTop + 200);
+        e.preventDefault();
+        return;
+      }
 
       if (e.key === 'Enter') {
         e.shiftKey ? inputText('\n') : enter();
