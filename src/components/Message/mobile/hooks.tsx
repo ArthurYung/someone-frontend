@@ -22,16 +22,14 @@ import { MessageDBRow, historyDB } from "../../../utils/indexDB";
 import { parseMessage } from "../../../utils/parser";
 import { CreateFooterInputer } from "../../Mobile/FooterInputer";
 
-
-
 const useBatchWriterCreator = (timeout = 300) => {
-  const writers = useRef<{ text: string, looper: number }[]>([]);
+  const writers = useRef<{ text: string; looper: number }[]>([]);
 
   function createBatchWriter(callback: (text: string) => void) {
     const writer = {
-      text: '',
+      text: "",
       looper: 0,
-    }
+    };
 
     writers.current.push(writer);
 
@@ -46,7 +44,7 @@ const useBatchWriterCreator = (timeout = 300) => {
         writer.looper = window.setTimeout(() => {
           writer.text = parseWrite(writer.text);
           writer.looper = 0;
-        }, timeout)
+        }, timeout);
       }
     }
 
@@ -72,21 +70,24 @@ const useBatchWriterCreator = (timeout = 300) => {
       run,
       put,
       clear,
-    }
+    };
   }
 
-  useEffect(() => () => {
-    writers.current.forEach(item => window.clearTimeout(item.looper))
-  }, [])
+  useEffect(
+    () => () => {
+      writers.current.forEach((item) => window.clearTimeout(item.looper));
+    },
+    [],
+  );
 
   return createBatchWriter;
-}
+};
 
 export const useWrites = () => {
   const { write, asyncWrite, clear, isWriting } = useSomeoneEditor();
   const { userInfo, reloadUserInfo } = useUserInfo();
   const { user_name, msg_count, is_vip } = userInfo;
-  const inputerState = useRef<'sending' | 'input'>('input');
+  const inputerState = useRef<"sending" | "input">("input");
   const history = useRef<MessageInfo[]>([]);
   const createBatchWather = useBatchWriterCreator(100);
 
@@ -95,7 +96,7 @@ export const useWrites = () => {
   }
 
   function writeSumeoneName() {
-    asyncWrite(someoneSaid() + '\n');
+    asyncWrite(someoneSaid() + "\n");
   }
 
   async function writeLimit() {
@@ -105,21 +106,27 @@ export const useWrites = () => {
     writeSumeoneName();
     write(
       `有时间的话可以输入${codeWrite(
-        SomeoneHelper.SURVEY
+        SomeoneHelper.SURVEY,
       )}参与调研或者输入${codeWrite(
-        SomeoneHelper.FEEDBACK
-      )}提建议或反馈，可能会更快见面哦！`
+        SomeoneHelper.FEEDBACK,
+      )}提建议或反馈，可能会更快见面哦！`,
     );
     writeUserName(true);
   }
 
   function writeHelp() {
-    write(`\n${primaryWrite("Someone")}是一个模拟私人Chat机器人对话的免费体验网站，作者: ${linkWrite('Bruceouyang', 'https://bruceau.com')}\n`)
-    write(`由于俺财力有限，每周可在Someone体验${primaryWrite("10轮")}对话服务\n`)
+    write(
+      `\n${primaryWrite("Someone")}是一个模拟私人Chat机器人对话的免费体验网站，作者: ${linkWrite("Bruceouyang", "https://bruceau.com")}\n`,
+    );
+    write(
+      `由于俺财力有限，每周可在Someone体验${primaryWrite("10轮")}对话服务\n`,
+    );
     write(`
 内置指令详解：
 
   - ${codeWrite(SomeoneHelper.HELPER)} -- 查看帮助文档
+
+  - ${codeWrite(SomeoneHelper.COPY + " {ID}")} -- 可以复制指定代码块COPY ID的内容，例如"/copy 1"
 
   - ${codeWrite(SomeoneHelper.INFO)} -- 可查看对话资源使用详情
 
@@ -132,145 +139,152 @@ export const useWrites = () => {
   - ${codeWrite(SomeoneHelper.FEEDBACK)} -- 参与提建议或反馈，填写后将由机会获得额外对话体验次数
 
   - ${codeWrite(SomeoneHelper.QUIT)} -- 退出当前用户登录状态
-`)
-writeUserName(true);
+`);
+    writeUserName(true);
   }
 
   function writeInfo() {
     write(async () => {
       const { data, error } = await reloadUserInfo();
-      if (error) return '';
+      if (error) return "";
       return `
     用户ID: ${data.info.id}
     用户昵称: ${data.info.user_name}
     已对话: ${data.info.send_count}
     剩余: ${data.info.msg_count}
-`
-    })
-writeUserName(true)
+`;
+    });
+    writeUserName(true);
   }
 
   function writeAuthor() {
-    write(`您可以访问我的个人博客：${linkWrite('https://bruceau.com')}\n`)
-    write('或扫描下方二维码添加微信：\n')
-    write(() => generateQrcode('https://u.wechat.com/EHySPrTCSCR8cyItHvrnMtM'))
-    writeUserName(true)
+    write(`您可以访问我的个人博客：${linkWrite("https://bruceau.com")}\n`);
+    write("或扫描下方二维码添加微信：\n");
+    write(() => generateQrcode("https://u.wechat.com/EHySPrTCSCR8cyItHvrnMtM"));
+    writeUserName(true);
   }
 
   function writeSurvey() {
-    write(`\nClick -> ${linkWrite(SURVEY_URL)} -> 有机会获取额外体验次数\n`)
-    writeUserName(true)
+    write(`\nClick -> ${linkWrite(SURVEY_URL)} -> 有机会获取额外体验次数\n`);
+    writeUserName(true);
   }
 
   function writeFeedback() {
-    write(`\nClick -> ${linkWrite(TXC_URL)} -> 有机会获取额外体验次数\n`)
-    writeUserName(true)
+    write(`\nClick -> ${linkWrite(TXC_URL)} -> 有机会获取额外体验次数\n`);
+    writeUserName(true);
   }
 
   function writeQuit() {
-    write(`Bye~`)
+    write(`Bye~`);
     setTimeout(() => {
       clearToken();
       window.location.reload();
-    }, 1000)
+    }, 1000);
   }
 
   function writeSendMessage(value: string) {
-    let responseRole = '';
-    let responseContent = '';
+    let responseRole = "";
+    let responseContent = "";
     const batchWriter = createBatchWather(write);
-    const userSaidInfo = { role: 'user', content: value };
+    const userSaidInfo = { role: "user", content: value };
     history.current = history.current.slice(-3);
     history.current.push(userSaidInfo);
     historyDB.messages.add(userSaidInfo);
-    inputerState.current = 'sending';
+    inputerState.current = "sending";
     writeSumeoneName();
     sendMessage({
       messages: history.current,
-      onMessage: data => {
+      onMessage: (data) => {
         if (data.delta.role && !responseRole) {
           responseRole = data.delta.role;
         }
-        
-        responseContent += data.delta.content || '';
-        batchWriter.put(data.delta.content || '');
+
+        responseContent += data.delta.content || "";
+        batchWriter.put(data.delta.content || "");
         batchWriter.run();
-      }
-    }).then(() => {
-      if (!responseRole) return;
-      const responseInfo = { role: responseRole, content: responseContent };
-      history.current.push(responseInfo);
-      historyDB.messages.add(responseInfo);
-    }).catch((err) => {
-      if (err.code === 3001) {
-        reloadUserInfo();
-        writeLimit();
-        return;
-      }
-
-      if (err.code === 5006) {
-        write(errorWrite('Ops! CPU要起火了! 让我冷静一下...\n'));
-        return;
-      }
-
-      write(errorWrite(err.message));
-    }).finally(() => {
-      batchWriter.clear();
-      writeUserName(true);
-      inputerState.current = 'input';
+      },
     })
+      .then(() => {
+        if (!responseRole) return;
+        const responseInfo = { role: responseRole, content: responseContent };
+        history.current.push(responseInfo);
+        historyDB.messages.add(responseInfo);
+      })
+      .catch((err) => {
+        if (err.code === 3001) {
+          reloadUserInfo();
+          writeLimit();
+          return;
+        }
+
+        if (err.code === 5006) {
+          write(errorWrite("Ops! CPU要起火了! 让我冷静一下...\n"));
+          return;
+        }
+
+        write(errorWrite(err.message));
+      })
+      .finally(() => {
+        batchWriter.clear();
+        writeUserName(true);
+        inputerState.current = "input";
+      });
   }
 
   function writeHistorys(messages: MessageDBRow[]) {
     if (!messages.length) return;
-    asyncWrite(historyPlaceholderWrite('============= History ============') + '\n');
-    messages.forEach(item => {
-      if (item.role === 'user') {
-        asyncWrite(`${userSaid(user_name)}\n${item.content}\n`, 100)
+    asyncWrite(
+      historyPlaceholderWrite("============= History ============") + "\n",
+    );
+    messages.forEach((item) => {
+      if (item.role === "user") {
+        asyncWrite(`${userSaid(user_name)}\n${item.content}\n`, 100);
       } else {
-        const { res, unmatched } = parseMessage(item.content)
+        const { res, unmatched } = parseMessage(item.content);
         writeSumeoneName();
-        asyncWrite(`${res}${unmatched}\n`, 100)
+        asyncWrite(`${res}${unmatched}\n`, 100);
       }
     });
-    asyncWrite(historyPlaceholderWrite('==================================') + '\n\n');
+    asyncWrite(
+      historyPlaceholderWrite("==================================") + "\n\n",
+    );
   }
 
   useEffect(() => {
     const inputer = CreateFooterInputer({
       onSubmit: (val) => {
-        if (isWriting() || inputerState.current !== 'input') return true;
+        if (isWriting() || inputerState.current !== "input") return true;
         const value = val.trim();
         if (value === SomeoneHelper.HELPER) {
           writeHelp();
           return;
         }
-    
+
         if (value === SomeoneHelper.INFO) {
           writeInfo();
           return;
         }
-    
+
         if (value === SomeoneHelper.CONACT) {
           writeAuthor();
           return;
         }
-    
+
         if (value === SomeoneHelper.SURVEY) {
           writeSurvey();
           return;
         }
-    
+
         if (value === SomeoneHelper.FEEDBACK) {
           writeFeedback();
           return;
         }
-    
+
         if (value === SomeoneHelper.QUIT) {
           writeQuit();
           return;
         }
-    
+
         if (value === SomeoneHelper.CLEAR) {
           clear();
           writeUserName();
@@ -278,25 +292,24 @@ writeUserName(true)
           historyDB.messages.clear();
           return;
         }
-    
+
         if (!is_vip && !msg_count) {
           writeLimit();
           return;
         }
-        
+
         if (!value) {
           writeUserName(true);
           return;
         }
-        
-        write(value + '\n');
-        writeSendMessage(value)
-      }
+
+        write(value + "\n");
+        writeSendMessage(value);
+      },
     });
 
     return inputer.destory;
   }, []);
-
 
   return {
     writeLimit,

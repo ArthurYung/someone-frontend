@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useRef } from "react";
 import { SomeoneEditorContext } from "./context";
 import { KeydownCMD, watchDocKeydown } from "./core/docKeydown";
+import { getCopyId } from "../../utils/copy";
 
 export function optionWrite(id: string) {
   return `<option|${id}>[% %]`;
@@ -26,8 +27,9 @@ export function linkWrite(link: string, href?: string) {
   return `<link|${href || link}>[%${link}%]`;
 }
 
-export function codePreRootWrite(type = "Code") {
-  return `<class|code-pre>[% %]<class|tips-dot-write>[% </> %]<class|tips-text-write>[% ${type} %]`;
+export function codePreRootWrite(type = "code") {
+  const copyId = getCopyId();
+  return `<class|code-pre copy-id-${copyId}>[%🧩 <${type}> | /copy ${copyId} |%]`;
 }
 
 export function thinkRootWrite() {
@@ -80,6 +82,10 @@ export function someoneSaid() {
 
 export function userSaid(text: string) {
   return `<class|user>[%[${text}]%]`;
+}
+
+export function copyGuideWrite(id: string) {
+  return `<class|copy-guide>[%| /copy ${id} |%]`;
 }
 
 export function useSomeoneInputerWatch(

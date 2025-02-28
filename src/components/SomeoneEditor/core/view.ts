@@ -27,7 +27,6 @@ export function createSomeoneView(config: SomeoneEditorConfig) {
       return;
     }
 
-    console.log('>>>> last cursor', viewContainer.lastChild);
     const isBlockEmit = !!(viewContainer.lastChild as HTMLElement)?.dataset
       ?.block;
     if (isBlockEmit && cursorType === "text") {
