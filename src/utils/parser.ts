@@ -78,7 +78,6 @@ const LineParser: lineParser = {
 function parseLineStart(text: string) {
   if (LineParser.type) return '';
   let res = '';
-  console.log('parser text :', text);
   if (res = LINE_START_PARSER_MAP[LineTokens.CODE_PRE](text)) {
     LineParser.type = LineTokens.CODE_PRE;
     LineParser.end = LineEndTokens.CODE_PRE;
@@ -121,8 +120,13 @@ function parseToken(text: string, type: Tokens) {
   return TOKEN_PARSER_MAP[type]?.(text) || '';
 }
 
+export function resetLineParser() {
+  LineParser.type = null;
+  LineParser.offset = 0;
+  LineParser.end = null;
+}
+
 export function parseMessage(text: string) {
-  console.log('parse text', text);
   let res = '';
   let matcher = '';
   let matchType: Tokens | null = null;
@@ -176,6 +180,13 @@ export function parseMessage(text: string) {
     }
 
     res += text[i];
+  }
+
+  if (LineParser.type && matcher && !res) {
+    if (!LineParser.end?.startsWith(matcher)) {
+      res += LineParser.render(matcher);
+      matcher = '';
+    }
   }
 
   return {

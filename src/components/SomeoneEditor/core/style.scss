@@ -35,6 +35,22 @@
     }
   }
 
+  &.block-cursor {
+    &::after {
+      content: none;
+      display: none;
+    }
+
+    [data-block=true]:last-child {
+      @include cursor;
+      
+      &::after {
+        transform: translateY(10%);
+        animation: blink .4s infinite steps(1);
+      }
+    }
+  }
+
   &.focus {
     .someone-editor-inputer--cursor {
       opacity: 1;

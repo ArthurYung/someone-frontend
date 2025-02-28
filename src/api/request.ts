@@ -1,10 +1,11 @@
 import qs from "qs";
 import { clearToken, getToken } from "../utils/token";
 import { createStreamPusher } from "../utils/stream";
+import { resetLineParser } from "../utils/parser";
 
 const BASEURL =
   import.meta.env.MODE === "development"
-    ? ""
+    ? "https://someone-api.bruceau.plus"
     : "https://someone-api.bruceau.plus";
 
 export const requestErrorHandler = {
@@ -201,6 +202,9 @@ export function fetchStream<T>(config: {
       controller.enqueue(value);
       push(controller, reader);
     };
+
+    // 重置解析器
+    resetLineParser()
 
     fetch(url, requestConfig)
       .then((res) => {

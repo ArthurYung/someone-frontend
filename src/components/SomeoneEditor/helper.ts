@@ -31,15 +31,15 @@ export function codePreRootWrite(type = "Code") {
 }
 
 export function thinkRootWrite() {
-  return `<class|think-header>[%💭 思考...%]`;
+  return `<block|think-header>[%💭 思考...%]`;
 }
 
 export function thinkLineWrite(text: string) {
-  return `<class|think>[%${text}%]`;
+  return `<block|think>[%${text}%]`;
 }
 
 export function codePreLineWrite(text: string) {
-  return `<class|code-pre>[% %]${text}`;
+  return `<block|code-inline>[%${text}%]`;
 }
 
 export function errorWrite(text: string) {

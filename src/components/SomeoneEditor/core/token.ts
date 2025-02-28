@@ -59,10 +59,10 @@ function applyImageSrc(src: string, node: HTMLImageElement) {
 }
 
 function applyBlockNode(className: string, node: HTMLSpanElement) {
-  applyStyleNode('display: block', node);
+  // applyStyleNode('display: block', node);
   applyClassNode(className, node);
+  node.setAttribute('data-block', 'true');
 }
-
 function updateNodeContent(node: HTMLElement, text: string) {
   node.innerText = text;
   return;

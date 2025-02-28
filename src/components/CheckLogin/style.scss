@@ -8,6 +8,7 @@
 }
 
 .qrcode {
+    display: block;
     line-height: 1.15;
     font-family: qrcode, ui-monospace, SFMono-Regular, SF Mono,Menlo,Consolas,Liberation Mono,monospace !important;
     &-cover {

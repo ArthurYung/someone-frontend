@@ -3,14 +3,16 @@ import { SomeoneEditorConfig } from "./config";
 export type SomeoneViewInstance = ReturnType<typeof createSomeoneView>;
 
 export function createSomeoneView(config: SomeoneEditorConfig) {
-  const baseContainer = document.createElement('div');
-  const viewContainer = document.createElement('div');
-  const scrollObserve = new MutationObserver(scrollCallback);
-  
-  let isObserved = false;
+  const baseContainer = document.createElement("div");
+  const viewContainer = document.createElement("div");
+  const contentObserve = new MutationObserver(contentCallback);
 
-  viewContainer.className = `someone-editor ${config.get('className') || ''}`;
-  baseContainer.className = 'someone-editor--container';
+  let isObserved = false;
+  let cursorType: "none" | "text" | "block" = "none";
+  let showCursor = false;
+
+  viewContainer.className = `someone-editor ${config.get("className") || ""}`;
+  baseContainer.className = "someone-editor--container";
   baseContainer.appendChild(viewContainer);
 
   function scrollCallback() {
@@ -20,9 +22,33 @@ export function createSomeoneView(config: SomeoneEditorConfig) {
     }
   }
 
+  function checkCursorType() {
+    if (!showCursor) {
+      return;
+    }
+
+    console.log('>>>> last cursor', viewContainer.lastChild);
+    const isBlockEmit = !!(viewContainer.lastChild as HTMLElement)?.dataset
+      ?.block;
+    if (isBlockEmit && cursorType === "text") {
+      viewContainer.classList.add("block-cursor");
+      cursorType = "block";
+    }
+
+    if (!isBlockEmit && cursorType === "block") {
+      viewContainer.classList.remove("block-cursor");
+      cursorType = "text";
+    }
+  }
+
+  function contentCallback() {
+    scrollCallback();
+    checkCursorType();
+  }
+
   function startObserve() {
     if (isObserved) return;
-    scrollObserve.observe(viewContainer, {
+    contentObserve.observe(viewContainer, {
       childList: true,
       subtree: true,
       characterData: true,
@@ -32,7 +58,7 @@ export function createSomeoneView(config: SomeoneEditorConfig) {
 
   function clearObserve() {
     if (!isObserved) return;
-    scrollObserve.disconnect();
+    contentObserve.disconnect();
     isObserved = false;
   }
 
@@ -49,7 +75,15 @@ export function createSomeoneView(config: SomeoneEditorConfig) {
   }
 
   function setCursor(visible: boolean) {
-    visible ? viewContainer.classList.add('cursor') : viewContainer.classList.remove('cursor');
+    if (visible) {
+      viewContainer.classList.add("cursor");
+      showCursor = true;
+      cursorType = 'text';
+    } else {
+      viewContainer.classList.remove("cursor");
+      showCursor = false;
+      cursorType = "none";
+    }
   }
 
   return {
@@ -60,5 +94,6 @@ export function createSomeoneView(config: SomeoneEditorConfig) {
     clearObserve,
     scrollCallback,
     getObserveStatus,
-  }
+  };
 }
+
